@@ -11,7 +11,7 @@
 
 import argparse
 
-from simpleir.splitter.build import build_splitter
+from simpleir.utils.split.build import build_splitter
 
 
 def parse_args():

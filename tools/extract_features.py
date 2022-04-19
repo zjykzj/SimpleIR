@@ -11,10 +11,9 @@
 4. 提取特征
 """
 
-import os
 import argparse
 
-from simpleir.extract.build import build_extractor
+from simpleir.utils.extract.build import build_extractor
 
 
 def parse_args():

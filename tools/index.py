@@ -9,10 +9,9 @@
 2. 按照相似度进行排序，计算top1/top5结果
 """
 
-import os
 import argparse
 
-from simpleir.index.build import build_indexer
+from simpleir.utils.index.build import build_indexer
 
 
 def parse_args():

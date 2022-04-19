@@ -11,7 +11,6 @@
 4. 依次遍历图像，保存图像提取的特征
 """
 
-import os
 from typing import Tuple, Any
 
 from torch.utils.data import DataLoader

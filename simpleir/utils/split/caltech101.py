@@ -24,18 +24,20 @@ import os
 import glob
 import random
 import shutil
+import time
 
+from tqdm import tqdm
 from sklearn.model_selection import train_test_split
+
+from simpleir.configs.key_words import KEY_GALLERY, KEY_QUERY
 
 __all__ = ['Caltech101']
 
 
 class Caltech101:
 
-    def __init__(self, root):
-        assert os.path.isdir(root)
-
-        self.root = root
+    def __init__(self, ):
+        pass
 
     def _save_to_dst(self, img_list, class_name, dst_root):
         dst_class_dir = os.path.join(dst_root, class_name)
@@ -49,17 +51,18 @@ class Caltech101:
 
             shutil.copy(img_path, dst_img_path)
 
-    def run(self, dst_root):
+    def run(self, src_root, dst_root):
+        assert os.path.isdir(src_root), src_root
+        classes = os.listdir(src_root)
+
         if not os.path.exists(dst_root):
             os.makedirs(dst_root)
+        dst_gallery = os.path.join(dst_root, KEY_GALLERY)
+        dst_query = os.path.join(dst_root, KEY_QUERY)
 
-        classes = os.listdir(self.root)
-
-        dst_gallery = os.path.join(dst_root, 'gallery')
-        dst_query = os.path.join(dst_root, 'query')
-
-        for class_name in classes:
-            cls_dir = os.path.join(self.root, class_name)
+        start = time.time()
+        for class_name in tqdm(classes):
+            cls_dir = os.path.join(src_root, class_name)
             assert os.path.isdir(cls_dir), cls_dir
 
             img_list = glob.glob(os.path.join(cls_dir, '*.jpg'))
@@ -76,6 +79,5 @@ class Caltech101:
                 gallery_list, query_list = train_test_split(img_list, test_size=0.2, train_size=0.8)
                 self._save_to_dst(gallery_list, class_name, dst_gallery)
                 self._save_to_dst(query_list, class_name, dst_query)
-
-    def __repr__(self):
-        return self.__class__.__name__ + ' (' + self.root + ')'
+        end = time.time()
+        print('time:', (end - start))

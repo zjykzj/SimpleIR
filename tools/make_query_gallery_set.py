@@ -17,17 +17,19 @@ from simpleir.utils.split.build import build_splitter
 def parse_args():
     parser = argparse.ArgumentParser(description="Make Query and Gallery Set")
     parser.add_argument('-d', '--dataset', metavar='DATASET', default='Caltech101', type=str, help='Dataset type')
-    parser.add_argument('DIR', default='./data/caltech101/', type=str, help='Path to the dataset')
+    parser.add_argument('SRC', default='./data/caltech101/', type=str, help='Path to the src dataset')
+    parser.add_argument('DST', default='./data/caltech101/', type=str, help='Path to the dst dataset')
 
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    print(args)
+    print('args:', args)
 
-    data_root = args.DIR
+    src_root = args.SRC
+    dst_root = args.DST
     dataset_type = args.dataset
 
-    splitter = build_splitter(data_root, dataset_type)
-    splitter.run('./data/caltech101')
+    splitter = build_splitter(dataset_type)
+    splitter.run(src_root, dst_root)

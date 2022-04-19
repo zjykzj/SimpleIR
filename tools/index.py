@@ -20,6 +20,8 @@ def parse_args():
                         help='Path to gallery features')
     parser.add_argument('-q', '--query', metavar='QUERY', default='./data/extract/caltech101/query', type=str,
                         help='Path to query features')
+    parser.add_argument('-s', '--similarity', metavar='SIMILARITY', default='abs_diff', type=str,
+                        help='Way to calculate similarity')
 
     return parser.parse_args()
 
@@ -30,5 +32,7 @@ if __name__ == '__main__':
 
     root_gallery = args.gallery
     root_query = args.query
+    similarity = args.similarity
 
-    build_indexer(root_gallery, root_query)
+    indexer = build_indexer(root_gallery, root_query)
+    indexer.run(similarity=similarity)

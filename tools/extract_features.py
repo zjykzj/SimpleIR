@@ -18,20 +18,22 @@ from simpleir.utils.extract.build import build_extractor
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Make Query and Gallery Set")
-    parser.add_argument('-d', '--dataset', metavar='DATASET', default='Caltech101', type=str, help='Dataset type')
     parser.add_argument('SRC', default='./data/caltech101/gallery', type=str, help='Path to the dataset')
     parser.add_argument('DST', default='./data/extract/caltech101/gallery/', type=str, help='Path to the save feature')
+    parser.add_argument('-d', '--dataset', metavar='DATASET', default='Caltech101', type=str, help='Dataset type')
+    parser.add_argument('-s', '--save-interval', metavar='INTERVAL', default=5000, type=int, help='Save interval')
 
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    print(args)
+    print('args:', args)
 
     src_root = args.SRC
     dst_root = args.DST
     dataset_type = args.dataset
+    save_interval = args.save_interval
 
     extractor = build_extractor(src_root, dataset_type)
-    extractor.run(dst_root)
+    extractor.run(dst_root, save_interval=save_interval)

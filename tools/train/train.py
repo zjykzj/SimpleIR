@@ -18,7 +18,7 @@ from simpleir.engine.trainer import train_epoch
 from simpleir.utils.util import save_model
 
 
-def load_args():
+def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch-size', type=int, default=64, metavar='N',
                         help='input batch size for training (default: 64)')
@@ -60,7 +60,7 @@ def process(gpu, args):
 
 
 def main():
-    args = load_args()
+    args = parse_args()
     process(0, args)
 
 

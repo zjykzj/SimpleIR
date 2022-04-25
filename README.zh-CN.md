@@ -44,8 +44,9 @@
 
 ## 致谢
 
-* [Build a simple Image Retrieval System with an Autoencoder](https://towardsdatascience.com/build-a-simple-image-retrieval-system-with-an-autoencoder-673a262b7921)
-* [Similar Image Retrieval using Autoencoders](https://towardsdatascience.com/find-similar-images-using-autoencoders-315f374029ea)
+* [ZJCV/ZCls2](https://github.com/ZJCV/ZCls2)
+
+更多致谢内容，查看[THANKS](THANKS.md)
 
 ## 参与贡献方式
 

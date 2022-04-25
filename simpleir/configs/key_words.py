@@ -9,3 +9,6 @@
 
 KEY_GALLERY = 'gallery'
 KEY_QUERY = 'query'
+
+KEY_INPUT = 'input'
+KEY_FEAT = 'feat'

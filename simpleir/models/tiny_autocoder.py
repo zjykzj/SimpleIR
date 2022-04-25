@@ -6,9 +6,15 @@
 @author: zj
 @description:
 """
+from typing import Dict
 
 import torch
 import torch.nn as nn
+
+from zcls2.config.key_word import KEY_OUTPUT
+from simpleir.configs.key_words import KEY_INPUT, KEY_FEAT
+
+__supported_model__ = ['TinyAutoCoder']
 
 
 class TinyAutoCoder(nn.Module):
@@ -44,19 +50,13 @@ class TinyAutoCoder(nn.Module):
             nn.Sigmoid(),
         )
 
-    def forward(self, x):
+    def forward(self, x) -> Dict:
         encoded = self.encoder(x)
         decoded = self.decoder(encoded)
+        return {
+            KEY_INPUT: x,
+            KEY_FEAT: encoded,
+            KEY_OUTPUT: decoded
+        }
         # return encoded, decoded
-        return decoded
-
-
-if __name__ == '__main__':
-    img = torch.randn((10, 1, 28, 28))
-    print(img.shape)
-    model = TinyAutoCoder(in_channels=1)
-
-    # encoded, decoded = model(img)
-    decoded = model(img)
-    # print(encoded.shape)
-    print(decoded.shape)
+        # return decoded

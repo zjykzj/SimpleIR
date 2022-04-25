@@ -7,33 +7,34 @@
 @description: 
 """
 
-from torch.utils.data import DataLoader
-import torchvision.datasets as datasets
-import torchvision.transforms as transforms
+from typing import Tuple
+
+from yacs.config import CfgNode
+from torch.utils.data import IterableDataset, DataLoader, Sampler
+
+from zcls2.data.transform.build import build_transform
+from zcls2.data.dataset.build import build_dataset
+from zcls2.data.sampler.build import build_sampler
+
+from .dataloader.build import build_dataloader
 
 
-def build_transform():
-    transform = transforms.Compose([
-        transforms.ToTensor(),
-    ])
+def build_data(cfg: CfgNode) -> Tuple[Sampler, DataLoader, DataLoader]:
+    train_transform, train_target_transform = build_transform(cfg, is_train=True)
+    train_dataset = build_dataset(cfg, train_transform, train_target_transform, is_train=True)
 
-    return transform
+    val_transform, val_target_transform = build_transform(cfg, is_train=False)
+    val_dataset = build_dataset(cfg, val_transform, val_target_transform, is_train=False)
 
+    if isinstance(train_dataset, IterableDataset):
+        train_sampler, val_sampler = None, None
+        shuffle = False
+    else:
+        train_sampler, val_sampler = build_sampler(cfg, train_dataset, val_dataset)
+        shuffle = train_sampler is None
 
-def build_dataset(root, transform=None, is_train=True):
-    data_set = datasets.MNIST(root, train=is_train, transform=transform, download=True)
+    train_loader, val_loader = build_dataloader(cfg,
+                                                train_dataset, val_dataset, train_sampler, val_sampler,
+                                                shuffle)
 
-    return data_set
-
-
-def build_dataloader(args, train=True):
-    transform = build_transform()
-    data_set = build_dataset('./data', transform=transform, is_train=train)
-
-    data_loader = DataLoader(dataset=data_set,
-                             batch_size=args.batch_size if train else args.test_batch_size,
-                             shuffle=True if train else False,
-                             num_workers=0,
-                             pin_memory=True)
-
-    return data_loader
+    return train_sampler, train_loader, val_loader

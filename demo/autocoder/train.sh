@@ -3,7 +3,7 @@
 set -eux
 
 project_root="/home/zj/repos/SimpleIR/"
-cfg_file="demo/autocoder/autocoder_mnist_28_b256_e90_g4.yaml"
+cfg_file="demo/autocoder/autocoder_mnist_28_b256_e20_g4.yaml"
 
 export PYTHONPATH="${project_root}"
 echo $PYTHONPATH

@@ -1,0 +1,44 @@
+PRINT_FREQ: 10
+DIST_BACKEND: "nccl"
+INIT_METHOD: "env://"
+OUTPUT_DIR: 'outputs/autocoder_mnist_28_b256_e10_g4'
+TRAIN:
+  EVAL_EPOCH: 1
+  START_EPOCH: 1
+  MAX_EPOCH: 10
+  TOP_K: (1, 3, 5)
+  CALCULATE_ACCURACY: False
+DATALOADER:
+  TRAIN_BATCH_SIZE: 256
+  TEST_BATCH_SIZE: 256
+  NUM_WORKERS: 4
+  RANDOM_SAMPLE: True
+DATASET:
+  NAME: 'GeneralDataset'
+  TRAIN_ROOT: './data/mnist/train'
+  TEST_ROOT: './data/mnist/val'
+TRANSFORM:
+  TRAIN_METHODS: ('CenterCrop', )
+  TEST_METHODS: ('CenterCrop', )
+  TRAIN_CROP: (32,)
+  TEST_CROP: (32,)
+  NORMALIZE: ((0.45, 0.45, 0.45), (0.225, 0.225, 0.225), False)
+MODEL:
+  ARCH: 'TinyAutoCoder'
+  CRITERION:
+    NAME: 'MSELoss'
+    REDUCTION: 'mean'
+OPTIMIZER:
+  NAME: 'SGD'
+  LR: 1e-2
+  MOMENTUM: 0.9
+  WEIGHT_DECAY:
+    DECAY: 1e-5
+    NO_BIAS: False
+    NO_NORM: False
+LR_SCHEDULER:
+  NAME: 'CosineAnnealingLR'
+  IS_WARMUP: True
+  WARMUP_EPOCH: 5
+  COSINE_ANNEALING_LR:
+    MINIMAL_LR: 1e-6

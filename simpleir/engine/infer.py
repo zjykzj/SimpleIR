@@ -7,8 +7,8 @@
 @description: 
 """
 
+from typing import List
 import time
-from typing import Tuple
 
 import numpy as np
 import torch
@@ -56,9 +56,8 @@ def similarity(feat, gallery_dict: dict):
     return top_list
 
 
-def gallery_accuracy(feats, targets, gallery_dict, topk=(1, 5)):
-    top1 = 0
-    top5 = 0
+def gallery_accuracy(feats, targets, gallery_dict, topk=(1, 5)) -> List:
+    topk_list = [0 for _ in topk]
     for feat, target in zip(feats, targets):
         # 将特征向量拉平为一维向量
         feat = feat.reshape(-1)
@@ -67,10 +66,9 @@ def gallery_accuracy(feats, targets, gallery_dict, topk=(1, 5)):
         if top_10_list is None:
             pass
         else:
-            if truth_key == top_10_list[0]:
-                top1 += 1
-            if truth_key in top_10_list[:5]:
-                top5 += 1
+            for i, k in enumerate(topk):
+                if truth_key in top_10_list[:k]:
+                    topk_list[i] += 1
 
         # 每次都将feat加入图集，如果该类别保存已满，那么弹出最开始加入的数据
         if truth_key not in gallery_dict.keys():
@@ -80,16 +78,17 @@ def gallery_accuracy(feats, targets, gallery_dict, topk=(1, 5)):
         gallery_dict[truth_key].append(feat)
 
     total_num = len(feats)
-    prec1 = 100.0 * top1 / total_num
-    prec5 = 100.0 * top5 / total_num
-    return prec1, prec5
+    res = []
+    for k in topk_list:
+        res.append(100.0 * k / total_num)
+    return res
 
 
-def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: nn.Module) -> Tuple[float, float]:
+def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: nn.Module) -> List:
     batch_time = AverageMeter()
     losses = AverageMeter()
-    top1 = AverageMeter()
-    top5 = AverageMeter()
+    top_k = cfg.TRAIN.TOP_K
+    top_list = [AverageMeter() for _ in top_k]
 
     # switch to evaluate mode
     model.eval()
@@ -113,8 +112,8 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
         # measure accuracy and record loss
         # prec1, prec5 = accuracy(output[KEY_OUTPUT].data, target, topk=(1, 5))
         # 假定使用输出作为特征向量
-        prec1, prec5 = gallery_accuracy(output[KEY_FEAT].detach().cpu().numpy(), target.detach().cpu().numpy(),
-                                        gallery_dict, topk=(1, 5))
+        prec_list = gallery_accuracy(output[KEY_FEAT].detach().cpu().numpy(), target.detach().cpu().numpy(),
+                                     gallery_dict, topk=top_k)
 
         # if cfg.DISTRIBUTED:
         #     reduced_loss = reduce_tensor(cfg.NUM_GPUS, loss.data)
@@ -126,8 +125,8 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
         losses.update(to_python_float(reduced_loss), input.size(0))
         # top1.update(to_python_float(prec1), input.size(0))
         # top5.update(to_python_float(prec5), input.size(0))
-        top1.update(prec1, input.size(0))
-        top5.update(prec5, input.size(0))
+        for idx, prec in enumerate(prec_list):
+            top_list[idx].update(prec, input.size(0))
 
         # measure elapsed time
         batch_time.update(time.time() - end)
@@ -135,21 +134,23 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
 
         # TODO:  Change timings to mirror train().
         if cfg.RANK_ID == 0 and i % cfg.PRINT_FREQ == 0:
-            logger.info('Test: [{0}/{1}] '
-                        'Time {batch_time.val:.3f} ({batch_time.avg:.3f}) '
-                        'Speed {2:.3f} ({3:.3f}) '
-                        'Loss {loss.val:.4f} ({loss.avg:.4f}) '
-                        'Prec@1 {top1.val:.3f} ({top1.avg:.3f}) '
-                        'Prec@5 {top5.val:.3f} ({top5.avg:.3f})'.format(
+            logger_str = 'Test: [{0}/{1}] ' \
+                         'Time {batch_time.val:.3f} ({batch_time.avg:.3f}) ' \
+                         'Speed {2:.3f} ({3:.3f}) ' \
+                         'Loss {loss.val:.4f} ({loss.avg:.4f}) '.format(
                 i, len(val_loader),
                 cfg.NUM_GPUS * cfg.DATALOADER.TRAIN_BATCH_SIZE / batch_time.val,
                 cfg.NUM_GPUS * cfg.DATALOADER.TRAIN_BATCH_SIZE / batch_time.avg,
-                batch_time=batch_time, loss=losses,
-                top1=top1, top5=top5))
+                batch_time=batch_time, loss=losses)
+            for k, top in zip(top_k, top_list):
+                logger_str += f'Prec@{k} {top.val:.3f} ({top.avg:.3f}) '
+            logger.info(logger_str)
 
         input, target = prefetcher.next()
 
-    logger.info(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
-                .format(top1=top1, top5=top5))
+    logger_str = ' * '
+    for k, top in zip(top_k, top_list):
+        logger_str += f'Prec@{k} {top.avg:.3f} '
+    logger.info(logger_str)
 
-    return top1.avg, top5.avg
+    return [top.avg for top in top_list]

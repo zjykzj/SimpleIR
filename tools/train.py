@@ -83,13 +83,14 @@ def init_cfg(args: Namespace) -> CfgNode:
 
 
 def main():
-    global best_prec1, best_prec5, best_epoch, args
-    best_prec1 = 0
-    best_prec5 = 0
-    best_epoch = 0
-    args = parse()
+    global best_prec_list, best_epoch, args
 
+    args = parse()
     cfg = init_cfg(args)
+
+    top_k = cfg.TRAIN.TOP_K
+    best_prec_list = [0 for _ in top_k]
+    best_epoch = 0
 
     device = torch.device(f'cuda:{cfg.RANK_ID}') if cfg.DISTRIBUTED else torch.device('cpu')
     model = build_model(cfg, device)
@@ -126,11 +127,9 @@ def main():
                 logger.info("=> loading checkpoint '{}'".format(cfg.RESUME))
                 checkpoint = torch.load(cfg.RESUME, map_location=lambda storage, loc: storage.to(device))
                 cfg.TRAIN.START_EPOCH = checkpoint['epoch']
-                global best_prec1
-                global best_prec5
+                global best_prec_list
                 global best_epoch
-                best_prec1 = checkpoint['best_prec1']
-                best_prec5 = checkpoint['best_prec5']
+                best_prec_list = checkpoint['best_prec_list']
                 best_epoch = checkpoint['epoch']
                 model.load_state_dict(checkpoint['state_dict'])
                 optimizer.load_state_dict(checkpoint['optimizer'])
@@ -178,16 +177,20 @@ def main():
             if epoch % cfg.TRAIN.EVAL_EPOCH == 0:
                 # evaluate on validation set
                 start = time.time()
-                prec1, prec5 = validate(cfg, val_loader, model, criterion)
+                prec_list = validate(cfg, val_loader, model, criterion)
                 torch.cuda.empty_cache()
 
-                is_best = prec1 > best_prec1
+                is_best = prec_list[0] > best_prec_list[0]
                 if is_best:
-                    best_prec1 = prec1
-                    best_prec5 = prec5
+                    best_prec_list = prec_list
                     best_epoch = epoch
-                logger.info(' * Best_prec@1 {top1:.3f} Best_prec@5 {top5:.3f} Best_epoch {be}'
-                            .format(top1=best_prec1, top5=best_prec5, be=best_epoch))
+
+                logger_str = f' BestEpoch: [{best_epoch}]'
+                logger.info(logger_str)
+                logger_str = ' * '
+                for k, prec in zip(top_k, best_prec_list):
+                    logger_str += f'Prec@{k} {prec:.3f} '
+                logger.info(logger_str)
 
                 # remember best prec@1 and save checkpoint
                 if cfg.RANK_ID == 0:
@@ -195,10 +198,8 @@ def main():
                         'epoch': epoch,
                         'arch': cfg.MODEL.ARCH,
                         'state_dict': model.state_dict(),
-                        'prec1': prec1,
-                        'prec5': prec5,
-                        'best_prec1': best_prec1,
-                        'best_prec5': best_prec5,
+                        'prec_list': prec_list,
+                        'best_prec_list': best_prec_list,
                         'best_epoch': epoch,
                         'optimizer': optimizer.state_dict(),
                         'lr_scheduler': lr_scheduler.state_dict(),

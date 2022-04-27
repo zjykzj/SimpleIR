@@ -16,6 +16,12 @@ def add_custom_config(_C: CfgNode) -> None:
     # Applicable to classification model
     _C.TRAIN.CALCULATE_ACCURACY = True
 
+    _C.METRIC = CfgNode()
+    # similarity type
+    _C.METRIC.SIMILARITY_TYPE = 'euclidean'
+    # sort type
+    _C.METRIC.RANK_TYPE = 'normal'
+
 
 def get_cfg_defaults() -> CfgNode:
     from zcls2 import config

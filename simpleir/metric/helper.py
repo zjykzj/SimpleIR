@@ -16,15 +16,13 @@ from .rank import rank
 
 class MetricHelper:
     """
-    计算准确率，基于相似度度量方式以及排序规则
-
-    输入度量方式以及排序方式
+    Calculation accuracy. Based on similarity measurement and rank
     """
 
     def __init__(self, max_num: int = 20) -> None:
         super().__init__()
 
-        # 特征集，每个类别保存20条特征，先进先出
+        # Feature set, each category saves N features, first in first out
         self.gallery_dict = dict()
         self.max_num = max_num
 
@@ -35,7 +33,7 @@ class MetricHelper:
             similarity_type: str = 'euclidean', rank_type='normal') -> List:
         top_k_similarity_list = [0 for _ in top_k_list]
         for feat, target in zip(feats, targets):
-            # 将特征向量拉平为一维向量
+            # Flatten the eigenvector into a one-dimensional vector
             feat = feat.reshape(-1)
 
             truth_key = int(target)
@@ -49,7 +47,7 @@ class MetricHelper:
                     if truth_key in sorted_list[:k]:
                         top_k_similarity_list[i] += 1
 
-            # 每次都将feat加入图集，如果该类别保存已满，那么弹出最开始加入的数据
+            # Add feat to the atlas every time. If the category is full, the data added at the beginning will pop up
             if truth_key not in self.gallery_dict.keys():
                 self.gallery_dict[truth_key] = list()
             if len(self.gallery_dict[truth_key]) > self.max_num:

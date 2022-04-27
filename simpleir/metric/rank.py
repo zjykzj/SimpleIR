@@ -16,7 +16,7 @@ def normal_rank(similarity_list: List) -> List:
     if len(sim_array) == 1:
         top_list = [int(sim_array[0][0])]
     else:
-        # 距离越小越相似
+        # The smaller the distance, the more similar
         sort_array = np.argsort(sim_array[:, 1])
         top_list = list(sim_array[:, 0][sort_array].astype(int))
 
@@ -29,7 +29,7 @@ def rank(similarity_list: List, top_k: int = 10, rank_type: str = 'normal') -> L
     else:
         raise ValueError(f'{rank_type} does not support')
 
-    # 仅返回计算命中率需要的排序结果
+    # Returns only the sort results needed to calculate the hit rate
     top_list = [0 for _ in range(top_k)]
     if len(tmp_top_list) < top_k:
         top_list[:len(tmp_top_list)] = tmp_top_list[:]

@@ -55,23 +55,12 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
             loss = criterion(output, target)
 
         # measure accuracy and record loss
-        # prec1, prec5 = accuracy(output[KEY_OUTPUT].data, target, topk=(1, 5))
-        # 假定使用输出作为特征向量
-        # prec_list = gallery_accuracy(output[KEY_FEAT].detach().cpu().numpy(), target.detach().cpu().numpy(),
-        #                              gallery_dict, topk=top_k)
         prec_list = metric.run(output[KEY_FEAT].detach().cpu().numpy(), target.detach().cpu().numpy(),
                                top_k_list=top_k, similarity_type=similarity_type, rank_type=rank_type)
 
-        # if cfg.DISTRIBUTED:
-        #     reduced_loss = reduce_tensor(cfg.NUM_GPUS, loss.data)
-        #     prec1 = reduce_tensor(cfg.NUM_GPUS, prec1)
-        #     prec5 = reduce_tensor(cfg.NUM_GPUS, prec5)
-        # else:
         reduced_loss = loss.data
 
         losses.update(to_python_float(reduced_loss), input.size(0))
-        # top1.update(to_python_float(prec1), input.size(0))
-        # top5.update(to_python_float(prec5), input.size(0))
         for idx, prec in enumerate(prec_list):
             top_list[idx].update(prec, input.size(0))
 

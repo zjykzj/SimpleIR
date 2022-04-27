@@ -5,11 +5,9 @@
 @file: similarity.py
 @author: zj
 @description: 
-对于欧式距离或者余弦距离，应该拥有相同的输入
-查询图像特征，以及检索集特征
-
-应该拥有相同的输出，查询图像与检索集每张图像之间的相似度
-返回一个列表，第一维表示target，第二维是相似度
+Input query image features and search set features.
+Calculate the similarity between the query image and each image in the retrieval set
+Returns a list. The first dimension represents target and the second dimension is similarity
 """
 from typing import Dict, List, Optional
 
@@ -39,7 +37,7 @@ def cosine_distance(query_feats: np.ndarray, gallery_feats: np.ndarray) -> np.nd
 def similarity(feat: np.ndarray, gallery_dict: Dict, similarity_type='euclidean') \
         -> List:
     """
-    计算相似度（欧式距离/余弦距离）
+    Calculate similarity (Euclidean distance / Cosine distance)
     """
     assert similarity_type in ['euclidean', 'cosine']
     feat_array = np.array(feat)

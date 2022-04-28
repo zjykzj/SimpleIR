@@ -7,7 +7,7 @@
  <div align="center"><a title="" href="https://github.com/ZJCV/SimpleIR"><img align="center" src="./imgs/SimpleIR.png"></a></div>
 
 <p align="center">
-  «SimpleIR»提供了一个简单的图像检索示例
+  «SimpleIR»提供了一个简单的图像检索框架
 <br>
 <br>
   <a href="https://github.com/RichardLitt/standard-readme"><img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square"></a>

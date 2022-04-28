@@ -7,7 +7,7 @@
  <div align="center"><a title="" href="https://github.com/zjykzj/SimpleIR"><img align="center" src="./imgs/SimpleIR.png"></a></div>
 
 <p align="center">
-  «SimpleIR» provides a simple demo of image retrieval </a>
+  «SimpleIR» provides a simple framework for Image Retrieval  </a>
 <br>
 <br>
   <a href="https://github.com/RichardLitt/standard-readme"><img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square"></a>

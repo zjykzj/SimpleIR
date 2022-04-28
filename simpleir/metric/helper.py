@@ -10,6 +10,7 @@ from typing import List, Tuple
 
 import numpy as np
 
+from .enhance import enhance
 from .similarity import similarity
 from .rank import rank
 
@@ -30,12 +31,13 @@ class MetricHelper:
         return self.run(*args, **kwargs)
 
     def run(self, feats: np.ndarray, targets: np.ndarray, top_k_list: Tuple = (1, 5),
-            similarity_type: str = 'euclidean', rank_type='normal') -> List:
+            enhance_type='normal', similarity_type: str = 'euclidean', rank_type='normal') -> List:
+        # Flatten the eigenvector into a one-dimensional vector
+        feats = feats.reshape(feats.shape[0], -1)
+        feats = enhance(feats, enhance_type=enhance_type)
+
         top_k_similarity_list = [0 for _ in top_k_list]
         for feat, target in zip(feats, targets):
-            # Flatten the eigenvector into a one-dimensional vector
-            feat = feat.reshape(-1)
-
             truth_key = int(target)
             similarity_list = similarity(feat, self.gallery_dict, similarity_type=similarity_type)
             if len(similarity_list) == 0:

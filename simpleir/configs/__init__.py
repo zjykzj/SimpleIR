@@ -17,6 +17,8 @@ def add_custom_config(_C: CfgNode) -> None:
     _C.TRAIN.CALCULATE_ACCURACY = True
 
     _C.METRIC = CfgNode()
+    # enhance type
+    _C.METRIC.ENHANCE_TYPE = 'normal'
     # similarity type
     _C.METRIC.SIMILARITY_TYPE = 'euclidean'
     # sort type

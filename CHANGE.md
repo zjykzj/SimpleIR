@@ -8,6 +8,8 @@
   1. build(python): update requirements.txt. [93351fe1](https://github.com/zjykzj/SimpleIR/tree/93351fe1111a37b29909621de0ed5b012d592918)
   2. feat(metric): before compute similarity, add Feat Enhance step. [31d4db33](https://github.com/zjykzj/SimpleIR/tree/31d4db3324d5846185265e93746d3c190e4db4bd)
   3. feat(simpleir): add metric module. [86b73969](https://github.com/zjykzj/SimpleIR/tree/86b73969db156d2e150535edd9d4b2e19c11bbe1)
+     1. add Similarity module.
+     2. add Rank module.
   4. perf(simpleir): add cfg.TRAIN.TOP_K support. [cc7bf3f3](https://github.com/zjykzj/SimpleIR/tree/cc7bf3f3c073bdb480a5c78841d0b07c20e4f772)
 * Bug fixes
 * Breaking changes.

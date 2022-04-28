@@ -107,8 +107,8 @@ def train(cfg: CfgNode, train_loader: DataLoader, model: nn.Module, criterion: n
 
             # to_python_float incurs a host<->device sync
             losses.update(to_python_float(reduced_loss), input.size(0))
-            for i, prec in enumerate(prec_list):
-                top_list[i].update(to_python_float(prec), input.size(0))
+            for idx, prec in enumerate(prec_list):
+                top_list[idx].update(to_python_float(prec), input.size(0))
 
             torch.cuda.synchronize()
             batch_time.update((time.time() - end) / cfg.PRINT_FREQ)

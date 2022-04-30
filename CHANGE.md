@@ -1,6 +1,13 @@
 
 # CHANGE
 
+## v0.2.1
+
+* New features
+  1. feat(python): add setup.py. [1c1b6c59](https://github.com/zjykzj/SimpleIR/tree/1c1b6c59d9e0b1deb217c42e8fbf2223e8d837a3)
+  2. fix(trainer.py): fix wrong use param i. [2f929567](https://github.com/zjykzj/SimpleIR/tree/2f92956761d9905b04e5319678b56caa3e098b9f)
+* Bug fixes
+* Breaking changes.
 
 ## v0.2.0 ([1c5b581e](https://github.com/zjykzj/SimpleIR/tree/1c5b581e3d96c76364472dcce8448561288611c0))
 

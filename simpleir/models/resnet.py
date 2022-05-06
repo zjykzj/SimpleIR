@@ -11,7 +11,8 @@ from typing import Type, Any, Callable, Union, List, Optional, Dict, Tuple
 
 import torch
 from torch import nn as nn, Tensor
-from torchvision.models.resnet import BasicBlock, Bottleneck, ResNet, model_urls
+from torchvision.models.resnet import BasicBlock, Bottleneck, model_urls
+from torchvision.models.resnet import ResNet as TResNet
 
 # See vision/torchvision/_internally_replaced_utils.py
 # https://github.com/pytorch/vision/blob/b50ffef5f85029b1440ac155ca1e6d95c55520aa/torchvision/_internally_replaced_utils.py
@@ -24,12 +25,13 @@ from zcls2.config.key_word import KEY_OUTPUT
 from simpleir.configs.key_words import KEY_FEAT
 
 __all__ = [
+    'ResNet',
     'resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152',
     'resnext50_32x4d', 'resnext101_32x8d', 'wide_resnet50_2', 'wide_resnet101_2'
 ]
 
 
-class ZResNet(ResNet):
+class ResNet(TResNet):
 
     def __init__(self, block: Type[Union[BasicBlock, Bottleneck]], layers: List[int], num_classes: int = 1000,
                  zero_init_residual: bool = False, groups: int = 1, width_per_group: int = 64,
@@ -72,7 +74,7 @@ def _resnet(
         progress: bool,
         **kwargs: Any
 ) -> ResNet:
-    model = ZResNet(block, layers, **kwargs)
+    model = ResNet(block, layers, **kwargs)
 
     if pretrained:
         state_dict = load_state_dict_from_url(model_urls[arch],

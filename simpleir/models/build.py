@@ -16,9 +16,9 @@ from zcls2.util import logging
 
 logger = logging.get_logger(__name__)
 
-from . import tiny_autocoder, resnet
+from . import tiny_autocoder, resnet, ghostnet
 
-__supported_model__ = resnet.__all__ + tiny_autocoder.__supported_model__
+__all__ = ["build_model"]
 
 
 def build_model(cfg: CfgNode, device: torch.device = torch.device('cpu')) -> nn.Module:
@@ -27,18 +27,18 @@ def build_model(cfg: CfgNode, device: torch.device = torch.device('cpu')) -> nn.
     num_classes = cfg.MODEL.NUM_CLASSES
     sync_bn = cfg.MODEL.SYNC_BN
 
-    assert model_arch in __supported_model__
-
     # create model
     if is_pretrained:
         logger.info("=> using pre-trained model '{}'".format(model_arch))
     else:
         logger.info("=> creating model '{}'".format(model_arch))
 
-    if model_arch in resnet.__all__:
-        model = resnet.__dict__[model_arch](pretrained=is_pretrained, num_classes=num_classes)
-    elif model_arch in tiny_autocoder.__supported_model__:
+    if model_arch in tiny_autocoder.__all__:
         model = tiny_autocoder.__dict__[model_arch]()
+    elif model_arch in resnet.__all__:
+        model = resnet.__dict__[model_arch](pretrained=is_pretrained, num_classes=num_classes)
+    elif model_arch in ghostnet.__all__:
+        model = ghostnet.__dict__[model_arch](pretrained=is_pretrained, num_classes=num_classes)
     else:
         raise ValueError(f"{model_arch} does not support")
 

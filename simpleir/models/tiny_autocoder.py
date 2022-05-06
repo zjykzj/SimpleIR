@@ -14,7 +14,7 @@ import torch.nn as nn
 from zcls2.config.key_word import KEY_OUTPUT
 from simpleir.configs.key_words import KEY_INPUT, KEY_FEAT
 
-__supported_model__ = ['TinyAutoCoder']
+__all__ = ['TinyAutoCoder']
 
 
 class TinyAutoCoder(nn.Module):

@@ -12,6 +12,8 @@ from torch import nn, Tensor
 from zcls2.config.key_word import KEY_OUTPUT
 from simpleir.configs.key_words import KEY_INPUT
 
+__all__ = ['MSELoss', 'mse_loss']
+
 
 class MSELoss(nn.MSELoss):
 
@@ -25,5 +27,5 @@ class MSELoss(nn.MSELoss):
         return super().forward(inputs, targets)
 
 
-def build_mse_loss(reduction: str = 'mean') -> nn.Module:
+def mse_loss(reduction: str = 'mean') -> nn.Module:
     return MSELoss(reduction=reduction)

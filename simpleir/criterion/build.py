@@ -10,29 +10,27 @@
 import torch.nn as nn
 from yacs.config import CfgNode
 
-from zcls2.model.criterion.cross_entropy_loss import build_cross_entropy_loss
-from zcls2.model.criterion.large_margin_softmax_loss import build_large_margin_softmax_loss
+from zcls2.model.criterion import cross_entropy_loss, large_margin_softmax_loss, soft_target_cross_entropy_loss
 
-from .mse_loss import build_mse_loss
+from . import mse_loss
 
-__supported_criterion__ = [
-    'CrossEntropyLoss',
-    'LargeMarginSoftmaxV1',
-    'MSELoss'
-]
+__all__ = ['build_criterion']
 
 
 def build_criterion(cfg: CfgNode) -> nn.Module:
     loss_name = cfg.MODEL.CRITERION.NAME
     reduction = cfg.MODEL.CRITERION.REDUCTION
 
-    assert loss_name in __supported_criterion__
-
-    if loss_name == 'CrossEntropyLoss':
-        return build_cross_entropy_loss(reduction=reduction)
-    elif loss_name == 'LargeMarginSoftmaxV1':
-        return build_large_margin_softmax_loss(reduction=reduction)
-    elif loss_name == 'MSELoss':
-        return build_mse_loss(reduction=reduction)
+    if loss_name in cross_entropy_loss.__all__:
+        label_smoothing = cfg.MODEL.CRITERION.LABEL_SMOOTHING
+        criterion = cross_entropy_loss.__dict__[loss_name](reduction=reduction, label_smoothing=label_smoothing)
+    elif loss_name in large_margin_softmax_loss.__all__:
+        criterion = large_margin_softmax_loss.__dict__[loss_name](reduction=reduction)
+    elif loss_name in soft_target_cross_entropy_loss.__all__:
+        criterion = soft_target_cross_entropy_loss.__dict__[loss_name]()
+    elif loss_name in mse_loss.__all__:
+        criterion = mse_loss.__dict__[loss_name]()
     else:
         raise ValueError(f"{loss_name} does not support")
+
+    return criterion

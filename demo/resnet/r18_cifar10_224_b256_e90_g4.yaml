@@ -34,10 +34,10 @@ MODEL:
   NUM_CLASSES: 10
   SYNC_BN: False
   CRITERION:
-    NAME: 'CrossEntropyLoss'
+    NAME: 'cross_entropy_loss'
     REDUCTION: 'mean'
 OPTIMIZER:
-  NAME: 'SGD'
+  NAME: 'sgd'
   LR: 1e-2
   MOMENTUM: 0.9
   WEIGHT_DECAY:
@@ -45,7 +45,7 @@ OPTIMIZER:
     NO_BIAS: False
     NO_NORM: False
 LR_SCHEDULER:
-  NAME: 'MultiStepLR'
+  NAME: 'multi_step_lr'
   IS_WARMUP: True
   WARMUP_EPOCH: 5
   MULTISTEP_LR:

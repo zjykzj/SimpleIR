@@ -26,10 +26,10 @@ TRANSFORM:
 MODEL:
   ARCH: 'TinyAutoCoder'
   CRITERION:
-    NAME: 'MSELoss'
+    NAME: 'mse_loss'
     REDUCTION: 'mean'
 OPTIMIZER:
-  NAME: 'SGD'
+  NAME: 'sgd'
   LR: 1e-2
   MOMENTUM: 0.9
   WEIGHT_DECAY:
@@ -37,7 +37,7 @@ OPTIMIZER:
     NO_BIAS: False
     NO_NORM: False
 LR_SCHEDULER:
-  NAME: 'CosineAnnealingLR'
+  NAME: 'cosine_annealing_lr'
   IS_WARMUP: True
   WARMUP_EPOCH: 5
   COSINE_ANNEALING_LR:

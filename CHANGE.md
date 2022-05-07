@@ -1,6 +1,14 @@
 
 # CHANGE
 
+## v0.3.0
+
+* New features
+  1. feat(model): add GhostNet. [805530e9c](https://github.com/zjykzj/SimpleIR/tree/805530e9c216e41cf612d4a659fb059444b669e1)
+* Bug fixes
+* Breaking changes
+  1. refactor(simpleir): refactor criterion use. [e71294a](https://github.com/zjykzj/SimpleIR/tree/e71294a9e7423b7167436837e097561942349b4d)
+
 ## v0.2.1
 
 * New features

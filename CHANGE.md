@@ -1,6 +1,17 @@
 
 # CHANGE
 
+## v0.4.0
+
+* New features
+  1. build(python): update zcls2 ~= 0.4.0. [a3e23c23](https://github.com/zjykzj/SimpleIR/tree/a3e23c23e83fb3d1431d33d6dc2e4a8e6a3f1fc0)
+  2. perf(train.py): use Mixup and Resume(). [3abc40a1](https://github.com/zjykzj/SimpleIR/tree/3abc40a1d068944dfc4cf9f478f4eabcc3b85a87)
+  3. feat(trainer.py): add Mixup feature. [f4fe5a4d](https://github.com/zjykzj/SimpleIR/tree/f4fe5a4d68dde74f3d18c17c47c012114dab5fb5)
+  4. feat(tools): add eval.sh. [f08a8709](https://github.com/zjykzj/SimpleIR/tree/f08a8709f246568568366b3aaaea19a1d8152956)
+  5. feat(models): add feat_type for each model. [492310e3](https://github.com/zjykzj/SimpleIR/tree/492310e3598f3bc9c3a411210b1da7064268298b)
+* Bug fixes
+* Breaking changes.
+
 ## v0.3.0
 
 * New features

@@ -13,6 +13,7 @@ from argparse import Namespace
 
 # from zcls2.config import get_cfg_defaults
 # from zcls2.data.build import build_data
+from zcls2.data.transform.build import create_mixup_fn
 from zcls2.data.dataset.mp_dataset import MPDataset
 from zcls2.optim.optimizer.build import build_optimizer
 from zcls2.optim.lr_scheduler.build import build_lr_scheduler
@@ -24,6 +25,7 @@ from zcls2.util.distributed import init_dist
 from zcls2.util.parser import parse, load_cfg
 from zcls2.util.collect_env import collect_env_info
 from zcls2.util.checkpoint import save_checkpoint
+from zcls2.util.misc import resume
 
 from zcls2.util import logging
 
@@ -77,7 +79,6 @@ def init_cfg(args: Namespace) -> CfgNode:
     cfg.OPTIMIZER.LR = cfg.OPTIMIZER.LR * float(cfg.DATALOADER.TRAIN_BATCH_SIZE * cfg.NUM_GPUS) / 256.
 
     logger.info("Running with config:\n{}".format(cfg))
-    cfg.freeze()
 
     return cfg
 
@@ -121,37 +122,24 @@ def main():
 
     # Optionally resume from a checkpoint
     if cfg.RESUME:
-        # Use a local scope to avoid dangling references
-        def resume():
-            if os.path.isfile(cfg.RESUME):
-                logger.info("=> loading checkpoint '{}'".format(cfg.RESUME))
-                checkpoint = torch.load(cfg.RESUME, map_location=lambda storage, loc: storage.to(device))
-                cfg.TRAIN.START_EPOCH = checkpoint['epoch']
-                global best_prec_list
-                global best_epoch
-                best_prec_list = checkpoint['best_prec_list']
-                best_epoch = checkpoint['epoch']
-                model.load_state_dict(checkpoint['state_dict'])
-                optimizer.load_state_dict(checkpoint['optimizer'])
-                lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
-                logger.info("=> loaded checkpoint '{}' (epoch {})"
-                            .format(cfg.RESUME, checkpoint['epoch']))
-            else:
-                logger.info("=> no checkpoint found at '{}'".format(cfg.RESUME))
-
-        resume()
+        logger.info("=> Resume now")
+        resume(cfg, model, optimizer=optimizer, lr_scheduler=lr_scheduler, device=device)
 
     # # Data loading code
     train_sampler, train_loader, val_loader = build_data(cfg)
+    mixup_fn = create_mixup_fn(cfg)
 
     if cfg.EVALUATE:
+        logger.info("=> Evaluate now")
         validate(cfg, val_loader, model, criterion)
         return
 
     warmup = cfg.LR_SCHEDULER.IS_WARMUP
     warmup_epoch = cfg.LR_SCHEDULER.WARMUP_EPOCH
 
+    torch.distributed.barrier()
     assert cfg.TRAIN.START_EPOCH > 0
+    logger.info("=> Train now")
     for epoch in range(cfg.TRAIN.START_EPOCH, cfg.TRAIN.MAX_EPOCH + 1):
         # train for one epoch
         start = time.time()
@@ -162,7 +150,7 @@ def main():
             assert isinstance(train_sampler, torch.utils.data.DistributedSampler)
             train_sampler.set_epoch(epoch)
 
-        train(cfg, train_loader, model, criterion, optimizer, epoch)
+        train(cfg, train_loader, model, criterion, optimizer, epoch=epoch, mixup_fn=mixup_fn)
         torch.cuda.empty_cache()
         if warmup and epoch < (warmup_epoch + 1):
             pass
@@ -172,43 +160,41 @@ def main():
         end = time.time()
         logger.info("One epoch train need: {:.3f}".format((end - start)))
 
+        if epoch % cfg.TRAIN.EVAL_EPOCH == 0:
+            # evaluate on validation set
+            start = time.time()
+            # prec1, prec5 = validate(cfg, val_loader, model, criterion)
+            prec_list = validate(cfg, val_loader, model, criterion)
+            torch.cuda.empty_cache()
+
+            is_best = prec_list[0] > best_prec_list[0]
+            if is_best:
+                best_prec_list = prec_list
+                best_epoch = epoch
+
+            logger_str = f' BestEpoch: [{best_epoch}]'
+            logger.info(logger_str)
+            logger_str = ' * '
+            for k, prec in zip(top_k, best_prec_list):
+                logger_str += f'Prec@{k} {prec:.3f} '
+            logger.info(logger_str)
+
+            # remember best prec@1 and save checkpoint
+            if cfg.RANK_ID == 0:
+                save_checkpoint({
+                    'epoch': epoch,
+                    'arch': cfg.MODEL.ARCH,
+                    'state_dict': model.state_dict(),
+                    'prec_list': prec_list,
+                    'best_prec_list': best_prec_list,
+                    'best_epoch': epoch,
+                    'optimizer': optimizer.state_dict(),
+                    'lr_scheduler': lr_scheduler.state_dict(),
+                }, is_best, output_dir=cfg.OUTPUT_DIR, filename=f'checkpoint_{epoch}.pth.tar')
+
+            end = time.time()
+            logger.info("One epoch validate need: {:.3f}".format((end - start)))
         torch.distributed.barrier()
-        if cfg.RANK_ID == 0:
-            if epoch % cfg.TRAIN.EVAL_EPOCH == 0:
-                # evaluate on validation set
-                start = time.time()
-                prec_list = validate(cfg, val_loader, model, criterion)
-                torch.cuda.empty_cache()
-
-                is_best = prec_list[0] > best_prec_list[0]
-                if is_best:
-                    best_prec_list = prec_list
-                    best_epoch = epoch
-
-                logger_str = f' BestEpoch: [{best_epoch}]'
-                logger.info(logger_str)
-                logger_str = ' * '
-                for k, prec in zip(top_k, best_prec_list):
-                    logger_str += f'Prec@{k} {prec:.3f} '
-                logger.info(logger_str)
-
-                # remember best prec@1 and save checkpoint
-                if cfg.RANK_ID == 0:
-                    save_checkpoint({
-                        'epoch': epoch,
-                        'arch': cfg.MODEL.ARCH,
-                        'state_dict': model.state_dict(),
-                        'prec_list': prec_list,
-                        'best_prec_list': best_prec_list,
-                        'best_epoch': epoch,
-                        'optimizer': optimizer.state_dict(),
-                        'lr_scheduler': lr_scheduler.state_dict(),
-                    }, is_best, output_dir=cfg.OUTPUT_DIR, filename=f'checkpoint_{epoch}.pth.tar')
-
-                end = time.time()
-                logger.info("One epoch validate need: {:.3f}".format((end - start)))
-        torch.distributed.barrier()
-
 
 if __name__ == '__main__':
     main()

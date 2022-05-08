@@ -17,7 +17,8 @@ INSTALL_REQUIRES = [
     "torchvision >= 0.11.1",
     "yacs >= 0.1.8",
     "tqdm >= 4.63.0",
-    "scikit_learn >= 0.24.2"
+    "scikit_learn >= 0.24.2",
+    "zcls2 ~= 0.4.0"
 ]
 CLASSIFIERS = [
     "Programming Language :: Python :: 3",

@@ -12,10 +12,6 @@ from yacs.config import CfgNode
 
 def add_custom_config(_C: CfgNode) -> None:
     # Add your own customized configs.
-    # Perform accuracy calculation in the training phase
-    # Applicable to classification model
-    _C.TRAIN.CALCULATE_ACCURACY = True
-
     _C.METRIC = CfgNode()
     # feat type
     _C.METRIC.FEAT_TYPE = 'avgpool'

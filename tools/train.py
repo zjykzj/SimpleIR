@@ -19,7 +19,7 @@ from zcls2.optim.optimizer.build import build_optimizer
 from zcls2.optim.lr_scheduler.build import build_lr_scheduler
 # from zcls2.model.criterion.build import build_criterion
 # from zcls2.model.model.build import build_model
-# from zcls2.engine.trainer import train
+from zcls2.engine.trainer import train
 # from zcls2.engine.infer import validate
 from zcls2.util.distributed import init_dist
 from zcls2.util.parser import parse, load_cfg
@@ -40,7 +40,6 @@ except ImportError:
     raise ImportError("Please install apex from https://www.github.com/nvidia/apex to run this example.")
 
 from simpleir.configs import get_cfg_defaults
-from simpleir.engine.trainer import train
 from simpleir.engine.infer import validate
 from simpleir.data.build import build_data
 from simpleir.models.build import build_model

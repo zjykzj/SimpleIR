@@ -20,7 +20,7 @@ class MetricHelper:
     Calculation accuracy. Based on similarity measurement and rank
     """
 
-    def __init__(self, max_num: int = 20) -> None:
+    def __init__(self, max_num: int = 5) -> None:
         super().__init__()
 
         # Feature set, each category saves N features, first in first out

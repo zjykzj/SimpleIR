@@ -17,6 +17,8 @@ def add_custom_config(_C: CfgNode) -> None:
     _C.TRAIN.CALCULATE_ACCURACY = True
 
     _C.METRIC = CfgNode()
+    # feat type
+    _C.METRIC.FEAT_TYPE = 'avgpool'
     # enhance type
     _C.METRIC.ENHANCE_TYPE = 'normal'
     # similarity type

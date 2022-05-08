@@ -27,6 +27,8 @@ def build_model(cfg: CfgNode, device: torch.device = torch.device('cpu')) -> nn.
     num_classes = cfg.MODEL.NUM_CLASSES
     sync_bn = cfg.MODEL.SYNC_BN
 
+    feat_type = cfg.METRIC.FEAT_TYPE
+
     # create model
     if is_pretrained:
         logger.info("=> using pre-trained model '{}'".format(model_arch))
@@ -36,9 +38,9 @@ def build_model(cfg: CfgNode, device: torch.device = torch.device('cpu')) -> nn.
     if model_arch in tiny_autocoder.__all__:
         model = tiny_autocoder.__dict__[model_arch]()
     elif model_arch in resnet.__all__:
-        model = resnet.__dict__[model_arch](pretrained=is_pretrained, num_classes=num_classes)
+        model = resnet.__dict__[model_arch](pretrained=is_pretrained, num_classes=num_classes, feat_type=feat_type)
     elif model_arch in ghostnet.__all__:
-        model = ghostnet.__dict__[model_arch](pretrained=is_pretrained, num_classes=num_classes)
+        model = ghostnet.__dict__[model_arch](pretrained=is_pretrained, num_classes=num_classes, feat_type=feat_type)
     else:
         raise ValueError(f"{model_arch} does not support")
 

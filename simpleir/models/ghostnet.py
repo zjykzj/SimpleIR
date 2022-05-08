@@ -6,37 +6,54 @@
 @author: zj
 @description: 
 """
-
-import torch.nn.functional as F
+from functools import partial
 
 from zcls2.model.model.ghostnet import default_cfgs, build_model_with_cfg
 from zcls2.model.model.ghostnet import GhostNet as ZGhostNet
-from zcls2.config.key_word import KEY_OUTPUT
 from simpleir.configs.key_words import KEY_FEAT
 
 __all__ = ["GhostNet", "ghostnet_050", "ghostnet_100", "ghostnet_130"]
 
 
 class GhostNet(ZGhostNet):
+    _feat_list = [
+        'blocks', 'act1', 'global_pool', 'conv_head', 'act2', 'fc'
+    ]
 
-    def __init__(self, cfgs, num_classes=1000, width=1.0, dropout=0.2, in_chans=3, output_stride=32):
+    def __init__(self, cfgs, num_classes=1000, width=1.0, dropout=0.2, in_chans=3, output_stride=32,
+                 feat_type='act2'):
         super().__init__(cfgs, num_classes, width, dropout, in_chans, output_stride)
+        assert feat_type in self._feat_list
 
-    def forward_features(self, x):
-        return super().forward_features(x)
+        self.feature_modules = {
+            "blocks": self.blocks[9][0].act1,
+            "act1": self.act1,
+            "global_pool": self.global_pool,
+            "conv_head": self.conv_head,
+            "act2": self.act2,
+            "fc": self.classifier,
+        }
+        self.feature_buffer = dict()
+        self.feat_type = feat_type
+        self._register_hook()
+
+    def _register_hook(self) -> None:
+        """
+        Register hooks to output inner feature map.
+        """
+
+        def hook(feature_buffer, fea_name, module, input, output):
+            feature_buffer[fea_name] = output.data
+
+        for fea_name in self._feat_list:
+            assert fea_name in self.feature_modules, 'unknown feature {}!'.format(fea_name)
+            self.feature_modules[fea_name].register_forward_hook(partial(hook, self.feature_buffer, fea_name))
 
     def forward(self, x):
-        feats = self.forward_features(x)
-        if not self.global_pool.is_identity():
-            feats = feats.view(feats.size(0), -1)
-        if self.dropout > 0.:
-            x = F.dropout(feats, p=self.dropout, training=self.training)
-        x = self.classifier(x)
+        res = super(GhostNet, self).forward(x)
+        res[KEY_FEAT] = self.feature_buffer[self.feat_type]
 
-        return {
-            KEY_OUTPUT: x,
-            KEY_FEAT: feats
-        }
+        return res
 
 
 def _create_ghostnet(variant, width=1.0, pretrained=False, **kwargs):

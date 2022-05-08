@@ -6,6 +6,7 @@
 @author: zj
 @description: 
 """
+from functools import partial
 
 from typing import Type, Any, Callable, Union, List, Optional, Dict, Tuple
 
@@ -32,37 +33,47 @@ __all__ = [
 
 
 class ResNet(TResNet):
+    _feat_list = [
+        'layer4',
+        'avgpool',
+        'fc',
+    ]
 
     def __init__(self, block: Type[Union[BasicBlock, Bottleneck]], layers: List[int], num_classes: int = 1000,
                  zero_init_residual: bool = False, groups: int = 1, width_per_group: int = 64,
                  replace_stride_with_dilation: Optional[List[bool]] = None,
-                 norm_layer: Optional[Callable[..., nn.Module]] = None) -> None:
+                 norm_layer: Optional[Callable[..., nn.Module]] = None,
+                 feat_type='avgpool') -> None:
         super().__init__(block, layers, num_classes, zero_init_residual, groups, width_per_group,
                          replace_stride_with_dilation, norm_layer)
+        assert feat_type in self._feat_list
 
-    def _forward_impl(self, x: Tensor) -> Tuple[Any, Any]:
-        # See note [TorchScript super()]
-        x = self.conv1(x)
-        x = self.bn1(x)
-        x = self.relu(x)
-        x = self.maxpool(x)
+        self.feature_modules = {
+            "layer4": self.layer4[2].relu,
+            "avgpool": self.avgpool,
+            "fc": self.fc
+        }
+        self.feature_buffer = dict()
+        self.feat_type = feat_type
+        self._register_hook()
 
-        x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
-        x = self.layer4(x)
+    def _register_hook(self) -> None:
+        """
+        Register hooks to output inner feature map.
+        """
 
-        feat = self.avgpool(x)
-        x = torch.flatten(feat, 1)
-        x = self.fc(x)
+        def hook(feature_buffer, fea_name, module, input, output):
+            feature_buffer[fea_name] = output.data
 
-        return feat, x
+        for fea_name in self._feat_list:
+            assert fea_name in self.feature_modules, 'unknown feature {}!'.format(fea_name)
+            self.feature_modules[fea_name].register_forward_hook(partial(hook, self.feature_buffer, fea_name))
 
     def forward(self, x: Tensor) -> Dict:
         feat, res = self._forward_impl(x)
         return {
             KEY_FEAT: feat,
-            KEY_OUTPUT: res
+            KEY_OUTPUT: self.feature_buffer[self.feat_type]
         }
 
 

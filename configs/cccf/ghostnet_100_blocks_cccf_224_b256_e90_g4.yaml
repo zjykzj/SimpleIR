@@ -2,6 +2,7 @@ PRINT_FREQ: 10
 DIST_BACKEND: "nccl"
 INIT_METHOD: "env://"
 OUTPUT_DIR: 'outputs/ghostnet_100_cccf_224_b256_e90_g4'
+EVALUATE: True
 TRAIN:
   EVAL_EPOCH: 1
   START_EPOCH: 1
@@ -12,6 +13,7 @@ METRIC:
   ENHANCE_TYPE: 'normal'
   SIMILARITY_TYPE: 'cosine'
   RANK_TYPE: 'normal'
+  FEAT_TYPE: 'blocks'
 DATALOADER:
   TRAIN_BATCH_SIZE: 256
   TEST_BATCH_SIZE: 256

@@ -4,13 +4,15 @@
 @date: 2022/4/25 下午4:33
 @file: trainer.py
 @author: zj
-@description: 
+@description:
 """
 
 import time
 
 from typing import Optional
 from yacs.config import CfgNode
+
+from timm.data import Mixup
 
 import torch
 import torch.nn as nn
@@ -37,8 +39,12 @@ from zcls2.util import logging
 logger = logging.get_logger(__name__)
 
 
-def train(cfg: CfgNode, train_loader: DataLoader, model: nn.Module, criterion: nn.Module, optimizer: Optimizer,
-          epoch: Optional[int] = 1) -> None:
+def train(cfg: CfgNode, train_loader: DataLoader,
+          model: nn.Module,
+          criterion: nn.Module,
+          optimizer: Optimizer,
+          epoch: Optional[int] = 1,
+          mixup_fn: Optional[Mixup] = None) -> None:
     batch_time = AverageMeter()
     losses = AverageMeter()
     top_k = cfg.TRAIN.TOP_K
@@ -52,9 +58,9 @@ def train(cfg: CfgNode, train_loader: DataLoader, model: nn.Module, criterion: n
     warmup_epoch = cfg.LR_SCHEDULER.WARMUP_EPOCH
 
     prefetcher = data_prefetcher(cfg, train_loader)
-    input, target = prefetcher.next()
+    samples, targets = prefetcher.next()
     i = 0
-    while input is not None:
+    while samples is not None:
         i += 1
         if cfg.PROF >= 0 and i == cfg.PROF:
             logger.info("Profiling begun at iteration {}".format(i))
@@ -65,11 +71,14 @@ def train(cfg: CfgNode, train_loader: DataLoader, model: nn.Module, criterion: n
         if warmup and epoch < warmup_epoch + 1:
             adjust_learning_rate(cfg, optimizer, epoch, i, len(train_loader))
 
+        if mixup_fn is not None:
+            samples, targets = mixup_fn(samples, targets)
+
         # compute output
         if cfg.PROF >= 0: torch.cuda.nvtx.range_push("forward")
-        output = model(input)
+        output = model(samples)
         if cfg.PROF >= 0: torch.cuda.nvtx.range_pop()
-        loss = criterion(output, target)
+        loss = criterion(output, targets)
 
         # compute gradient and do SGD step
         optimizer.zero_grad()
@@ -93,7 +102,7 @@ def train(cfg: CfgNode, train_loader: DataLoader, model: nn.Module, criterion: n
 
             # Measure accuracy
             if cfg.TRAIN.CALCULATE_ACCURACY:
-                prec_list = accuracy(output[KEY_OUTPUT].data, target, topk=top_k)
+                prec_list = accuracy(output[KEY_OUTPUT].data, samples, topk=top_k)
             else:
                 prec_list = [[0.] for _ in top_k]
 
@@ -106,9 +115,9 @@ def train(cfg: CfgNode, train_loader: DataLoader, model: nn.Module, criterion: n
                 reduced_loss = loss.data
 
             # to_python_float incurs a host<->device sync
-            losses.update(to_python_float(reduced_loss), input.size(0))
+            losses.update(to_python_float(reduced_loss), samples.size(0))
             for idx, prec in enumerate(prec_list):
-                top_list[idx].update(to_python_float(prec), input.size(0))
+                top_list[idx].update(to_python_float(prec), samples.size(0))
 
             torch.cuda.synchronize()
             batch_time.update((time.time() - end) / cfg.PRINT_FREQ)
@@ -130,7 +139,7 @@ def train(cfg: CfgNode, train_loader: DataLoader, model: nn.Module, criterion: n
                     logger_str += f'Prec@{k} {top.val:.3f} ({top.avg:.3f}) '
                 logger.info(logger_str)
         if cfg.PROF >= 0: torch.cuda.nvtx.range_push("prefetcher.next()")
-        input, target = prefetcher.next()
+        samples, targets = prefetcher.next()
         if cfg.PROF >= 0: torch.cuda.nvtx.range_pop()
 
         # Pop range "Body of iteration {}".format(i)

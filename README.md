@@ -46,6 +46,7 @@
 ## Thanks
 
 * [ZJCV/ZCls2](https://github.com/ZJCV/ZCls2)
+* [PyRetri/PyRetri](https://github.com/PyRetri/PyRetri)
 
 For more thanks, check [THANKS](THANKS.md)
 

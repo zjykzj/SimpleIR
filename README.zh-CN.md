@@ -46,6 +46,7 @@
 ## 致谢
 
 * [ZJCV/ZCls2](https://github.com/ZJCV/ZCls2)
+* [PyRetri/PyRetri](https://github.com/PyRetri/PyRetri)
 
 更多致谢内容，查看[THANKS](THANKS.md)
 

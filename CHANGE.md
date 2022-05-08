@@ -1,6 +1,14 @@
 
 # CHANGE
 
+## v0.4.1
+
+* New features
+  1. perf(simpleir): use zcls2's trainer.py. [69e702ba](https://github.com/zjykzj/SimpleIR/tree/69e702ba1699963b56db5608cbaa98a99dc080e0)
+  2. fix(trainer.py): fix mixup usgae. [19e259a4](https://github.com/zjykzj/SimpleIR/tree/19e259a44cd257bb8f422f9cdc6450f47b460f82)
+* Bug fixes
+* Breaking changes.
+
 ## v0.4.0
 
 * New features

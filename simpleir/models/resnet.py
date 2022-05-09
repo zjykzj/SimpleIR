@@ -70,10 +70,10 @@ class ResNet(TResNet):
             self.feature_modules[fea_name].register_forward_hook(partial(hook, self.feature_buffer, fea_name))
 
     def forward(self, x: Tensor) -> Dict:
-        feat, res = self._forward_impl(x)
+        res = super(ResNet, self).forward(x)
         return {
-            KEY_FEAT: feat,
-            KEY_OUTPUT: self.feature_buffer[self.feat_type]
+            KEY_OUTPUT: res,
+            KEY_FEAT: self.feature_buffer[self.feat_type]
         }
 
 

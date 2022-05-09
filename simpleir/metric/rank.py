@@ -6,34 +6,42 @@
 @author: zj
 @description: 
 """
-from typing import List
+from typing import Any, List
 
 import numpy as np
 
 
-def normal_rank(similarity_list: List) -> List:
-    sim_array = np.array(similarity_list)
-    if len(sim_array) == 1:
-        top_list = [int(sim_array[0][0])]
-    else:
-        # The smaller the distance, the more similar
-        sort_array = np.argsort(sim_array[:, 1])
-        top_list = list(sim_array[:, 0][sort_array].astype(int))
+def normal_rank(distance_array: np.ndarray) -> np.ndarray:
+    if len(distance_array.shape) == 1:
+        distance_array = distance_array.reshape(1, -1)
 
-    return top_list
+    # The more smaller distance, the more similar object
+    sort_array = np.argsort(distance_array, axis=1)
+
+    return sort_array
 
 
-def rank(similarity_list: List, top_k: int = 10, rank_type: str = 'normal') -> List:
+def do_rank(distance_array: np.ndarray, candidate_target_list: List,
+            top_k: int = 10, rank_type: str = 'normal') -> Any:
+    if distance_array is None:
+        return None
+
     if rank_type == 'normal':
-        tmp_top_list = normal_rank(similarity_list)
+        sort_array = normal_rank(distance_array)
     else:
         raise ValueError(f'{rank_type} does not support')
 
-    # Returns only the sort results needed to calculate the hit rate
-    top_list = [0 for _ in range(top_k)]
-    if len(tmp_top_list) < top_k:
-        top_list[:len(tmp_top_list)] = tmp_top_list[:]
-    else:
-        top_list = tmp_top_list[:top_k]
+    pred_top_k_list = list()
+    for sort_arr in sort_array:
+        tmp_top_list = list(np.array(candidate_target_list)[sort_arr].astype(int))
 
-    return top_list
+        # Returns only the sort results needed to calculate the hit rate
+        top_list = [0 for _ in range(top_k)]
+        if len(tmp_top_list) < top_k:
+            top_list[:len(tmp_top_list)] = tmp_top_list[:]
+        else:
+            top_list = tmp_top_list[:top_k]
+
+        pred_top_k_list.append(top_list)
+
+    return pred_top_k_list

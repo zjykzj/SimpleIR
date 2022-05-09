@@ -13,7 +13,7 @@ import torch
 from .aggregator import do_aggregate
 from .enhancer import do_enhance
 from .distancer import do_distance
-from .rank import rank
+from .rank import do_rank
 
 
 class MetricHelper:
@@ -39,14 +39,17 @@ class MetricHelper:
         feats = feats.reshape(feats.shape[0], -1)
         feats = do_enhance(feats, enhance_type=enhance_type)
 
+        distance_array, candidate_target_list = do_distance(feats, self.gallery_dict, distance_type=distance_type)
+        pred_top_k_list = do_rank(distance_array, candidate_target_list,
+                                  top_k=top_k_list[-1], rank_type=rank_type)
+
         top_k_similarity_list = [0 for _ in top_k_list]
-        for feat, target in zip(feats, targets):
+        for idx, (feat, target) in enumerate(zip(feats, targets)):
             truth_key = int(target)
-            similarity_list = do_distance(feat, self.gallery_dict, distance_type=distance_type)
-            if len(similarity_list) == 0:
+            if pred_top_k_list is None:
                 pass
             else:
-                sorted_list = rank(similarity_list, top_k=top_k_list[-1], rank_type=rank_type)
+                sorted_list = pred_top_k_list[idx]
 
                 for i, k in enumerate(top_k_list):
                     if truth_key in sorted_list[:k]:

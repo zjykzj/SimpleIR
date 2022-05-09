@@ -9,8 +9,9 @@ Input query image features and search set features.
 Calculate the similarity between the query image and each image in the retrieval set
 Returns a list. The first dimension represents target and the second dimension is similarity
 """
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
+import numpy as np
 import torch
 import torch.nn.functional as F
 
@@ -53,7 +54,7 @@ def cosine_distance(query_feats: torch.Tensor, gallery_feats: torch.Tensor) -> t
 
 
 def do_distance(feat: torch.Tensor, gallery_dict: Dict, distance_type='euclidean') \
-        -> List:
+        -> Tuple[np.ndarray, List]:
     """
     Calculate distance (Euclidean distance / Cosine distance)
     """
@@ -61,7 +62,7 @@ def do_distance(feat: torch.Tensor, gallery_dict: Dict, distance_type='euclidean
     if len(feat.shape) == 1:
         feat = feat.reshape(1, -1)
 
-    sim_list = list()
+    distance_array = None
     key_list = list()
     value_list = list()
 
@@ -76,12 +77,10 @@ def do_distance(feat: torch.Tensor, gallery_dict: Dict, distance_type='euclidean
         pass
     else:
         if distance_type == 'euclidean':
-            tmp_sim_array = euclidean_distance(feat, torch.stack(value_list))[0]
+            distance_array = euclidean_distance(feat, torch.stack(value_list)).numpy()
         elif distance_type == 'cosine':
-            tmp_sim_array = cosine_distance(feat, torch.stack(value_list))[0]
+            distance_array = cosine_distance(feat, torch.stack(value_list)).numpy()
         else:
             raise ValueError(f'{distance_type} does not support')
 
-        sim_list = [[key, score.item()] for key, score in zip(key_list, tmp_sim_array)]
-
-    return sim_list
+    return distance_array, key_list

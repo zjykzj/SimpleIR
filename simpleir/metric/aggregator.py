@@ -95,11 +95,33 @@ def spoc(feats: torch.Tensor, use_prior: bool = True) -> torch.Tensor:
     return feats
 
 
+def crow(feats: torch.Tensor, spatial_a: float = 2.0, spatial_b: float = 2.0) -> torch.Tensor:
+    """
+    Cross-dimensional Weighting for Aggregated Deep Convolutional Features.
+    """
+    assert feats.ndimension() == 4
+
+    spatial_weight = feats.sum(dim=1, keepdim=True)
+    z = (spatial_weight ** spatial_a).sum(dim=(2, 3), keepdims=True)
+    z = z ** (1.0 / spatial_a)
+    spatial_weight = (spatial_weight / z) ** (1.0 / spatial_b)
+
+    c, w, h = feats.shape[1:]
+    nonzeros = (feats != 0).float().sum(dim=(2, 3)) / 1.0 / (w * h) + 1e-6
+    channel_weight = torch.log(nonzeros.sum(dim=1, keepdims=True) / nonzeros)
+
+    feats = feats * spatial_weight
+    feats = feats.sum(dim=(2, 3))
+    feats = feats * channel_weight
+
+    return feats
+
+
 def do_aggregate(feats: torch.Tensor, aggregate_type='identity') -> torch.Tensor:
     """
     Feature aggregate. Specifically for conv features
     """
-    assert aggregate_type in ['identity', 'gap', 'gmp', 'gem', 'r_mac', 'spoc']
+    assert aggregate_type in ['identity', 'gap', 'gmp', 'gem', 'r_mac', 'spoc', 'crow']
 
     if aggregate_type == 'identity':
         return feats
@@ -113,5 +135,7 @@ def do_aggregate(feats: torch.Tensor, aggregate_type='identity') -> torch.Tensor
         return r_mac(feats)
     elif aggregate_type == 'spoc':
         return spoc(feats)
+    elif aggregate_type == 'crow':
+        return crow(feats)
     else:
         raise ValueError(f'{aggregate_type} does not support')

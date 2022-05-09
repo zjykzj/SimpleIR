@@ -17,6 +17,8 @@ def add_custom_config(_C: CfgNode) -> None:
     _C.METRIC.MAX_CATE_NUM = 5
     # feat type
     _C.METRIC.FEAT_TYPE = 'avgpool'
+    # aggregate type
+    _C.METRIC.AGGREGATE_TYPE = 'identity'
     # enhance type
     _C.METRIC.ENHANCE_TYPE = 'normal'
     # similarity type

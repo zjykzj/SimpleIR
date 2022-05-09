@@ -40,6 +40,7 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
     end = time.time()
 
     metric = MetricHelper(cfg.METRIC.MAX_CATE_NUM)
+    aggregate_type = cfg.METRIC.AGGREGATE_TYPE
     similarity_type = cfg.METRIC.SIMILARITY_TYPE
     rank_type = cfg.METRIC.RANK_TYPE
 
@@ -57,7 +58,8 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
         # measure accuracy and record loss
         # prec_list = metric.run(output[KEY_FEAT].detach().cpu().numpy(), target.detach().cpu().numpy(),
         prec_list = metric.run(output[KEY_FEAT].detach().cpu(), target.detach().cpu(),
-                               top_k_list=top_k, similarity_type=similarity_type, rank_type=rank_type)
+                               top_k_list=top_k,
+                               aggregate_type=aggregate_type, similarity_type=similarity_type, rank_type=rank_type)
 
         reduced_loss = loss.data
 

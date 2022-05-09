@@ -10,7 +10,7 @@ from typing import List, Tuple
 
 import torch
 
-# from .aggregator import do_aggregate
+from .aggregator import do_aggregate
 from .enhancer import do_enhance
 from .distancer import do_distance
 from .rank import rank
@@ -34,7 +34,7 @@ class MetricHelper:
     def run(self, feats: torch.Tensor, targets: torch.Tensor, top_k_list: Tuple = (1, 5),
             aggregate_type='identity', enhance_type='normal', similarity_type: str = 'euclidean',
             rank_type='normal') -> List:
-        # feats = do_aggregate(feats, aggregate_type=aggregate_type)
+        feats = do_aggregate(feats, aggregate_type=aggregate_type)
         # Flatten the eigenvector into a one-dimensional vector
         feats = feats.reshape(feats.shape[0], -1)
         feats = do_enhance(feats, enhance_type=enhance_type)

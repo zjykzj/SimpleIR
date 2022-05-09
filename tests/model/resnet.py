@@ -11,7 +11,7 @@ from simpleir.models.resnet import resnet50
 
 if __name__ == '__main__':
     m = resnet50()
-    # print(m)
+    print(m)
 
     print(m.layer4)
     print(m.layer4[2])

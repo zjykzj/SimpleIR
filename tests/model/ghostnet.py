@@ -15,15 +15,15 @@ from simpleir.configs.key_words import KEY_FEAT
 if __name__ == '__main__':
     # m = timm.models.__dict__['ghostnet_100']()
     m = ghostnet_100()
-    # print(m)
+    print(m)
 
-    import torch
-
-    a = torch.randn(1, 3, 224, 224)
-    res = m(a)
-    print(res.keys())
-    print(res[KEY_OUTPUT].shape)
-    print(res[KEY_FEAT].shape)
+    # import torch
+    #
+    # a = torch.randn(1, 3, 224, 224)
+    # res = m(a)
+    # print(res.keys())
+    # print(res[KEY_OUTPUT].shape)
+    # print(res[KEY_FEAT].shape)
 
     # print(m.default_cfg)
 

@@ -9,6 +9,7 @@
 import torch
 
 from .r_mac import get_regions
+from .spoc import get_spatial_weight
 
 
 def gap(feats: torch.Tensor) -> torch.Tensor:
@@ -62,6 +63,7 @@ def r_mac(feats: torch.Tensor, level_n: int = 3) -> torch.Tensor:
     @param feats (torch.Tensor): conv feats
     @param level_n (int): number of levels for selecting regions.
     """
+    assert feats.ndimension() == 4
     h, w = feats.shape[2:]
     final_fea = None
     regions = get_regions(h, w, level_n=level_n)
@@ -77,11 +79,27 @@ def r_mac(feats: torch.Tensor, level_n: int = 3) -> torch.Tensor:
     return final_fea
 
 
+def spoc(feats: torch.Tensor, use_prior: bool = True) -> torch.Tensor:
+    """
+    SPoC with center prior.
+    """
+    assert feats.ndimension() == 4
+
+    if use_prior:
+        h, w = feats.shape[2:]
+        spatial_weight = get_spatial_weight(h, w)
+
+        feats = feats * spatial_weight
+    feats = feats.sum(dim=(2, 3))
+
+    return feats
+
+
 def do_aggregate(feats: torch.Tensor, aggregate_type='identity') -> torch.Tensor:
     """
     Feature aggregate. Specifically for conv features
     """
-    assert aggregate_type in ['identity', 'gap', 'gmp', 'gem', 'r_mac']
+    assert aggregate_type in ['identity', 'gap', 'gmp', 'gem', 'r_mac', 'spoc']
 
     if aggregate_type == 'identity':
         return feats
@@ -93,5 +111,7 @@ def do_aggregate(feats: torch.Tensor, aggregate_type='identity') -> torch.Tensor
         return gem(feats)
     elif aggregate_type == 'r_mac':
         return r_mac(feats)
+    elif aggregate_type == 'spoc':
+        return spoc(feats)
     else:
         raise ValueError(f'{aggregate_type} does not support')

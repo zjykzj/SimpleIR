@@ -16,13 +16,13 @@ def l2_norm(feats: torch.Tensor) -> torch.Tensor:
     return feats / torch.norm(feats, dim=1, keepdim=True)
 
 
-def do_enhance(feats: torch.Tensor, enhance_type='normal') -> torch.Tensor:
+def do_enhance(feats: torch.Tensor, enhance_type='identity') -> torch.Tensor:
     """
-    Calculate similarity (Euclidean distance / Cosine distance)
+    Feature enhancement
     """
-    assert enhance_type in ['normal', 'l2-norm']
+    assert enhance_type in ['identity', 'l2-norm']
 
-    if enhance_type == 'normal':
+    if enhance_type == 'identity':
         return feats
     elif enhance_type == 'l2-norm':
         return l2_norm(feats)

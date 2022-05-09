@@ -20,7 +20,7 @@ def add_custom_config(_C: CfgNode) -> None:
     # aggregate type
     _C.METRIC.AGGREGATE_TYPE = 'identity'
     # enhance type
-    _C.METRIC.ENHANCE_TYPE = 'normal'
+    _C.METRIC.ENHANCE_TYPE = 'identity'
     # distance type
     _C.METRIC.DISTANCE_TYPE = 'euclidean'
     # sort type

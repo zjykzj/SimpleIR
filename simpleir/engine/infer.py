@@ -39,7 +39,7 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
 
     end = time.time()
 
-    metric = MetricHelper()
+    metric = MetricHelper(cfg.METRIC.MAX_CATE_NUM)
     similarity_type = cfg.METRIC.SIMILARITY_TYPE
     rank_type = cfg.METRIC.RANK_TYPE
 

@@ -13,6 +13,8 @@ from yacs.config import CfgNode
 def add_custom_config(_C: CfgNode) -> None:
     # Add your own customized configs.
     _C.METRIC = CfgNode()
+    # Maximum number of each category saved in the gallery
+    _C.METRIC.MAX_CATE_NUM = 5
     # feat type
     _C.METRIC.FEAT_TYPE = 'avgpool'
     # enhance type

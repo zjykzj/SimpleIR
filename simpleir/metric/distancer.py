@@ -52,7 +52,7 @@ def cosine_distance(query_feats: torch.Tensor, gallery_feats: torch.Tensor) -> t
     return 1 - similarity_matrix
 
 
-def similarity(feat: torch.Tensor, gallery_dict: Dict, similarity_type='euclidean') \
+def do_distance(feat: torch.Tensor, gallery_dict: Dict, similarity_type='euclidean') \
         -> List:
     """
     Calculate similarity (Euclidean distance / Cosine distance)

@@ -8,11 +8,11 @@
 """
 from typing import List, Tuple
 
-import numpy as np
 import torch
 
-from .enhance import enhance
-from .similarity import similarity
+# from .aggregator import do_aggregate
+from .enhancer import do_enhance
+from .distancer import do_distance
 from .rank import rank
 
 
@@ -32,15 +32,17 @@ class MetricHelper:
         return self.run(*args, **kwargs)
 
     def run(self, feats: torch.Tensor, targets: torch.Tensor, top_k_list: Tuple = (1, 5),
-            enhance_type='normal', similarity_type: str = 'euclidean', rank_type='normal') -> List:
+            aggregate_type='identity', enhance_type='normal', similarity_type: str = 'euclidean',
+            rank_type='normal') -> List:
+        # feats = do_aggregate(feats, aggregate_type=aggregate_type)
         # Flatten the eigenvector into a one-dimensional vector
         feats = feats.reshape(feats.shape[0], -1)
-        feats = enhance(feats, enhance_type=enhance_type)
+        feats = do_enhance(feats, enhance_type=enhance_type)
 
         top_k_similarity_list = [0 for _ in top_k_list]
         for feat, target in zip(feats, targets):
             truth_key = int(target)
-            similarity_list = similarity(feat, self.gallery_dict, similarity_type=similarity_type)
+            similarity_list = do_distance(feat, self.gallery_dict, similarity_type=similarity_type)
             if len(similarity_list) == 0:
                 pass
             else:

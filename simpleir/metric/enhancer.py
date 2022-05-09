@@ -16,7 +16,7 @@ def l2_norm(feats: torch.Tensor) -> torch.Tensor:
     return feats / torch.norm(feats, dim=1, keepdim=True)
 
 
-def enhance(feats: torch.Tensor, enhance_type='normal') -> torch.Tensor:
+def do_enhance(feats: torch.Tensor, enhance_type='normal') -> torch.Tensor:
     """
     Calculate similarity (Euclidean distance / Cosine distance)
     """

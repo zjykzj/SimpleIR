@@ -17,7 +17,7 @@ __all__ = ["GhostNet", "ghostnet_050", "ghostnet_100", "ghostnet_130"]
 
 class GhostNet(ZGhostNet):
     _feat_list = [
-        'blocks', 'act1', 'global_pool', 'conv_head', 'act2', 'fc'
+        'blocks', 'global_pool', 'conv_head', 'act2', 'fc'
     ]
 
     def __init__(self, cfgs, num_classes=1000, width=1.0, dropout=0.2, in_chans=3, output_stride=32,
@@ -27,7 +27,6 @@ class GhostNet(ZGhostNet):
 
         self.feature_modules = {
             "blocks": self.blocks[9][0].act1,
-            "act1": self.act1,
             "global_pool": self.global_pool,
             "conv_head": self.conv_head,
             "act2": self.act2,

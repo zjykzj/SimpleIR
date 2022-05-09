@@ -7,17 +7,23 @@
 @description: 
 """
 import numpy as np
+import torch
 from sklearn.preprocessing import normalize
+from torch import norm
 
 
-def l2_norm(feats: np.ndarray) -> np.ndarray:
+# def l2_norm(feats: np.ndarray) -> np.ndarray:
+def l2_norm(feats: torch.Tensor) -> torch.Tensor:
     if len(feats.shape) == 1:
-        feats = np.array([feats])
+        # feats = np.array([feats])
+        feats = feats.reshape(1, -1)
 
-    return normalize(feats, norm="l2", return_norm=False)
+    # return normalize(feats, norm="l2", return_norm=False)
+    return feats / torch.norm(feats, dim=1, keepdim=True)
 
 
-def enhance(feats: np.ndarray, enhance_type='normal') -> np.ndarray:
+# def enhance(feats: np.ndarray, enhance_type='normal') -> np.ndarray:
+def enhance(feats: torch.Tensor, enhance_type='normal') -> torch.Tensor:
     """
     Calculate similarity (Euclidean distance / Cosine distance)
     """

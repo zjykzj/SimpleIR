@@ -12,35 +12,62 @@ Returns a list. The first dimension represents target and the second dimension i
 from typing import Dict, List, Optional
 
 import numpy as np
+
+import torch
+import torch.nn.functional as F
 from sklearn.metrics.pairwise import cosine_distances, euclidean_distances
 
 
-def euclidean_distance(query_feats: np.ndarray, gallery_feats: np.ndarray) -> np.ndarray:
+# def euclidean_distance(query_feats: np.ndarray, gallery_feats: np.ndarray) -> np.ndarray:
+def euclidean_distance(query_feats: torch.Tensor, gallery_feats: torch.Tensor) -> torch.Tensor:
     """
-    X : {array-like, sparse matrix} of shape (n_samples_X, n_features)
-    Y : {array-like, sparse matrix} of shape (n_samples_Y, n_features)
+    Calculate the distance between query set features and gallery set features. Derived from PyRetri
+
+    Args:
+        query_feats (torch.tensor): query set features.
+        gallery_feats (torch.tensor): gallery set features.
+
+    Returns:
+        dis (torch.tensor): the euclidean distance between query set features and gallery set features.
     """
-    if len(query_feats.shape) == 1:
-        query_feats = [query_feats]
-
-    return euclidean_distances(query_feats, gallery_feats)
-    # return np.linalg.norm(query_feat - gallery_feats, axis=1)
-
-
-def cosine_distance(query_feats: np.ndarray, gallery_feats: np.ndarray) -> np.ndarray:
-    if len(query_feats.shape) == 1:
-        query_feats = [query_feats]
-
-    return cosine_distances(query_feats, gallery_feats)
+    query_fea = query_feats.transpose(1, 0)
+    inner_dot = gallery_feats.mm(query_fea)
+    dis = (gallery_feats ** 2).sum(dim=1, keepdim=True) + (query_fea ** 2).sum(dim=0, keepdim=True)
+    dis = dis - 2 * inner_dot
+    dis = dis.transpose(1, 0)
+    # return dis
+    return torch.sqrt(dis)
 
 
-def similarity(feat: np.ndarray, gallery_dict: Dict, similarity_type='euclidean') \
+# def cosine_distance(query_feats: np.ndarray, gallery_feats: np.ndarray) -> np.ndarray:
+def cosine_distance(query_feats: torch.Tensor, gallery_feats: torch.Tensor) -> torch.Tensor:
+    """
+    Calculate the distance between query set features and gallery set features.
+
+    Args:
+        query_feats (torch.tensor): query set features.
+        gallery_feats (torch.tensor): gallery set features.
+
+    Returns:
+        dis (torch.tensor): the cosine distance between query set features and gallery set features.
+    """
+    similarity_matrix = F.cosine_similarity(query_feats.unsqueeze(1),
+                                            gallery_feats.unsqueeze(0), dim=2)
+
+    # torch.cosine_similarity(query_feats, gallery_feats, dim=1, keepdim=True)
+    return 1 - similarity_matrix
+
+
+# def similarity(feat: np.ndarray, gallery_dict: Dict, similarity_type='euclidean') \
+def similarity(feat: torch.Tensor, gallery_dict: Dict, similarity_type='euclidean') \
         -> List:
     """
     Calculate similarity (Euclidean distance / Cosine distance)
     """
     assert similarity_type in ['euclidean', 'cosine']
-    feat_array = np.array(feat)
+    # feat_array = np.array(feat)
+    if len(feat.shape) == 1:
+        feat = feat.reshape(1, -1)
 
     sim_list = list()
     for idx, (key, values) in enumerate(gallery_dict.items()):
@@ -48,12 +75,12 @@ def similarity(feat: np.ndarray, gallery_dict: Dict, similarity_type='euclidean'
             continue
 
         if similarity_type == 'euclidean':
-            tmp_sim_array = euclidean_distance(feat_array, values)[0]
+            tmp_sim_array = euclidean_distance(feat, torch.stack(values))[0]
         elif similarity_type == 'cosine':
-            tmp_sim_array = cosine_distance(feat_array, values)[0]
+            tmp_sim_array = cosine_distance(feat, torch.stack(values))[0]
         else:
             raise ValueError(f'{similarity_type} does not support')
 
-        sim_list.extend([[key, score] for score in tmp_sim_array])
+        sim_list.extend([[key, score.item()] for score in tmp_sim_array])
 
     return sim_list

@@ -55,7 +55,8 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
             loss = criterion(output, target)
 
         # measure accuracy and record loss
-        prec_list = metric.run(output[KEY_FEAT].detach().cpu().numpy(), target.detach().cpu().numpy(),
+        # prec_list = metric.run(output[KEY_FEAT].detach().cpu().numpy(), target.detach().cpu().numpy(),
+        prec_list = metric.run(output[KEY_FEAT].detach().cpu(), target.detach().cpu(),
                                top_k_list=top_k, similarity_type=similarity_type, rank_type=rank_type)
 
         reduced_loss = loss.data

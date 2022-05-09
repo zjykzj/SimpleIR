@@ -9,6 +9,7 @@
 from typing import List, Tuple
 
 import numpy as np
+import torch
 
 from .enhance import enhance
 from .similarity import similarity
@@ -30,7 +31,8 @@ class MetricHelper:
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
 
-    def run(self, feats: np.ndarray, targets: np.ndarray, top_k_list: Tuple = (1, 5),
+    # def run(self, feats: np.ndarray, targets: np.ndarray, top_k_list: Tuple = (1, 5),
+    def run(self, feats: torch.Tensor, targets: torch.Tensor, top_k_list: Tuple = (1, 5),
             enhance_type='normal', similarity_type: str = 'euclidean', rank_type='normal') -> List:
         # Flatten the eigenvector into a one-dimensional vector
         feats = feats.reshape(feats.shape[0], -1)

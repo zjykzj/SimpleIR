@@ -1,6 +1,13 @@
 
 # CHANGE
 
+## v0.5.1
+
+* New features
+* Bug fixes
+  1. fix(resnet.py): fix ResNet forward() use. [a1b55b6](https://github.com/zjykzj/SimpleIR/tree/a1b55b6ac183600aaeb0f1aea215592e849cc047)
+* Breaking changes
+
 ## v0.5.0
 
 * New features

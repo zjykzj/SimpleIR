@@ -1,6 +1,24 @@
 
 # CHANGE
 
+## v0.5.0
+
+* New features
+  1. perf(rank): make batch rank process. [2b5f5dc7](https://github.com/zjykzj/SimpleIR/tree/2b5f5dc73e36df1b48a6d3f5dd8a20b061ef2e6f)
+  2. feat(aggregator): add CroW. [ff90d4ee](https://github.com/zjykzj/SimpleIR/tree/ff90d4ee760e7129d63aa41ab965a5d1b3e91f06)
+  3. feat(aggregator): add SpoC. [4c9a5535](https://github.com/zjykzj/SimpleIR/tree/4c9a55356aede97ed067f1e5a7cb09aee242b6d1)
+  4. feat(aggregator): add R_Mac. [799f08da](https://github.com/zjykzj/SimpleIR/tree/799f08da43c779d1c12df48b656c6053400bf671)
+  5. feat(aggregator): add GeM. [1a90fabc](https://github.com/zjykzj/SimpleIR/tree/1a90fabcbaba947c214c54354e40f3f5791398f6)
+  6. feat(metric): add Aggregator for Conv feats. [87b1838](https://github.com/zjykzj/SimpleIR/tree/87b183812f5fcd33bfd700a41efe59a221641931)
+  7. feat(config): add cfg.METRIC.MAX_CATE_NUM. [1ea469d](https://github.com/zjykzj/SimpleIR/tree/1ea469d15174936346101191ac5d34ed108b22ab)
+  8. perf(similarity): speed up calcluation. [c2679b91](https://github.com/zjykzj/SimpleIR/tree/c2679b91b1bcc427027ff8504ebe48f7606df19d)
+  9. perf(metric): update enhance and similarity phase be torch operation. [83398480](https://github.com/zjykzj/SimpleIR/tree/83398480d66e3a4b76997d03890c06d0ba0a7311)
+* Bug fixes
+* Breaking changes
+  1. refactor(enhancer.py): modify enhance_type "normal" to "identity". [5da1a760](https://github.com/zjykzj/SimpleIR/tree/5da1a760911086e8ca5f675769db3a501fef31d1)
+  2. refactor(config): modify _C.METRIC.SIMILARITY_TYPE to _C.METRIC.DISTANCE_TYPE. [4dda521f](https://github.com/zjykzj/SimpleIR/tree/4dda521f3107ec255c7a5f5b9d648b74b72f87ea)
+  3. refactor(ghostnet.py): remove "act1" feature. [84150b76](https://github.com/zjykzj/SimpleIR/tree/84150b76e81d36dc57e6d16f1114969a86cc745a)
+
 ## v0.4.1
 
 * New features

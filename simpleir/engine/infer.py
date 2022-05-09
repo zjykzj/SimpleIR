@@ -41,7 +41,7 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
 
     metric = MetricHelper(cfg.METRIC.MAX_CATE_NUM)
     aggregate_type = cfg.METRIC.AGGREGATE_TYPE
-    similarity_type = cfg.METRIC.SIMILARITY_TYPE
+    distance_type = cfg.METRIC.DISTANCE_TYPE
     rank_type = cfg.METRIC.RANK_TYPE
 
     prefetcher = data_prefetcher(cfg, val_loader)
@@ -59,7 +59,7 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
         # prec_list = metric.run(output[KEY_FEAT].detach().cpu().numpy(), target.detach().cpu().numpy(),
         prec_list = metric.run(output[KEY_FEAT].detach().cpu(), target.detach().cpu(),
                                top_k_list=top_k,
-                               aggregate_type=aggregate_type, similarity_type=similarity_type, rank_type=rank_type)
+                               aggregate_type=aggregate_type, distance_type=distance_type, rank_type=rank_type)
 
         reduced_loss = loss.data
 

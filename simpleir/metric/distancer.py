@@ -52,12 +52,12 @@ def cosine_distance(query_feats: torch.Tensor, gallery_feats: torch.Tensor) -> t
     return 1 - similarity_matrix
 
 
-def do_distance(feat: torch.Tensor, gallery_dict: Dict, similarity_type='euclidean') \
+def do_distance(feat: torch.Tensor, gallery_dict: Dict, distance_type='euclidean') \
         -> List:
     """
-    Calculate similarity (Euclidean distance / Cosine distance)
+    Calculate distance (Euclidean distance / Cosine distance)
     """
-    assert similarity_type in ['euclidean', 'cosine']
+    assert distance_type in ['euclidean', 'cosine']
     if len(feat.shape) == 1:
         feat = feat.reshape(1, -1)
 
@@ -75,12 +75,12 @@ def do_distance(feat: torch.Tensor, gallery_dict: Dict, similarity_type='euclide
     if len(value_list) == 0:
         pass
     else:
-        if similarity_type == 'euclidean':
+        if distance_type == 'euclidean':
             tmp_sim_array = euclidean_distance(feat, torch.stack(value_list))[0]
-        elif similarity_type == 'cosine':
+        elif distance_type == 'cosine':
             tmp_sim_array = cosine_distance(feat, torch.stack(value_list))[0]
         else:
-            raise ValueError(f'{similarity_type} does not support')
+            raise ValueError(f'{distance_type} does not support')
 
         sim_list = [[key, score.item()] for key, score in zip(key_list, tmp_sim_array)]
 

@@ -32,7 +32,7 @@ class MetricHelper:
         return self.run(*args, **kwargs)
 
     def run(self, feats: torch.Tensor, targets: torch.Tensor, top_k_list: Tuple = (1, 5),
-            aggregate_type='identity', enhance_type='normal', similarity_type: str = 'euclidean',
+            aggregate_type='identity', enhance_type='normal', distance_type: str = 'euclidean',
             rank_type='normal') -> List:
         feats = do_aggregate(feats, aggregate_type=aggregate_type)
         # Flatten the eigenvector into a one-dimensional vector
@@ -42,7 +42,7 @@ class MetricHelper:
         top_k_similarity_list = [0 for _ in top_k_list]
         for feat, target in zip(feats, targets):
             truth_key = int(target)
-            similarity_list = do_distance(feat, self.gallery_dict, similarity_type=similarity_type)
+            similarity_list = do_distance(feat, self.gallery_dict, distance_type=distance_type)
             if len(similarity_list) == 0:
                 pass
             else:

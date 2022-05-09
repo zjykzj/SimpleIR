@@ -21,8 +21,8 @@ def add_custom_config(_C: CfgNode) -> None:
     _C.METRIC.AGGREGATE_TYPE = 'identity'
     # enhance type
     _C.METRIC.ENHANCE_TYPE = 'normal'
-    # similarity type
-    _C.METRIC.SIMILARITY_TYPE = 'euclidean'
+    # distance type
+    _C.METRIC.DISTANCE_TYPE = 'euclidean'
     # sort type
     _C.METRIC.RANK_TYPE = 'normal'
 

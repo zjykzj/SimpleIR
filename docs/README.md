@@ -120,6 +120,9 @@ act2 cate_num 70
 avgpool cate_num 5
 [05/10 01:51:48][INFO] infer.py:  96:  * Prec@1 44.413 Prec@3 61.038 Prec@5 67.892 Prec@10 76.531
 
+avgpool cate_num 5 cosine
+[05/10 06:58:20][INFO] infer.py:  96:  * Prec@1 48.883 Prec@3 64.741 Prec@5 71.725 Prec@10 79.448 
+
 fc
 [05/10 01:53:31][INFO] infer.py:  96:  * Prec@1 41.870 Prec@3 58.775 Prec@5 66.321 Prec@10 75.475
 
@@ -128,6 +131,9 @@ layer4
 
 layer4 crow
 [05/10 01:57:18][INFO] infer.py:  96:  * Prec@1 45.573 Prec@3 61.524 Prec@5 68.537 Prec@10 76.774
+
+layer4 crow cosine
+[05/10 06:58:08][INFO] infer.py:  96:  * Prec@1 49.472 Prec@3 65.507 Prec@5 72.071 Prec@10 79.598
 
 layer4 gap
 [05/10 01:58:19][INFO] infer.py:  96:  * Prec@1 44.413 Prec@3 61.038 Prec@5 67.892 Prec@10 76.540
@@ -154,8 +160,14 @@ avgpool cate_num 10
 avgpool cate_num 20
 [05/10 02:05:27][INFO] infer.py:  96:  * Prec@1 48.237 Prec@3 64.404 Prec@5 70.771 Prec@10 78.635
 
+avgpool cate_num 20 cosine
+[05/10 08:00:13][INFO] infer.py:  96:  * Prec@1 52.426 Prec@3 67.779 Prec@5 73.726 Prec@10 81.103
+
 layer4 crow
 [05/10 02:15:21][INFO] infer.py:  96:  * Prec@1 49.294 Prec@3 64.909 Prec@5 71.248 Prec@10 78.373 
+
+layer4 crow cosine
+[05/10 07:56:36][INFO] infer.py:  96:  * Prec@1 53.343 Prec@3 68.079 Prec@5 74.240 Prec@10 81.197
 
 layer4 gap
 [05/10 02:18:01][INFO] infer.py:  96:  * Prec@1 48.256 Prec@3 64.404 Prec@5 70.771 Prec@10 78.644
@@ -178,8 +190,14 @@ avgpool cate_num 40
 avgpool cate_num 50
 [05/10 02:09:29][INFO] infer.py:  96:  * Prec@1 49.079 Prec@3 65.115 Prec@5 71.248 Prec@10 79.074 
 
+avgpool cate_num 50 cosine
+[05/10 08:17:58][INFO] infer.py:  96:  * Prec@1 52.959 Prec@3 68.228 Prec@5 74.128 Prec@10 81.169
+
 layer4 crow
 [05/10 02:16:00][INFO] infer.py:  96:  * Prec@1 50.098 Prec@3 65.395 Prec@5 71.678 Prec@10 78.700 
+
+layer4 crow cosine
+[05/10 08:14:28][INFO] infer.py:  96:  * Prec@1 53.950 Prec@3 68.322 Prec@5 74.381 Prec@10 81.085
 
 layer4 gap
 [05/10 02:18:14][INFO] infer.py:  96:  * Prec@1 49.079 Prec@3 65.115 Prec@5 71.258 Prec@10 79.084

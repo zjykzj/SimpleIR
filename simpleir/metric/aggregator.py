@@ -8,8 +8,8 @@
 """
 import torch
 
-from .r_mac import get_regions
-from .spoc import get_spatial_weight
+from .aggregate.r_mac import get_regions
+from .aggregate.spoc import get_spatial_weight
 
 
 def gap(feats: torch.Tensor) -> torch.Tensor:

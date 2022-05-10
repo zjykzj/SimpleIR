@@ -1,8 +1,8 @@
 PRINT_FREQ: 10
 DIST_BACKEND: "nccl"
 INIT_METHOD: "env://"
-OUTPUT_DIR: 'outputs/ghostnet_100_blocks_gem_cccf_224_b256_e90_g4'
-RESUME: "/home/zj/repos/ZCls2/outputs/ghostnet_100_cccf_300_b256_e90_g4/model_best.pth.tar"
+OUTPUT_DIR: 'outputs/ghostnet_100_global_pool_cccf_224_b256_e90_g4'
+RESUME: "/home/zj/repos/SimpleIR/outputs/ghostnet_100_act2_cccf_224_b256_e90_g4/model_best.pth.tar"
 TRAIN:
   EVAL_EPOCH: 1
   START_EPOCH: 1
@@ -11,8 +11,8 @@ TRAIN:
   CALCULATE_ACCURACY: True
 METRIC:
   MAX_CATE_NUM: 5
-  FEAT_TYPE: 'blocks'
-  AGGREGATE_TYPE: 'gem'
+  FEAT_TYPE: 'global_pool'
+  AGGREGATE_TYPE: 'identity'
   ENHANCE_TYPE: 'identity'
   DISTANCE_TYPE: 'euclidean'
   RANK_TYPE: 'normal'

@@ -13,12 +13,12 @@ import torch
 from .aggregator import do_aggregate
 from .enhancer import do_enhance
 from .distancer import do_distance
-from .rank import do_rank
+from .ranker import do_rank
 
 
 class MetricHelper:
     """
-    Calculation accuracy. Based on similarity measurement and rank
+    Calculation accuracy. Based on distance measurement and rank
     """
 
     def __init__(self, max_num: int = 5) -> None:
@@ -55,7 +55,7 @@ class MetricHelper:
                     if truth_key in sorted_list[:k]:
                         top_k_similarity_list[i] += 1
 
-            # Add feat to the atlas every time. If the category is full, the data added at the beginning will pop up
+            # Add feat to the gallery every time. If the category is full, the data added at the beginning will pop up
             if truth_key not in self.gallery_dict.keys():
                 self.gallery_dict[truth_key] = list()
             if len(self.gallery_dict[truth_key]) > self.max_num:

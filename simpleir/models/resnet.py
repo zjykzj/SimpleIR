@@ -4,7 +4,7 @@
 @date: 2022/4/25 下午6:46
 @file: resnet.py
 @author: zj
-@description: 
+@description: Custom ResNet, derived from torchvision
 """
 from functools import partial
 

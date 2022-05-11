@@ -4,7 +4,7 @@
 @date: 2022/5/6 下午8:36
 @file: ghostnet.py
 @author: zj
-@description: 
+@description: Custom MobileNetV3, derived from zcls2
 """
 from functools import partial
 

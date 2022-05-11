@@ -12,7 +12,6 @@ import torch
 
 from .aggregator import do_aggregate
 from .enhancer import do_enhance
-from .distancer import do_distance
 from .ranker import do_rank
 
 
@@ -33,14 +32,13 @@ class MetricHelper:
 
     def run(self, feats: torch.Tensor, targets: torch.Tensor, top_k_list: Tuple = (1, 5),
             aggregate_type='identity', enhance_type='identity', distance_type: str = 'euclidean',
-            rank_type='normal') -> List:
+            rank_type='normal', re_rank_type='identity') -> List:
         feats = do_aggregate(feats, aggregate_type=aggregate_type)
         # Flatten the eigenvector into a one-dimensional vector
         feats = feats.reshape(feats.shape[0], -1)
         feats = do_enhance(feats, enhance_type=enhance_type)
 
-        distance_array, candidate_target_list = do_distance(feats, self.gallery_dict, distance_type=distance_type)
-        pred_top_k_list = do_rank(distance_array, candidate_target_list,
+        pred_top_k_list = do_rank(feats, self.gallery_dict, distance_type=distance_type,
                                   top_k=top_k_list[-1], rank_type=rank_type)
 
         top_k_similarity_list = [0 for _ in top_k_list]

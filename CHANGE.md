@@ -1,6 +1,14 @@
 
 # CHANGE
 
+## v0.5.2
+
+* New features
+  1. perf(ranker): update knn_rank use. [3b77d172](https://github.com/zjykzj/SimpleIR/tree/3b77d172048c357173ba5de0acb738f7776a4068)
+  2. feat(ranker): add KNN Rank. [d167eedd9](https://github.com/zjykzj/SimpleIR/tree/d167eedd93664db9ae783dd8013cdcab735bc8e4)
+* Bug fixes
+* Breaking changes
+
 ## v0.5.1
 
 * New features

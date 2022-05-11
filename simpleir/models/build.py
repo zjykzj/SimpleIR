@@ -16,7 +16,7 @@ from zcls2.util import logging
 
 logger = logging.get_logger(__name__)
 
-from . import tiny_autocoder, resnet, ghostnet
+from . import tiny_autocoder, resnet, ghostnet, mobilenet
 
 __all__ = ["build_model"]
 
@@ -41,6 +41,8 @@ def build_model(cfg: CfgNode, device: torch.device = torch.device('cpu')) -> nn.
         model = resnet.__dict__[model_arch](pretrained=is_pretrained, num_classes=num_classes, feat_type=feat_type)
     elif model_arch in ghostnet.__all__:
         model = ghostnet.__dict__[model_arch](pretrained=is_pretrained, num_classes=num_classes, feat_type=feat_type)
+    elif model_arch in mobilenet.__all__:
+        model = mobilenet.__dict__[model_arch](pretrained=is_pretrained, num_classes=num_classes, feat_type=feat_type)
     else:
         raise ValueError(f"{model_arch} does not support")
 

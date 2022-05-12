@@ -12,13 +12,6 @@
 
     The classes num = 100 + 200 + 101 + 101 = 502
 
-### SCORES (Train)
-
-| cfg |    model   |   top1/top3/top5/top10   |       loss       | optimizer | lr-scheduler | epoch | pretrained |
-|:---:|:----------:|:-------------:|:----------------:|:---------:|:------------:|:-----:|:-----:|
-|  [ghostnet_100_act2_c5_cccf_224_b256_e90_g4](../configs/cccf/ghostnet/ghostnet_100_act2_c5_cccf_224_b256_e90_g4.yaml)   |  ghostnet_100  | 48.191 / 63.768 / 70.201 / 77.878  | CrossEntropyLoss |    SGD    |  MultiStepLR |   90  |   True  |
-|  [r50_avgpool_c5_cccf_224_b256_e90_g4](../configs/cccf/resnet/r50_avgpool_c5_cccf_224_b256_e90_g4.yaml)   |  resnet50  | 44.413 / 61.038 / 67.892 / 76.531  | CrossEntropyLoss |    SGD    |  MultiStepLR |   90  |   True  |
-
 ### SCORES (Eval)
 
 | cfg |    model   |   top1/top3/top5/top10   |   feat_type   | max_num | aggregate | enhance | distance | rank |

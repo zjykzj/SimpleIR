@@ -1,6 +1,13 @@
 
 # CHANGE
 
+## v0.5.3
+
+* New features
+  1. feat(models): add mobilenet_v3_large / mobilenet_v3_small. [5afd5a457](https://github.com/zjykzj/SimpleIR/tree/5afd5a457c641bd999cc8ac0dfd390c2c8d051ed)
+* Bug fixes
+* Breaking changes
+
 ## v0.5.2
 
 * New features

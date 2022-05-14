@@ -32,15 +32,15 @@
 
 ## 背景
 
-...
+从传统图像处理开始，图像检索领域就一直是研究的热点。直到现在，基于深度学习的图像检索算法依然不断的被提出来。虽然这个领域已经发展了很多年，但是还是存在极大的研究和实践壁垒。为了更好的实践图像检索算法，我开发了本仓库，希望能够更好的促进图像检索算法的落地和优化。
 
 ## 安装
 
-...
+查看[install](https://simpleir.readthedocs.io/en/latest/install/)
 
 ## 用法
 
-...
+查看[Get Started](https://simpleir.readthedocs.io/en/latest/get-started/)
 
 ## 主要维护人员
 

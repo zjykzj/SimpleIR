@@ -32,15 +32,15 @@
 
 ## Background
 
-...
+Since the traditional image processing, the field of image retrieval has been a research hotspot. Up to now, image retrieval algorithms based on deep learning have been continuously proposed. Although this field has developed for many years, there are still great barriers to research and practice. In order to better practice image retrieval algorithms, I developed this warehouse, hoping to better promote the landing and optimization of image retrieval algorithms.
 
 ## Installation
 
-...
+See [install](https://simpleir.readthedocs.io/en/latest/install/)
 
 ## Usage
 
-...
+See [Get Started](https://simpleir.readthedocs.io/en/latest/get-started/)
 
 ## Maintainers
 

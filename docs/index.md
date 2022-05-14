@@ -1,17 +1,27 @@
-# Welcome to MkDocs
+# SimpleIR
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+> A Simple Framework for Image Retrieval 
 
-## Commands
+## Manual
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+* [LeaderBoard](./LEADERBOARD.md)
 
 ## Project layout
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+    .
+    ├── CHANGE.md                 # Version description
+    ├── configs                   # Sample configuration file
+    ├── demo                      # Example projects
+    ├── docs                      # Operation document
+    ├── imgs                      # Common images
+    ├── LICENSE                   # License file
+    ├── mkdocs.yml                # Document configuration file
+    ├── README.md                 # Repository introduction (English version)
+    ├── README.zh-CN.md           # repository introduction (Chinese version)
+    ├── requirements.txt          # Build environment  
+    ├── setup.py                  # Pypi configuration file
+    ├── simpleir                  # SimpleIR implementation
+    ├── tests                     # Test files and scripts
+    ├── THANKS.md                 # Reference works and articles
+    └── tools                     # Training files and scripts
+

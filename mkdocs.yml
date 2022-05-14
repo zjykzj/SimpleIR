@@ -38,4 +38,6 @@ extra_javascript:
 # 导航
 nav:
     - Home: index.md
+    - Install: install.md
+    - Get started: get-started.md
     - LeaderBoard: LEADERBOARD.md

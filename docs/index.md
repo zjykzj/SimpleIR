@@ -4,6 +4,8 @@
 
 ## Manual
 
+* [Install](./install.md)
+* [Get Started](./get-started.md)
 * [LeaderBoard](./LEADERBOARD.md)
 
 ## Project layout

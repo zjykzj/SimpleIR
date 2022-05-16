@@ -10,8 +10,7 @@ from typing import List, Tuple
 
 import torch
 
-from .aggregator import do_aggregate
-from .enhancer import do_enhance
+from .feature.helper import FeatureHelper
 from .index.helper import IndexHelper
 
 
@@ -28,6 +27,7 @@ class MetricHelper:
         self.gallery_dict = dict()
         self.max_num = max_num
         self.top_k_list = top_k_list
+        self.feature = FeatureHelper()
         self.index = IndexHelper(distance_type=distance_type, top_k=self.top_k_list[-1],
                                  rank_type=rank_type, re_rank_type=re_rank_type)
 
@@ -36,11 +36,8 @@ class MetricHelper:
 
     def run(self, feats: torch.Tensor, targets: torch.Tensor,
             aggregate_type='identity', enhance_type='identity') -> List:
-        feats = do_aggregate(feats, aggregate_type=aggregate_type)
-        # Flatten the eigenvector into a one-dimensional vector
-        feats = feats.reshape(feats.shape[0], -1)
-        feats = do_enhance(feats, enhance_type=enhance_type)
-
+        feats = self.feature.run(feats, targets,
+                                 aggregate_type=aggregate_type, enhance_type=enhance_type)
         pred_top_k_list = self.index.run(feats, self.gallery_dict)
 
         top_k_similarity_list = [0 for _ in self.top_k_list]

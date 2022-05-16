@@ -39,7 +39,7 @@ class MetricHelper:
         feats = do_enhance(feats, enhance_type=enhance_type)
 
         pred_top_k_list = do_rank(feats, self.gallery_dict, distance_type=distance_type,
-                                  top_k=top_k_list[-1], rank_type=rank_type)
+                                  top_k=top_k_list[-1], rank_type=rank_type, re_rank_type=re_rank_type)
 
         top_k_similarity_list = [0 for _ in top_k_list]
         for idx, (feat, target) in enumerate(zip(feats, targets)):

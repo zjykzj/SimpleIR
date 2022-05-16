@@ -23,8 +23,10 @@ def add_custom_config(_C: CfgNode) -> None:
     _C.METRIC.ENHANCE_TYPE = 'identity'
     # distance type
     _C.METRIC.DISTANCE_TYPE = 'euclidean'
-    # sort type
+    # rank type
     _C.METRIC.RANK_TYPE = 'normal'
+    # re_rank type
+    _C.METRIC.RE_RANK_TYPE = 'identity'
 
 
 def get_cfg_defaults() -> CfgNode:

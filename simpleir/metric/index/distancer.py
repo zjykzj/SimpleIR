@@ -15,6 +15,13 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
+from enum import Enum
+
+
+class DistanceType(Enum):
+    EUCLIDEAN = 'EUCLIDEAN'
+    COSINE = 'COSINE'
+
 
 def euclidean_distance(query_feats: torch.Tensor, gallery_feats: torch.Tensor) -> torch.Tensor:
     """
@@ -53,12 +60,11 @@ def cosine_distance(query_feats: torch.Tensor, gallery_feats: torch.Tensor) -> t
     return 1 - similarity_matrix
 
 
-def do_distance(feat: torch.Tensor, gallery_dict: Dict, distance_type='euclidean') \
+def do_distance(feat: torch.Tensor, gallery_dict: Dict, distance_type: DistanceType = DistanceType.EUCLIDEAN) \
         -> Tuple[np.ndarray, List]:
     """
     Calculate distance (Euclidean distance / Cosine distance)
     """
-    assert distance_type in ['euclidean', 'cosine']
     if len(feat.shape) == 1:
         feat = feat.reshape(1, -1)
 
@@ -76,9 +82,9 @@ def do_distance(feat: torch.Tensor, gallery_dict: Dict, distance_type='euclidean
     if len(value_list) == 0:
         pass
     else:
-        if distance_type == 'euclidean':
+        if distance_type is DistanceType.EUCLIDEAN:
             distance_array = euclidean_distance(feat, torch.stack(value_list)).numpy()
-        elif distance_type == 'cosine':
+        elif distance_type is DistanceType.COSINE:
             distance_array = cosine_distance(feat, torch.stack(value_list)).numpy()
         else:
             raise ValueError(f'{distance_type} does not support')

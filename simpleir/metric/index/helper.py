@@ -10,6 +10,7 @@ from typing import Dict
 
 import torch
 
+from .distancer import DistanceType
 from .ranker import do_rank, do_re_rank
 
 
@@ -18,11 +19,11 @@ class IndexHelper:
     Object index. Including Rank and Re_Rank module
     """
 
-    def __init__(self, top_k: int = 10, distance_type='euclidean',
+    def __init__(self, top_k: int = 10, distance_type='EUCLIDEAN',
                  rank_type: str = 'normal', re_rank_type='identity') -> None:
         super().__init__()
 
-        self.distance_type = distance_type
+        self.distance_type = DistanceType[distance_type]
         self.top_k = top_k
         self.rank_type = rank_type
         self.re_rank_type = re_rank_type

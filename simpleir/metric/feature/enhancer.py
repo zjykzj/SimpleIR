@@ -13,8 +13,8 @@ from enum import Enum
 
 
 class EnhanceType(Enum):
-    IDENTITY = 'identity'
-    L2_NORM = "l2_norm"
+    IDENTITY = 'IDENTITY'
+    L2_NORM = "L2_NORM"
 
 
 def l2_norm(feats: torch.Tensor) -> torch.Tensor:

@@ -12,7 +12,7 @@ import torch
 
 import numpy as np
 
-from .distancer import do_distance
+from .distancer import do_distance, DistanceType
 from simpleir.utils.count import count_frequency_v3
 
 
@@ -77,7 +77,7 @@ def do_rank(feats: torch.Tensor, gallery_dict: Dict, distance_type='euclidean',
     return pred_top_k_list
 
 
-def do_re_rank(feats: torch.Tensor, gallery_dict: Dict, distance_type='euclidean',
+def do_re_rank(feats: torch.Tensor, gallery_dict: Dict, distance_type: DistanceType = DistanceType.EUCLIDEAN,
                top_k: int = 10, rank_type: str = 'normal', re_rank_type='identity'):
     distance_array, candidate_target_list = do_distance(feats, gallery_dict, distance_type=distance_type)
     if distance_array is None:

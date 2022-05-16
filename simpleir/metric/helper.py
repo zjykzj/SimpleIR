@@ -23,7 +23,7 @@ class MetricHelper:
                  max_num: int = 5,
                  top_k_list: Tuple = (1, 5),
                  aggregate_type='IDENTITY', enhance_type='IDENTITY',
-                 distance_type: str = 'euclidean', rank_type='normal', re_rank_type='identity') -> None:
+                 distance_type: str = 'EUCLIDEAN', rank_type='normal', re_rank_type='identity') -> None:
         super().__init__()
 
         # Feature set, each category saves N features, first in first out

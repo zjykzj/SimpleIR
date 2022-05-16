@@ -15,14 +15,16 @@ from .enhancer import do_enhance
 
 class FeatureHelper:
 
-    def __init__(self) -> None:
+    def __init__(self, aggregate_type='identity', enhance_type='identity') -> None:
         super().__init__()
 
-    def run(self, feats: torch.Tensor, targets: torch.Tensor,
-            aggregate_type='identity', enhance_type='identity'):
-        feats = do_aggregate(feats, aggregate_type=aggregate_type)
+        self.aggregate_type = aggregate_type
+        self.enhance_type = enhance_type
+
+    def run(self, feats: torch.Tensor):
+        feats = do_aggregate(feats, aggregate_type=self.aggregate_type)
         # Flatten the eigenvector into a one-dimensional vector
         feats = feats.reshape(feats.shape[0], -1)
-        feats = do_enhance(feats, enhance_type=enhance_type)
 
+        feats = do_enhance(feats, enhance_type=self.enhance_type)
         return feats

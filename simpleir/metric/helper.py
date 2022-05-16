@@ -19,7 +19,11 @@ class MetricHelper:
     Calculation accuracy. Based on distance measurement and rank
     """
 
-    def __init__(self, max_num: int = 5, top_k_list: Tuple = (1, 5), distance_type: str = 'euclidean',
+    def __init__(self,
+                 max_num: int = 5,
+                 aggregate_type='identity', enhance_type='identity',
+                 top_k_list: Tuple = (1, 5),
+                 distance_type: str = 'euclidean',
                  rank_type='normal', re_rank_type='identity') -> None:
         super().__init__()
 
@@ -27,17 +31,15 @@ class MetricHelper:
         self.gallery_dict = dict()
         self.max_num = max_num
         self.top_k_list = top_k_list
-        self.feature = FeatureHelper()
+        self.feature = FeatureHelper(aggregate_type=aggregate_type, enhance_type=enhance_type)
         self.index = IndexHelper(distance_type=distance_type, top_k=self.top_k_list[-1],
                                  rank_type=rank_type, re_rank_type=re_rank_type)
 
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
 
-    def run(self, feats: torch.Tensor, targets: torch.Tensor,
-            aggregate_type='identity', enhance_type='identity') -> List:
-        feats = self.feature.run(feats, targets,
-                                 aggregate_type=aggregate_type, enhance_type=enhance_type)
+    def run(self, feats: torch.Tensor, targets: torch.Tensor) -> List:
+        feats = self.feature.run(feats)
         pred_top_k_list = self.index.run(feats, self.gallery_dict)
 
         top_k_similarity_list = [0 for _ in self.top_k_list]

@@ -60,33 +60,20 @@ def cosine_distance(query_feats: torch.Tensor, gallery_feats: torch.Tensor) -> t
     return 1 - similarity_matrix
 
 
-def do_distance(feat: torch.Tensor, gallery_dict: Dict, distance_type: DistanceType = DistanceType.EUCLIDEAN) \
-        -> Tuple[np.ndarray, List]:
+def do_distance(query_feats: torch.Tensor, gallery_feats: torch.Tensor,
+                distance_type: DistanceType = DistanceType.EUCLIDEAN) \
+        -> np.ndarray:
     """
     Calculate distance (Euclidean distance / Cosine distance)
     """
-    if len(feat.shape) == 1:
-        feat = feat.reshape(1, -1)
+    if len(query_feats.shape) == 1:
+        query_feats = query_feats.reshape(1, -1)
 
-    distance_array = None
-    key_list = list()
-    value_list = list()
-
-    for idx, (key, values) in enumerate(gallery_dict.items()):
-        if len(values) == 0:
-            continue
-
-        key_list.extend([key for _ in range(len(values))])
-        value_list.extend(values)
-
-    if len(value_list) == 0:
-        pass
+    if distance_type is DistanceType.EUCLIDEAN:
+        distance_array = euclidean_distance(query_feats, gallery_feats).numpy()
+    elif distance_type is DistanceType.COSINE:
+        distance_array = cosine_distance(query_feats, gallery_feats).numpy()
     else:
-        if distance_type is DistanceType.EUCLIDEAN:
-            distance_array = euclidean_distance(feat, torch.stack(value_list)).numpy()
-        elif distance_type is DistanceType.COSINE:
-            distance_array = cosine_distance(feat, torch.stack(value_list)).numpy()
-        else:
-            raise ValueError(f'{distance_type} does not support')
+        raise ValueError(f'{distance_type} does not support')
 
-    return distance_array, key_list
+    return distance_array

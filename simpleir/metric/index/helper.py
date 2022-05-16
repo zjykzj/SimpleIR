@@ -10,7 +10,7 @@ from typing import Dict
 
 import torch
 
-from .distancer import DistanceType
+from .distancer import DistanceType, do_distance
 from .ranker import do_rank, do_re_rank, RankType, ReRankType
 
 
@@ -29,15 +29,29 @@ class IndexHelper:
         self.re_rank_type = ReRankType[re_rank_type]
 
     def run(self, feats: torch.Tensor, gallery_dict: Dict):
-        # rank
-        pred_top_k_list = do_rank(feats, gallery_dict,
-                                  distance_type=self.distance_type, top_k=self.top_k, rank_type=self.rank_type)
+        gallery_key_list = list()
+        gallery_value_list = list()
 
-        # re_rank
-        if self.re_rank_type == 'identity':
-            pass
-        else:
-            pred_top_k_list = do_re_rank(feats, gallery_dict, distance_type=self.distance_type,
-                                         top_k=self.top_k, rank_type=self.rank_type, re_rank_type=self.re_rank_type)
+        for idx, (key, values) in enumerate(gallery_dict.items()):
+            if len(values) == 0:
+                continue
+
+            gallery_key_list.extend([key for _ in range(len(values))])
+            gallery_value_list.extend(values)
+
+        pred_top_k_list = None
+        if len(gallery_value_list) != 0:
+            # distance
+            distance_array = do_distance(feats, torch.stack(gallery_value_list), distance_type=self.distance_type)
+
+            # rank
+            sort_array, pred_top_k_list = do_rank(distance_array, gallery_key_list, top_k=self.top_k,
+                                                  rank_type=self.rank_type)
+
+            # re_rank
+            if self.re_rank_type != 'identity':
+                pred_top_k_list = do_re_rank(feats.numpy(), torch.stack(gallery_value_list).numpy(),
+                                             gallery_key_list, sort_array,
+                                             top_k=self.top_k, rank_type=self.rank_type, re_rank_type=self.re_rank_type)
 
         return pred_top_k_list

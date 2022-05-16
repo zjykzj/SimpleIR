@@ -6,13 +6,12 @@
 @author: zj
 @description: 
 """
-from typing import Any, List, Dict
+from typing import Any, List
 
 import torch
 import numpy as np
 from enum import Enum
 
-from .distancer import do_distance, DistanceType
 from simpleir.utils.count import count_frequency_v3
 
 
@@ -26,13 +25,7 @@ class ReRankType(Enum):
     QE = 'QE'
 
 
-def normal_rank(distance_array: np.ndarray, candidate_target_list: List, top_k: int = 10) -> List:
-    if len(distance_array.shape) == 1:
-        distance_array = distance_array.reshape(1, -1)
-
-    # The more smaller distance, the more similar object
-    sort_array = np.argsort(distance_array, axis=1)
-
+def normal_rank(sort_array: np.ndarray, candidate_target_list: List, top_k: int = 10) -> List:
     pred_top_k_list = list()
     for sort_arr in sort_array:
         tmp_top_list = list(np.array(candidate_target_list)[sort_arr].astype(int))
@@ -48,13 +41,7 @@ def normal_rank(distance_array: np.ndarray, candidate_target_list: List, top_k: 
     return pred_top_k_list
 
 
-def knn_rank(distance_array: np.ndarray, candidate_target_list: List, top_k: int = 10) -> List:
-    if len(distance_array.shape) == 1:
-        distance_array = distance_array.reshape(1, -1)
-
-    # The more smaller distance, the more similar object
-    sort_array = np.argsort(distance_array, axis=1)
-
+def knn_rank(sort_array: np.ndarray, candidate_target_list: List, top_k: int = 10) -> List:
     # sqrt_len = int(np.sqrt(len(candidate_target_list)))
     pred_top_k_list = list()
     for sort_arr in sort_array:
@@ -71,83 +58,40 @@ def knn_rank(distance_array: np.ndarray, candidate_target_list: List, top_k: int
     return pred_top_k_list
 
 
-def do_rank(feats: torch.Tensor, gallery_dict: Dict, distance_type: DistanceType = DistanceType.EUCLIDEAN,
+def do_rank(distance_array: np.ndarray, gallery_targets: list,
             top_k: int = 10, rank_type: RankType = RankType.NORMAL) -> Any:
-    distance_array, candidate_target_list = do_distance(feats, gallery_dict, distance_type=distance_type)
-    if distance_array is None:
-        return None
+    if len(distance_array.shape) == 1:
+        distance_array = distance_array.reshape(1, -1)
+
+    # The more smaller distance, the more similar object
+    sort_array = np.argsort(distance_array, axis=1)
 
     if rank_type is RankType.NORMAL:
-        pred_top_k_list = normal_rank(distance_array, candidate_target_list, top_k)
+        pred_top_k_list = normal_rank(sort_array, gallery_targets, top_k)
     elif rank_type is RankType.KNN:
-        pred_top_k_list = knn_rank(distance_array, candidate_target_list, top_k)
+        pred_top_k_list = knn_rank(sort_array, gallery_targets, top_k)
     else:
         raise ValueError(f'{rank_type} does not support')
 
-    return pred_top_k_list
+    return sort_array, pred_top_k_list
 
 
-def do_re_rank(feats: torch.Tensor, gallery_dict: Dict, distance_type: DistanceType = DistanceType.EUCLIDEAN,
+def do_re_rank(query_feats: np.ndarray, gallery_feats: np.ndarray, gallery_targets: list, sort_array: np.ndarray,
                top_k: int = 10, rank_type: RankType = RankType.NORMAL, re_rank_type: ReRankType = ReRankType.IDENTITY):
-    distance_array, candidate_target_list = do_distance(feats, gallery_dict, distance_type=distance_type)
-    if distance_array is None:
-        return None
-
     pred_top_k_list = list()
     if re_rank_type is ReRankType.IDENTITY:
         pass
     elif re_rank_type is ReRankType.QE:
-        # The more smaller distance, the more similar object
-        sort_array = np.argsort(distance_array, axis=1)
-        gallery_fea = list()
-        for key, values in gallery_dict.items():
-            if len(values) == 0:
-                continue
-            gallery_fea.extend(values)
-        gallery_fea = torch.stack(gallery_fea).numpy()
-
-        # sorted_index = np.array(sort_array)[:, :10]
         sorted_index = np.array(sort_array)[:, :2]
-        # sorted_index = np.array(sort_array)[:, :3]
-        # sorted_index = np.array(sort_array)[:, :5]
         sorted_index = np.array(sorted_index).reshape(-1)
-        # requery_fea = gallery_fea[sorted_index].reshape(feats.shape[0], -1, feats.shape[1]).sum(dim=1)
-        requery_fea = gallery_fea[sorted_index].reshape(feats.shape[0], -1, feats.shape[1]).sum(axis=1)
-        requery_fea = requery_fea + feats.numpy()
-        query_fea = requery_fea
-        # query_fea = requery_fea / (10 + 1)
-        # query_fea = requery_fea / (5 + 1)
-
-        # 10
-        # 不取平均
-        # Prec@1 42.871 Prec@3 61.019 Prec@5 67.274 Prec@10 73.043
-        # Prec@1 42.403 Prec@3 57.952 Prec@5 65.750 Prec@10 75.344
-        # 取平均
-        # Prec@1 42.403 Prec@3 57.952 Prec@5 65.750 Prec@10 75.344
-
-        # 5
-        # cosine top=5
-        # 不取平均
-        # Prec@1 45.414 Prec@3 60.561 Prec@5 68.387 Prec@10 74.783
-        # 取平均
-        # Prec@1 45.423 Prec@3 60.561 Prec@5 68.396 Prec@10 74.773
-
-        # 2
-        # cosine top=5
-        #
-        # Prec@1 47.246 Prec@3 61.178 Prec@5 65.750 Prec@10 73.193
+        requery_feats = gallery_feats[sorted_index].reshape(query_feats.shape[0], -1, query_feats.shape[1]).sum(axis=1)
+        requery_feats = requery_feats + query_feats
+        query_feats = requery_feats
 
         from .distancer import cosine_distance
-        distance_array = cosine_distance(torch.from_numpy(query_fea), torch.from_numpy(gallery_fea)).numpy()
-        if distance_array is None:
-            return None
+        distance_array = cosine_distance(torch.from_numpy(query_feats), torch.from_numpy(gallery_feats)).numpy()
 
-        if rank_type is RankType.NORMAL:
-            pred_top_k_list = normal_rank(distance_array, candidate_target_list, top_k)
-        elif rank_type is RankType.KNN:
-            pred_top_k_list = knn_rank(distance_array, candidate_target_list, top_k)
-        else:
-            raise ValueError(f'{rank_type} does not support')
+        sort_array, pred_top_k_list = do_rank(distance_array, gallery_targets, top_k=top_k, rank_type=rank_type)
     else:
         raise ValueError(f'{re_rank_type} does not support')
 

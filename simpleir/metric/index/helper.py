@@ -15,11 +15,11 @@ from .ranker import do_rank, do_re_rank
 
 class IndexHelper:
     """
-    object index. Including Rank and Re_Rank module
+    Object index. Including Rank and Re_Rank module
     """
 
-    def __init__(self, distance_type='euclidean', top_k: int = 10, rank_type: str = 'normal',
-                 re_rank_type='identity') -> None:
+    def __init__(self, top_k: int = 10, distance_type='euclidean',
+                 rank_type: str = 'normal', re_rank_type='identity') -> None:
         super().__init__()
 
         self.distance_type = distance_type

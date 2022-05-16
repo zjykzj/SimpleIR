@@ -7,9 +7,20 @@
 @description: 
 """
 import torch
+from enum import Enum
 
 from .aggregate.r_mac import get_regions
 from .aggregate.spoc import get_spatial_weight
+
+
+class AggregateType(Enum):
+    IDENTITY = "IDENTITY"
+    GAP = 'GAP'
+    GMP = 'GMP'
+    GEM = 'GEM'
+    R_MAC = 'R_MAC'
+    SPOC = 'SPOC'
+    CROW = 'CROW'
 
 
 def gap(feats: torch.Tensor) -> torch.Tensor:
@@ -117,25 +128,23 @@ def crow(feats: torch.Tensor, spatial_a: float = 2.0, spatial_b: float = 2.0) ->
     return feats
 
 
-def do_aggregate(feats: torch.Tensor, aggregate_type='identity') -> torch.Tensor:
+def do_aggregate(feats: torch.Tensor, aggregate_type: AggregateType = AggregateType.IDENTITY) -> torch.Tensor:
     """
     Feature aggregate. Specifically for conv features
     """
-    assert aggregate_type in ['identity', 'gap', 'gmp', 'gem', 'r_mac', 'spoc', 'crow']
-
-    if aggregate_type == 'identity':
+    if aggregate_type is AggregateType.IDENTITY:
         return feats
-    elif aggregate_type == 'gap':
+    elif aggregate_type is AggregateType.GAP:
         return gap(feats)
-    elif aggregate_type == 'gmp':
+    elif aggregate_type is AggregateType.GMP:
         return gmp(feats)
-    elif aggregate_type == 'gem':
+    elif aggregate_type is AggregateType.GEM:
         return gem(feats)
-    elif aggregate_type == 'r_mac':
+    elif aggregate_type is AggregateType.R_MAC:
         return r_mac(feats)
-    elif aggregate_type == 'spoc':
+    elif aggregate_type is AggregateType.SPOC:
         return spoc(feats)
-    elif aggregate_type == 'crow':
+    elif aggregate_type is AggregateType.CROW:
         return crow(feats)
     else:
         raise ValueError(f'{aggregate_type} does not support')

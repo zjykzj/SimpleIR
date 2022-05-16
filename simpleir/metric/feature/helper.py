@@ -9,16 +9,19 @@
 
 import torch
 
-from .aggregator import do_aggregate
+from .aggregator import do_aggregate, AggregateType
 from .enhancer import do_enhance
 
 
 class FeatureHelper:
+    """
+    Feature enhancement
+    """
 
-    def __init__(self, aggregate_type='identity', enhance_type='identity') -> None:
+    def __init__(self, aggregate_type='identity', enhance_type='IDENTITY') -> None:
         super().__init__()
 
-        self.aggregate_type = aggregate_type
+        self.aggregate_type = AggregateType[aggregate_type]
         self.enhance_type = enhance_type
 
     def run(self, feats: torch.Tensor):

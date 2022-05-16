@@ -21,10 +21,9 @@ class MetricHelper:
 
     def __init__(self,
                  max_num: int = 5,
-                 aggregate_type='identity', enhance_type='identity',
                  top_k_list: Tuple = (1, 5),
-                 distance_type: str = 'euclidean',
-                 rank_type='normal', re_rank_type='identity') -> None:
+                 aggregate_type='identity', enhance_type='IDENTITY',
+                 distance_type: str = 'euclidean', rank_type='normal', re_rank_type='identity') -> None:
         super().__init__()
 
         # Feature set, each category saves N features, first in first out
@@ -32,7 +31,7 @@ class MetricHelper:
         self.max_num = max_num
         self.top_k_list = top_k_list
         self.feature = FeatureHelper(aggregate_type=aggregate_type, enhance_type=enhance_type)
-        self.index = IndexHelper(distance_type=distance_type, top_k=self.top_k_list[-1],
+        self.index = IndexHelper(top_k=self.top_k_list[-1], distance_type=distance_type,
                                  rank_type=rank_type, re_rank_type=re_rank_type)
 
     def __call__(self, *args, **kwargs):

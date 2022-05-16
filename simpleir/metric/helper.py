@@ -12,7 +12,7 @@ import torch
 
 from .aggregator import do_aggregate
 from .enhancer import do_enhance
-from .ranker import do_rank
+from .index.helper import IndexHelper
 
 
 class MetricHelper:
@@ -26,6 +26,7 @@ class MetricHelper:
         # Feature set, each category saves N features, first in first out
         self.gallery_dict = dict()
         self.max_num = max_num
+        self.index = IndexHelper()
 
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
@@ -38,8 +39,8 @@ class MetricHelper:
         feats = feats.reshape(feats.shape[0], -1)
         feats = do_enhance(feats, enhance_type=enhance_type)
 
-        pred_top_k_list = do_rank(feats, self.gallery_dict, distance_type=distance_type,
-                                  top_k=top_k_list[-1], rank_type=rank_type, re_rank_type=re_rank_type)
+        pred_top_k_list = self.index.run(feats, self.gallery_dict, distance_type=distance_type,
+                                         top_k=top_k_list[-1], rank_type=rank_type, re_rank_type=re_rank_type)
 
         top_k_similarity_list = [0 for _ in top_k_list]
         for idx, (feat, target) in enumerate(zip(feats, targets)):

@@ -26,6 +26,7 @@ class FeatureHelper:
 
     def run(self, feats: torch.Tensor):
         feats = do_aggregate(feats, aggregate_type=self.aggregate_type)
+
         # Flatten the eigenvector into a one-dimensional vector
         feats = feats.reshape(feats.shape[0], -1)
 

@@ -16,7 +16,7 @@ from .index.helper import IndexHelper
 
 class MetricHelper:
     """
-    Calculation accuracy. Based on distance measurement and rank
+    Calculation accuracy. 
     """
 
     def __init__(self,
@@ -25,12 +25,14 @@ class MetricHelper:
                  aggregate_type='IDENTITY', enhance_type='IDENTITY',
                  distance_type: str = 'EUCLIDEAN', rank_type='NORMAL', re_rank_type='IDENTITY') -> None:
         super().__init__()
+        self.max_num = max_num
+        self.top_k_list = top_k_list
 
         # Feature set, each category saves N features, first in first out
         self.gallery_dict = dict()
-        self.max_num = max_num
-        self.top_k_list = top_k_list
+
         self.feature = FeatureHelper(aggregate_type=aggregate_type, enhance_type=enhance_type)
+        assert len(top_k_list) >= 1
         self.index = IndexHelper(top_k=self.top_k_list[-1], distance_type=distance_type,
                                  rank_type=rank_type, re_rank_type=re_rank_type)
 

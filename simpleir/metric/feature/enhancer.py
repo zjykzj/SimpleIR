@@ -10,18 +10,12 @@
 import torch
 
 from enum import Enum
+from simpleir.utils.norm import l2_norm
 
 
 class EnhanceType(Enum):
     IDENTITY = 'IDENTITY'
     L2_NORM = "L2_NORM"
-
-
-def l2_norm(feats: torch.Tensor) -> torch.Tensor:
-    if len(feats.shape) == 1:
-        feats = feats.reshape(1, -1)
-
-    return feats / torch.norm(feats, dim=1, keepdim=True)
 
 
 def do_enhance(feats: torch.Tensor, enhance_type: EnhanceType = EnhanceType.IDENTITY) -> torch.Tensor:

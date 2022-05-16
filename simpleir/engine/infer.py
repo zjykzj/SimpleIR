@@ -39,11 +39,12 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
 
     end = time.time()
 
-    metric = MetricHelper(cfg.METRIC.MAX_CATE_NUM)
     aggregate_type = cfg.METRIC.AGGREGATE_TYPE
     distance_type = cfg.METRIC.DISTANCE_TYPE
     rank_type = cfg.METRIC.RANK_TYPE
     re_rank_type = cfg.METRIC.RE_RANK_TYPE
+    metric = MetricHelper(cfg.METRIC.MAX_CATE_NUM, top_k_list=top_k, distance_type=distance_type,
+                          rank_type=rank_type, re_rank_type=re_rank_type)
 
     prefetcher = data_prefetcher(cfg, val_loader)
     input, target = prefetcher.next()
@@ -59,9 +60,7 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
         # measure accuracy and record loss
         # prec_list = metric.run(output[KEY_FEAT].detach().cpu().numpy(), target.detach().cpu().numpy(),
         prec_list = metric.run(output[KEY_FEAT].detach().cpu(), target.detach().cpu(),
-                               top_k_list=top_k,
-                               aggregate_type=aggregate_type, distance_type=distance_type,
-                               rank_type=rank_type, re_rank_type=re_rank_type)
+                               aggregate_type=aggregate_type)
 
         reduced_loss = loss.data
 

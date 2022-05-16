@@ -20,29 +20,30 @@ class MetricHelper:
     Calculation accuracy. Based on distance measurement and rank
     """
 
-    def __init__(self, max_num: int = 5) -> None:
+    def __init__(self, max_num: int = 5, top_k_list: Tuple = (1, 5), distance_type: str = 'euclidean',
+                 rank_type='normal', re_rank_type='identity') -> None:
         super().__init__()
 
         # Feature set, each category saves N features, first in first out
         self.gallery_dict = dict()
         self.max_num = max_num
-        self.index = IndexHelper()
+        self.top_k_list = top_k_list
+        self.index = IndexHelper(distance_type=distance_type, top_k=self.top_k_list[-1],
+                                 rank_type=rank_type, re_rank_type=re_rank_type)
 
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
 
-    def run(self, feats: torch.Tensor, targets: torch.Tensor, top_k_list: Tuple = (1, 5),
-            aggregate_type='identity', enhance_type='identity', distance_type: str = 'euclidean',
-            rank_type='normal', re_rank_type='identity') -> List:
+    def run(self, feats: torch.Tensor, targets: torch.Tensor,
+            aggregate_type='identity', enhance_type='identity') -> List:
         feats = do_aggregate(feats, aggregate_type=aggregate_type)
         # Flatten the eigenvector into a one-dimensional vector
         feats = feats.reshape(feats.shape[0], -1)
         feats = do_enhance(feats, enhance_type=enhance_type)
 
-        pred_top_k_list = self.index.run(feats, self.gallery_dict, distance_type=distance_type,
-                                         top_k=top_k_list[-1], rank_type=rank_type, re_rank_type=re_rank_type)
+        pred_top_k_list = self.index.run(feats, self.gallery_dict)
 
-        top_k_similarity_list = [0 for _ in top_k_list]
+        top_k_similarity_list = [0 for _ in self.top_k_list]
         for idx, (feat, target) in enumerate(zip(feats, targets)):
             truth_key = int(target)
             if pred_top_k_list is None:
@@ -50,7 +51,7 @@ class MetricHelper:
             else:
                 sorted_list = pred_top_k_list[idx]
 
-                for i, k in enumerate(top_k_list):
+                for i, k in enumerate(self.top_k_list):
                     if truth_key in sorted_list[:k]:
                         top_k_similarity_list[i] += 1
 

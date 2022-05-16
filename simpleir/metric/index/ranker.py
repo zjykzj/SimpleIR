@@ -9,11 +9,21 @@
 from typing import Any, List, Dict
 
 import torch
-
 import numpy as np
+from enum import Enum
 
 from .distancer import do_distance, DistanceType
 from simpleir.utils.count import count_frequency_v3
+
+
+class RankType(Enum):
+    NORMAL = 'NORMAL'
+    KNN = 'KNN'
+
+
+class ReRankType(Enum):
+    IDENTITY = "IDENTITY"
+    QE = 'QE'
 
 
 def normal_rank(distance_array: np.ndarray, candidate_target_list: List, top_k: int = 10) -> List:
@@ -61,15 +71,15 @@ def knn_rank(distance_array: np.ndarray, candidate_target_list: List, top_k: int
     return pred_top_k_list
 
 
-def do_rank(feats: torch.Tensor, gallery_dict: Dict, distance_type='euclidean',
-            top_k: int = 10, rank_type: str = 'normal') -> Any:
+def do_rank(feats: torch.Tensor, gallery_dict: Dict, distance_type: DistanceType = DistanceType.EUCLIDEAN,
+            top_k: int = 10, rank_type: RankType = RankType.NORMAL) -> Any:
     distance_array, candidate_target_list = do_distance(feats, gallery_dict, distance_type=distance_type)
     if distance_array is None:
         return None
 
-    if rank_type == 'normal':
+    if rank_type is RankType.NORMAL:
         pred_top_k_list = normal_rank(distance_array, candidate_target_list, top_k)
-    elif rank_type == 'knn':
+    elif rank_type is RankType.KNN:
         pred_top_k_list = knn_rank(distance_array, candidate_target_list, top_k)
     else:
         raise ValueError(f'{rank_type} does not support')
@@ -78,15 +88,15 @@ def do_rank(feats: torch.Tensor, gallery_dict: Dict, distance_type='euclidean',
 
 
 def do_re_rank(feats: torch.Tensor, gallery_dict: Dict, distance_type: DistanceType = DistanceType.EUCLIDEAN,
-               top_k: int = 10, rank_type: str = 'normal', re_rank_type='identity'):
+               top_k: int = 10, rank_type: RankType = RankType.NORMAL, re_rank_type: ReRankType = ReRankType.IDENTITY):
     distance_array, candidate_target_list = do_distance(feats, gallery_dict, distance_type=distance_type)
     if distance_array is None:
         return None
 
     pred_top_k_list = list()
-    if re_rank_type == 'identity':
+    if re_rank_type is ReRankType.IDENTITY:
         pass
-    elif re_rank_type == 'qe':
+    elif re_rank_type is ReRankType.QE:
         # The more smaller distance, the more similar object
         sort_array = np.argsort(distance_array, axis=1)
         gallery_fea = list()
@@ -132,9 +142,9 @@ def do_re_rank(feats: torch.Tensor, gallery_dict: Dict, distance_type: DistanceT
         if distance_array is None:
             return None
 
-        if rank_type == 'normal':
+        if rank_type is RankType.NORMAL:
             pred_top_k_list = normal_rank(distance_array, candidate_target_list, top_k)
-        elif rank_type == 'knn':
+        elif rank_type is RankType.KNN:
             pred_top_k_list = knn_rank(distance_array, candidate_target_list, top_k)
         else:
             raise ValueError(f'{rank_type} does not support')

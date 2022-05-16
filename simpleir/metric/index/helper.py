@@ -11,7 +11,7 @@ from typing import Dict
 import torch
 
 from .distancer import DistanceType
-from .ranker import do_rank, do_re_rank
+from .ranker import do_rank, do_re_rank, RankType, ReRankType
 
 
 class IndexHelper:
@@ -20,13 +20,13 @@ class IndexHelper:
     """
 
     def __init__(self, top_k: int = 10, distance_type='EUCLIDEAN',
-                 rank_type: str = 'normal', re_rank_type='identity') -> None:
+                 rank_type: str = 'NORMAL', re_rank_type='IDENTITY') -> None:
         super().__init__()
 
         self.distance_type = DistanceType[distance_type]
         self.top_k = top_k
-        self.rank_type = rank_type
-        self.re_rank_type = re_rank_type
+        self.rank_type = RankType[rank_type]
+        self.re_rank_type = ReRankType[re_rank_type]
 
     def run(self, feats: torch.Tensor, gallery_dict: Dict):
         # rank

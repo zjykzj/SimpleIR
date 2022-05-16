@@ -18,15 +18,15 @@ def add_custom_config(_C: CfgNode) -> None:
     # feat type
     _C.METRIC.FEAT_TYPE = 'avgpool'
     # aggregate type
-    _C.METRIC.AGGREGATE_TYPE = 'identity'
+    _C.METRIC.AGGREGATE_TYPE = 'IDENTITY'
     # enhance type
-    _C.METRIC.ENHANCE_TYPE = 'identity'
+    _C.METRIC.ENHANCE_TYPE = 'IDENTITY'
     # distance type
-    _C.METRIC.DISTANCE_TYPE = 'euclidean'
+    _C.METRIC.DISTANCE_TYPE = 'EUCLIDEAN'
     # rank type
-    _C.METRIC.RANK_TYPE = 'normal'
+    _C.METRIC.RANK_TYPE = 'NORMAL'
     # re_rank type
-    _C.METRIC.RE_RANK_TYPE = 'identity'
+    _C.METRIC.RE_RANK_TYPE = 'IDENTITY'
 
 
 def get_cfg_defaults() -> CfgNode:

@@ -1,6 +1,21 @@
 
 # CHANGE
 
+## v0.6.0
+
+* New features
+  1. feat(metric): add RankType and ReRankType for ranker. [dcbeae6b2](https://github.com/zjykzj/SimpleIR/tree/dcbeae6b2a92fc9f15223a82164bae837d4fcd8f)
+  2. feat(metric): add Enum DistanceType for distancer. [506092e03](https://github.com/zjykzj/SimpleIR/tree/506092e034ea9172686f048b42f94c1700f37012)
+  3. feat(metric): add Enum EnhanceType for enhancer. [00172cd15d9](https://github.com/zjykzj/SimpleIR/tree/00172cd15d9ce2dc029b111414c20117485ee8c4)
+  4. feat(metric): add Enum AggregateType for aggregator. [2f2696f4e](https://github.com/zjykzj/SimpleIR/tree/2f2696f4e1b4d5187948aaefb1a7a2986a438102)
+  5. feat(metric): update Feature module use. [a205c84](https://github.com/zjykzj/SimpleIR/tree/a205c8473e90ce8f7ded8eabae2efd9535c0a2ba)
+  6. feat(metric): create Feature module, including Aggregate and Enhance module. [0b9dafe55](https://github.com/zjykzj/SimpleIR/tree/0b9dafe555dfd3ecc5d5f23111a695f2395b85ab)
+  7. feat(metric): create Index module, including rank and re_rank. [8503922f9](https://github.com/zjykzj/SimpleIR/tree/8503922f92b6326a9f0523794a4025750d350570)
+  8. feat(metric): add ReRank module. [7c50ee](https://github.com/zjykzj/SimpleIR/tree/7c50ee31ddd41b6167cf3333b737b91bbeddc164)
+  9. feat(mkdocs): init. [bc169e7dbb](https://github.com/zjykzj/SimpleIR/tree/bc169e7dbbfd5aabcaa92dc505f2fbcb735e78c0)
+* Bug fixes
+* Breaking changes
+
 ## v0.5.3
 
 * New features

@@ -10,7 +10,7 @@
 import torch
 
 from .aggregator import do_aggregate, AggregateType
-from .enhancer import do_enhance
+from .enhancer import do_enhance, EnhanceType
 
 
 class FeatureHelper:
@@ -18,11 +18,11 @@ class FeatureHelper:
     Feature enhancement
     """
 
-    def __init__(self, aggregate_type='identity', enhance_type='IDENTITY') -> None:
+    def __init__(self, aggregate_type='IDENTITY', enhance_type='IDENTITY') -> None:
         super().__init__()
 
         self.aggregate_type = AggregateType[aggregate_type]
-        self.enhance_type = enhance_type
+        self.enhance_type = EnhanceType[enhance_type]
 
     def run(self, feats: torch.Tensor):
         feats = do_aggregate(feats, aggregate_type=self.aggregate_type)

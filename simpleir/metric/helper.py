@@ -22,7 +22,7 @@ class MetricHelper:
     def __init__(self,
                  max_num: int = 5,
                  top_k_list: Tuple = (1, 5),
-                 aggregate_type='identity', enhance_type='IDENTITY',
+                 aggregate_type='IDENTITY', enhance_type='IDENTITY',
                  distance_type: str = 'euclidean', rank_type='normal', re_rank_type='identity') -> None:
         super().__init__()
 

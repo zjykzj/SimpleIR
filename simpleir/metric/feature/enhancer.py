@@ -6,7 +6,15 @@
 @author: zj
 @description: 
 """
+
 import torch
+
+from enum import Enum
+
+
+class EnhanceType(Enum):
+    IDENTITY = 'identity'
+    L2_NORM = "l2_norm"
 
 
 def l2_norm(feats: torch.Tensor) -> torch.Tensor:
@@ -16,15 +24,13 @@ def l2_norm(feats: torch.Tensor) -> torch.Tensor:
     return feats / torch.norm(feats, dim=1, keepdim=True)
 
 
-def do_enhance(feats: torch.Tensor, enhance_type='identity') -> torch.Tensor:
+def do_enhance(feats: torch.Tensor, enhance_type: EnhanceType = EnhanceType.IDENTITY) -> torch.Tensor:
     """
     Feature enhancement
     """
-    assert enhance_type in ['identity', 'l2-norm']
-
-    if enhance_type == 'identity':
+    if enhance_type is EnhanceType.IDENTITY:
         return feats
-    elif enhance_type == 'l2-norm':
+    elif enhance_type is EnhanceType.L2_NORM:
         return l2_norm(feats)
     else:
         raise ValueError(f'{enhance_type} does not support')

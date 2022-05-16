@@ -11,7 +11,8 @@ from typing import Dict
 import torch
 
 from .distancer import DistanceType, do_distance
-from .ranker import do_rank, do_re_rank, RankType, ReRankType
+from .ranker import do_rank, RankType
+from .re_ranker import do_re_rank, ReRankType
 
 
 class IndexHelper:
@@ -50,8 +51,9 @@ class IndexHelper:
 
             # re_rank
             if self.re_rank_type != 'identity':
-                pred_top_k_list = do_re_rank(feats.numpy(), torch.stack(gallery_value_list).numpy(),
-                                             gallery_key_list, sort_array,
-                                             top_k=self.top_k, rank_type=self.rank_type, re_rank_type=self.re_rank_type)
+                sort_array, pred_top_k_list = do_re_rank(feats.numpy(), torch.stack(gallery_value_list).numpy(),
+                                                         gallery_key_list, sort_array,
+                                                         top_k=self.top_k, rank_type=self.rank_type,
+                                                         re_rank_type=self.re_rank_type)
 
         return pred_top_k_list

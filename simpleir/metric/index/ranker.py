@@ -20,15 +20,12 @@ class RankType(Enum):
     KNN = 'KNN'
 
 
-class ReRankType(Enum):
-    IDENTITY = "IDENTITY"
-    QE = 'QE'
 
 
-def normal_rank(sort_array: np.ndarray, candidate_target_list: List, top_k: int = 10) -> List:
+def normal_rank(sort_array: np.ndarray, gallery_targets: List, top_k: int = 10) -> List:
     pred_top_k_list = list()
     for sort_arr in sort_array:
-        tmp_top_list = list(np.array(candidate_target_list)[sort_arr].astype(int))
+        tmp_top_list = list(np.array(gallery_targets)[sort_arr].astype(int))
 
         # Returns only the sort results needed to calculate the hit rate
         top_list = [-1 for _ in range(top_k)]
@@ -41,12 +38,12 @@ def normal_rank(sort_array: np.ndarray, candidate_target_list: List, top_k: int 
     return pred_top_k_list
 
 
-def knn_rank(sort_array: np.ndarray, candidate_target_list: List, top_k: int = 10) -> List:
+def knn_rank(sort_array: np.ndarray, gallery_targets: List, top_k: int = 10) -> List:
     # sqrt_len = int(np.sqrt(len(candidate_target_list)))
     pred_top_k_list = list()
     for sort_arr in sort_array:
         tmp_top_list = count_frequency_v3(
-            list(np.array(candidate_target_list)[sort_arr].astype(int))[:top_k])
+            list(np.array(gallery_targets)[sort_arr].astype(int))[:top_k])
 
         top_list = [-1 for _ in range(top_k)]
         if len(tmp_top_list) < top_k:
@@ -76,23 +73,3 @@ def do_rank(distance_array: np.ndarray, gallery_targets: list,
     return sort_array, pred_top_k_list
 
 
-def do_re_rank(query_feats: np.ndarray, gallery_feats: np.ndarray, gallery_targets: list, sort_array: np.ndarray,
-               top_k: int = 10, rank_type: RankType = RankType.NORMAL, re_rank_type: ReRankType = ReRankType.IDENTITY):
-    pred_top_k_list = list()
-    if re_rank_type is ReRankType.IDENTITY:
-        pass
-    elif re_rank_type is ReRankType.QE:
-        sorted_index = np.array(sort_array)[:, :2]
-        sorted_index = np.array(sorted_index).reshape(-1)
-        requery_feats = gallery_feats[sorted_index].reshape(query_feats.shape[0], -1, query_feats.shape[1]).sum(axis=1)
-        requery_feats = requery_feats + query_feats
-        query_feats = requery_feats
-
-        from .distancer import cosine_distance
-        distance_array = cosine_distance(torch.from_numpy(query_feats), torch.from_numpy(gallery_feats)).numpy()
-
-        sort_array, pred_top_k_list = do_rank(distance_array, gallery_targets, top_k=top_k, rank_type=rank_type)
-    else:
-        raise ValueError(f'{re_rank_type} does not support')
-
-    return pred_top_k_list

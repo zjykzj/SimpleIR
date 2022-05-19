@@ -11,4 +11,4 @@ torch ~= 1.12.0a0+2c916ef
 torchvision ~= 0.13.0a0
 tqdm ~= 4.63.0
 yacs ~= 0.1.8
-zcls2 ~= 0.4.1
+zcls2 ~= 0.4.2

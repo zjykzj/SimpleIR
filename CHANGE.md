@@ -1,6 +1,14 @@
 
 # CHANGE
 
+## v0.6.1
+
+* New features
+  1. build(python): upgrade zcls2 ~= 0.4.1 to zcls2 ~= 0.4.2. [ec055010d](https://github.com/zjykzj/SimpleIR/tree/ec055010d88f7dac8ac68ceefae79919ddf45f87)
+  2. refactor(configs): update NORMALIZE usage. [0e65e2540a0](https://github.com/zjykzj/SimpleIR/tree/0e65e2540a00da1e8167644f394e2eefbf03a209)
+* Bug fixes
+* Breaking changes
+
 ## v0.6.0
 
 * New features

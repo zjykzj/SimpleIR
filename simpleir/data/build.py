@@ -13,10 +13,10 @@ from yacs.config import CfgNode
 from torch.utils.data import IterableDataset, DataLoader, Sampler
 
 from zcls2.data.transform.build import build_transform
-from zcls2.data.dataset.build import build_dataset
 from zcls2.data.sampler.build import build_sampler
 
 from .dataloader.build import build_dataloader
+from .dataset.build import build_dataset
 
 
 def build_data(cfg: CfgNode) -> Tuple[Sampler, DataLoader, DataLoader]:

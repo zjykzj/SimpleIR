@@ -15,17 +15,15 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from yacs.config import CfgNode
-# from zcls2.config.key_word import KEY_OUTPUT
 from zcls2.util import logging
-# from zcls2.util.distributed import reduce_tensor
 from zcls2.util.meter import AverageMeter
 from zcls2.util.misc import to_python_float
-from zcls2.util.prefetcher import data_prefetcher
 
 logger = logging.get_logger(__name__)
 
 from simpleir.configs.key_words import KEY_FEAT
 from simpleir.metric.helper import MetricHelper
+from simpleir.utils.prefetcher import data_prefetcher
 
 
 def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: nn.Module) -> List:
@@ -48,7 +46,7 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
                           rank_type=rank_type, re_rank_type=re_rank_type)
 
     prefetcher = data_prefetcher(cfg, val_loader)
-    input, target = prefetcher.next()
+    input, target, paths = prefetcher.next()
     i = 0
     while input is not None:
         i += 1
@@ -87,7 +85,7 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
                 logger_str += f'Prec@{k} {top.val:.3f} ({top.avg:.3f}) '
             logger.info(logger_str)
 
-        input, target = prefetcher.next()
+        input, target, paths = prefetcher.next()
 
     metric.clear()
 

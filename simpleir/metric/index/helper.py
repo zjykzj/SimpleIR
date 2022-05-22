@@ -29,6 +29,8 @@ class IndexHelper:
         self.rank_type = RankType[rank_type]
         self.re_rank_type = ReRankType[re_rank_type]
 
+        self.is_re_rank = re_rank_type != 'IDENTITY'
+
     def run(self, feats: torch.Tensor, gallery_dict: Dict):
         gallery_key_list = list()
         gallery_value_list = list()
@@ -50,7 +52,7 @@ class IndexHelper:
                                                   rank_type=self.rank_type)
 
             # re_rank
-            if self.re_rank_type != 'identity':
+            if self.is_re_rank:
                 sort_array, pred_top_k_list = do_re_rank(feats.numpy(), torch.stack(gallery_value_list).numpy(),
                                                          gallery_key_list, sort_array,
                                                          top_k=self.top_k, rank_type=self.rank_type,

@@ -1,6 +1,16 @@
 
 # CHANGE
 
+## v0.6.2
+
+* New features
+  1. build(python): upgrade zcls2 ~= 0.4.2 to zcls2 ~= 0.4.3. [068f4b2b](https://github.com/zjykzj/SimpleIR/tree/068f4b2b0cab72646c788081a691cc50f135b80e)
+  2. feat(data): for INFER stage, always get (image, target, img_path). [cf994b4de5](https://github.com/zjykzj/SimpleIR/tree/cf994b4de56d688fa09219b4f39d4305e3cb3322)
+* Bug fixes
+  1. fix(configs): fix NORMALIZE use. [61422de5c](https://github.com/zjykzj/SimpleIR/tree/61422de5c584f89463c4d6749a99a30a43548b23)
+  2. fix(index): error skipping rank/re_rank stage. [c21bfca](https://github.com/zjykzj/SimpleIR/tree/c21bfca3cac21f96b4c06be53923ced9ff45c7ca)
+* Breaking changes
+
 ## v0.6.1
 
 * New features

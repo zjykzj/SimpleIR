@@ -1,6 +1,18 @@
 
 # CHANGE
 
+## v0.6.3
+
+* New features
+  1. perf(infer.py): use cfg.METRIC.ENHANCE_TYPE. [a19a90641fac](https://github.com/zjykzj/SimpleIR/tree/a19a90641faceba406cce95f40b0ea7f01d7780b)
+  2. perf(make_query_gallery_set.py): support GeneralSplitter. [b03350008](https://github.com/zjykzj/SimpleIR/tree/b03350008d822d691acfb6beb7ca511fb5a27366)
+  3. feat(split): add GeneralSplitter. [ae5c0b0cc](https://github.com/zjykzj/SimpleIR/tree/ae5c0b0cc9c044280be4197e98e01bb7f154ed6b)
+  4. perf(extract): update Extract Features module use. [cdff10f](https://github.com/zjykzj/SimpleIR/tree/cdff10fd4e7b4af03f37f9cc32e68c411b0f7682)
+  5. perf(dataset): add w_path support. [42f696be](https://github.com/zjykzj/SimpleIR/tree/42f696be1e3e6c10b38d0e2d61397b592668dff6)
+  6. feat(dataset): add GeneralDataset. [07fd67a1](https://github.com/zjykzj/SimpleIR/tree/07fd67a19e4aa425f22dfca697d344ec34c7534d)
+* Bug fixes
+* Breaking changes
+
 ## v0.6.2
 
 * New features

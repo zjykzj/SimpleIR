@@ -17,8 +17,10 @@ from simpleir.utils.split.build import build_splitter
 def parse_args():
     parser = argparse.ArgumentParser(description="Make Query and Gallery Set")
     parser.add_argument('-d', '--dataset', metavar='DATASET', default='Caltech101', type=str, help='Dataset type')
-    parser.add_argument('SRC', default='./data/caltech101/', type=str, help='Path to the src dataset')
-    parser.add_argument('DST', default='./data/caltech101/', type=str, help='Path to the dst dataset')
+    parser.add_argument('src', metavar="SRC", default='./data/caltech101/', type=str, help='Path to the src dataset')
+    parser.add_argument('dst', metavar='DST', default='./data/caltech101/', type=str, help='Path to the dst dataset')
+    parser.add_argument('-max', metavar='MAX', default=20, type=int, help="Max num each class in "
+                                                                          "dataset. Used for General")
 
     return parser.parse_args()
 
@@ -27,9 +29,10 @@ if __name__ == '__main__':
     args = parse_args()
     print('args:', args)
 
-    src_root = args.SRC
-    dst_root = args.DST
+    src_root = args.src
+    dst_root = args.dst
     dataset_type = args.dataset
+    max_num = args.max
 
-    splitter = build_splitter(dataset_type)
+    splitter = build_splitter(dataset_type, max_num=max_num)
     splitter.run(src_root, dst_root)

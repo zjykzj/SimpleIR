@@ -18,10 +18,10 @@ class ImageFolder(datasets.ImageFolder):
 
     def __init__(self, root: str, transform: Optional[Callable] = None, target_transform: Optional[Callable] = None,
                  loader: Callable[[str], Any] = default_loader, is_valid_file: Optional[Callable[[str], bool]] = None,
-                 is_path: bool = False) -> None:
+                 w_path: bool = False) -> None:
         super().__init__(root, transform, target_transform, loader, is_valid_file)
 
-        self.is_path = is_path
+        self.w_path = w_path
 
     def __getitem__(self, index: int) -> Any:
         """
@@ -38,7 +38,7 @@ class ImageFolder(datasets.ImageFolder):
         if self.target_transform is not None:
             target = self.target_transform(target)
 
-        if self.is_path:
+        if self.w_path:
             return sample, target, path
         else:
             return sample, target

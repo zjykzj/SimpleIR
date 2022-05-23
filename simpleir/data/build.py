@@ -19,9 +19,9 @@ from .dataloader.build import build_dataloader
 from .dataset.build import build_dataset
 
 
-def build_data(cfg: CfgNode) -> Tuple[Sampler, DataLoader, DataLoader]:
+def build_data(cfg: CfgNode, w_path: bool = False) -> Tuple[Sampler, DataLoader, DataLoader]:
     train_transform, train_target_transform = build_transform(cfg, is_train=True)
-    train_dataset = build_dataset(cfg, train_transform, train_target_transform, is_train=True)
+    train_dataset = build_dataset(cfg, train_transform, train_target_transform, is_train=True, w_path=w_path)
 
     val_transform, val_target_transform = build_transform(cfg, is_train=False)
     val_dataset = build_dataset(cfg, val_transform, val_target_transform, is_train=False)

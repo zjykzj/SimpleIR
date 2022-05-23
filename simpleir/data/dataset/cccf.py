@@ -18,10 +18,10 @@ __all__ = ['CCCF']
 class CCCF(cccf.CCCF):
 
     def __init__(self, root: str, train: Optional[bool] = True, transform: Optional[Callable] = None,
-                 target_transform: Optional[Callable] = None, is_path: bool = False) -> None:
+                 target_transform: Optional[Callable] = None, w_path: bool = False) -> None:
         super().__init__(root, train, transform, target_transform)
 
-        self.is_path = is_path
+        self.w_path = w_path
 
     def __getitem__(self, index) -> Any:
         """
@@ -45,7 +45,7 @@ class CCCF(cccf.CCCF):
         if self.target_transform is not None:
             target = self.target_transform(target)
 
-        if self.is_path:
+        if self.w_path:
             return img, target, img_path
         else:
             return img, target

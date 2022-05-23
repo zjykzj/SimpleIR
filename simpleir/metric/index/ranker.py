@@ -20,8 +20,6 @@ class RankType(Enum):
     KNN = 'KNN'
 
 
-
-
 def normal_rank(sort_array: np.ndarray, gallery_targets: List, top_k: int = 10) -> List:
     pred_top_k_list = list()
     for sort_arr in sort_array:
@@ -71,5 +69,3 @@ def do_rank(distance_array: np.ndarray, gallery_targets: list,
         raise ValueError(f'{rank_type} does not support')
 
     return sort_array, pred_top_k_list
-
-

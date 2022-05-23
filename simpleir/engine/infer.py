@@ -37,11 +37,13 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
     end = time.time()
 
     aggregate_type = cfg.METRIC.AGGREGATE_TYPE
+    enhance_type = cfg.METRIC.ENHANCE_TYPE
     distance_type = cfg.METRIC.DISTANCE_TYPE
     rank_type = cfg.METRIC.RANK_TYPE
     re_rank_type = cfg.METRIC.RE_RANK_TYPE
     metric = MetricHelper(cfg.METRIC.MAX_CATE_NUM,
                           aggregate_type=aggregate_type,
+                          enhance_type=enhance_type,
                           top_k_list=top_k, distance_type=distance_type,
                           rank_type=rank_type, re_rank_type=re_rank_type)
 

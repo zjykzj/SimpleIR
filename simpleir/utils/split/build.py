@@ -7,15 +7,13 @@
 @description: 
 """
 
-from . import caltech101
-
-__support__ = caltech101.__all__
+from . import caltech101, general
 
 
-def build_splitter(dataset_type):
-    assert dataset_type in __support__
-
-    if dataset_type == caltech101.__all__:
+def build_splitter(dataset_type, **kwargs):
+    if dataset_type in caltech101.__all__:
         return caltech101.__dict__[dataset_type]()
+    elif dataset_type in general.__all__:
+        return general.__dict__[dataset_type](**kwargs)
     else:
         raise ValueError(f'{dataset_type} does not support')

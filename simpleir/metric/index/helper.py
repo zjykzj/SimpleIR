@@ -20,7 +20,7 @@ class IndexHelper:
     Object index. Including Rank and Re_Rank module
     """
 
-    def __init__(self, top_k: int = 10, distance_type='EUCLIDEAN',
+    def __init__(self, top_k: int = 10, max_num: int = 5, distance_type='EUCLIDEAN',
                  rank_type: str = 'NORMAL', re_rank_type='IDENTITY') -> None:
         super().__init__()
         self.top_k = top_k
@@ -31,11 +31,15 @@ class IndexHelper:
 
         self.is_re_rank = re_rank_type != 'IDENTITY'
 
-    def run(self, feats: torch.Tensor, gallery_dict: Dict):
+        # Feature set, each category saves N features, first in first out
+        self.gallery_dict = dict()
+        self.max_num = max_num
+
+    def run(self, feats: torch.Tensor, targets: torch.Tensor):
         gallery_key_list = list()
         gallery_value_list = list()
 
-        for idx, (key, values) in enumerate(gallery_dict.items()):
+        for idx, (key, values) in enumerate(self.gallery_dict.items()):
             if len(values) == 0:
                 continue
 
@@ -58,4 +62,18 @@ class IndexHelper:
                                                          top_k=self.top_k, rank_type=self.rank_type,
                                                          re_rank_type=self.re_rank_type)
 
+        for idx, (feat, target) in enumerate(zip(feats, targets)):
+            truth_key = int(target)
+
+            # Add feat to the gallery every time. If the category is full, the data added at the beginning will pop up
+            if truth_key not in self.gallery_dict.keys():
+                self.gallery_dict[truth_key] = list()
+            if len(self.gallery_dict[truth_key]) > self.max_num:
+                self.gallery_dict[truth_key].pop(0)
+            self.gallery_dict[truth_key].append(feat)
+
         return pred_top_k_list
+
+    def clear(self) -> None:
+        del self.gallery_dict
+        self.gallery_dict = dict()

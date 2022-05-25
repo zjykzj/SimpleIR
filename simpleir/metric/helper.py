@@ -24,14 +24,16 @@ class MetricHelper:
                  max_num: int = 5,
                  top_k_list: Tuple = (1, 5),
                  aggregate_type='IDENTITY', enhance_type='IDENTITY',
-                 distance_type: str = 'EUCLIDEAN', rank_type='NORMAL', re_rank_type='IDENTITY') -> None:
+                 distance_type: str = 'EUCLIDEAN', rank_type='NORMAL', re_rank_type='IDENTITY',
+                 train_dir: str = '') -> None:
         super().__init__()
         self.feature = FeatureHelper(aggregate_type=aggregate_type, enhance_type=enhance_type)
         assert len(top_k_list) >= 1
         self.index = IndexHelper(top_k=top_k_list[-1], max_num=max_num,
                                  distance_type=distance_type,
                                  rank_type=rank_type,
-                                 re_rank_type=re_rank_type)
+                                 re_rank_type=re_rank_type,
+                                 train_dir=train_dir)
         self.eval = EvaluateHelper(top_k_list=top_k_list)
 
     def __call__(self, *args, **kwargs):

@@ -6,13 +6,31 @@
 @author: zj
 @description: 
 """
+import glob
 from typing import Dict, List
 
+import os
 import torch
+import pickle
 
 from .distancer import DistanceType, do_distance
 from .ranker import do_rank, RankType
 from .re_ranker import do_re_rank, ReRankType
+
+
+def load_feats(feat_dir: str) -> Dict:
+    assert os.path.isdir(feat_dir), feat_dir
+
+    gallery_dict = dict()
+
+    file_list = glob.glob(os.path.join(feat_dir, 'part_*.pkl'))
+    for file_path in file_list:
+        with open(file_path, 'rb') as f:
+            tmp_dict = pickle.load(f)
+
+            gallery_dict.update(tmp_dict['feats'])
+
+    return gallery_dict
 
 
 class IndexHelper:
@@ -21,7 +39,7 @@ class IndexHelper:
     """
 
     def __init__(self, top_k: int = 10, max_num: int = 5, distance_type='EUCLIDEAN',
-                 rank_type: str = 'NORMAL', re_rank_type='IDENTITY') -> None:
+                 rank_type: str = 'NORMAL', re_rank_type='IDENTITY', train_dir: str = '') -> None:
         super().__init__()
         self.top_k = top_k
 
@@ -34,6 +52,9 @@ class IndexHelper:
         # Feature set, each category saves N features, first in first out
         self.gallery_dict = dict()
         self.max_num = max_num
+
+        if train_dir != '':
+            self.gallery_dict = load_feats(train_dir)
 
     def run(self, feats: torch.Tensor, targets: torch.Tensor) -> List[List]:
         # Get gallery set

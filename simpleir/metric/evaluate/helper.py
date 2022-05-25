@@ -24,15 +24,13 @@ class EvaluateHelper:
     Feature evaluate
     """
 
-    def __init__(self, top_k_list: Tuple = (1, 5)) -> None:
+    def __init__(self, top_k_list: Tuple = (1, 5), eval_type='ACCURACY') -> None:
         super().__init__()
 
         self.top_k_list = top_k_list
+        self.eval_type = EvaluateType[eval_type]
 
-    def normal(self):
-        pass
-
-    def run(self, pred_top_k_list: List[List], targets: np.ndarray):
+    def accuracy(self, pred_top_k_list: List[List], targets: np.ndarray) -> List:
         top_k_similarity_list = [0 for _ in self.top_k_list]
         if pred_top_k_list is None:
             pass
@@ -51,3 +49,9 @@ class EvaluateHelper:
         for k in top_k_similarity_list:
             res.append(100.0 * k / total_num)
         return res
+
+    def run(self, pred_top_k_list: List[List], targets: np.ndarray) -> List:
+        if self.eval_type is EvaluateType.ACCURACY:
+            return self.accuracy(pred_top_k_list, targets)
+        if self.eval_type is EvaluateType.MAP:
+            return list()

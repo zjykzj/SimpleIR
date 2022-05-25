@@ -6,7 +6,7 @@
 @author: zj
 @description: 
 """
-from typing import Dict
+from typing import Dict, List
 
 import torch
 
@@ -35,7 +35,8 @@ class IndexHelper:
         self.gallery_dict = dict()
         self.max_num = max_num
 
-    def run(self, feats: torch.Tensor, targets: torch.Tensor):
+    def run(self, feats: torch.Tensor, targets: torch.Tensor) -> List[List]:
+        # Get gallery set
         gallery_key_list = list()
         gallery_value_list = list()
 
@@ -46,6 +47,7 @@ class IndexHelper:
             gallery_key_list.extend([key for _ in range(len(values))])
             gallery_value_list.extend(values)
 
+        # Index
         pred_top_k_list = None
         if len(gallery_value_list) != 0:
             # distance
@@ -62,6 +64,7 @@ class IndexHelper:
                                                          top_k=self.top_k, rank_type=self.rank_type,
                                                          re_rank_type=self.re_rank_type)
 
+        # Update gallery dict
         for idx, (feat, target) in enumerate(zip(feats, targets)):
             truth_key = int(target)
 

@@ -38,16 +38,20 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
 
     aggregate_type = cfg.METRIC.FEATURE.AGGREGATE_TYPE
     enhance_type = cfg.METRIC.FEATURE.ENHANCE_TYPE
+
     distance_type = cfg.METRIC.INDEX.DISTANCE_TYPE
     rank_type = cfg.METRIC.INDEX.RANK_TYPE
     re_rank_type = cfg.METRIC.INDEX.RE_RANK_TYPE
     train_dir = cfg.METRIC.INDEX.TRAIN_DIR
     max_num = cfg.METRIC.INDEX.MAX_CATE_NUM
+
+    eval_type = cfg.METRIC.EVAL.EVAL_TYPE
     metric = MetricHelper(max_num=max_num,
                           top_k_list=top_k,
                           aggregate_type=aggregate_type, enhance_type=enhance_type,
                           distance_type=distance_type, rank_type=rank_type, re_rank_type=re_rank_type,
-                          train_dir=train_dir)
+                          train_dir=train_dir,
+                          eval_type=eval_type)
 
     prefetcher = data_prefetcher(cfg, val_loader)
     input, target, paths = prefetcher.next()

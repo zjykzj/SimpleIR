@@ -25,7 +25,8 @@ class MetricHelper:
                  top_k_list: Tuple = (1, 5),
                  aggregate_type='IDENTITY', enhance_type='IDENTITY',
                  distance_type: str = 'EUCLIDEAN', rank_type='NORMAL', re_rank_type='IDENTITY',
-                 train_dir: str = '') -> None:
+                 train_dir: str = '',
+                 eval_type='ACCURACY') -> None:
         super().__init__()
         self.feature = FeatureHelper(aggregate_type=aggregate_type, enhance_type=enhance_type)
         assert len(top_k_list) >= 1
@@ -34,7 +35,7 @@ class MetricHelper:
                                  rank_type=rank_type,
                                  re_rank_type=re_rank_type,
                                  train_dir=train_dir)
-        self.eval = EvaluateHelper(top_k_list=top_k_list)
+        self.eval = EvaluateHelper(top_k_list=top_k_list, eval_type=eval_type)
 
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)

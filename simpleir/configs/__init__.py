@@ -34,6 +34,9 @@ def add_custom_config(_C: CfgNode) -> None:
     # Pretrained feats
     _C.METRIC.INDEX.TRAIN_DIR = ''
 
+    _C.METRIC.EVAL = CfgNode()
+    _C.METRIC.EVAL.EVAL_TYPE = 'ACCURACY'
+
 
 def get_cfg_defaults() -> CfgNode:
     from zcls2 import config

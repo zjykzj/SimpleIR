@@ -1,6 +1,17 @@
 
 # CHANGE
 
+## v0.7.0
+
+* New features
+  1. feat(configs): add _C.METRIC.EVAL.EVAL_TYPE. [55980d186c](https://github.com/zjykzj/SimpleIR/tree/55980d186cc22ef05797cef026a8449fe32f43a3)
+  2. feat(index): add train_dir use. [4561f9220](https://github.com/zjykzj/SimpleIR/tree/4561f9220553ade8b6e41d2c80b80249797272b0)
+  3. perf(simpleir): new ACCURACY impl. [3bc52d7b3](https://github.com/zjykzj/SimpleIR/tree/3bc52d7b313a2390a5155daf711cff5465807128)
+  4. feat(metric): new EvaluateHelper. [e37e02db4](https://github.com/zjykzj/SimpleIR/tree/e37e02db4069b67f955f83da179c19c5232435a5)
+* Bug fixes
+* Breaking changes
+  1. feat(configs): add _C.METRIC.INDEX.TRAIN_DIR and refactor _C.METRIC use. [a3bb4924d8](https://github.com/zjykzj/SimpleIR/tree/a3bb4924d83f5306aafe7a08c54223266af5f47c)
+
 ## v0.6.3
 
 * New features

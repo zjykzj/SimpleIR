@@ -5,31 +5,26 @@
 @file: extract_features.py
 @author: zj
 @description:
-1. 加载数据
-2. 加载图像处理器
-3. 加载模型
-4. 提取特征
 """
 
 import os
-import torch
 import argparse
 
 from simpleir.configs import get_cfg_defaults
-from simpleir.data.build import build_data
-from simpleir.models.build import build_model
-from simpleir.eval.feature.helper import FeatureHelper
 from simpleir.utils.extract.helper import ExtractHelper
+
+from zcls2.util import logging
+
+logger = logging.get_logger(__name__)
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Make Query and Gallery Set")
+    parser = argparse.ArgumentParser(description="Extract features")
     parser.add_argument('cfg',
                         type=str,
-                        default="",
                         metavar="CONFIG",
                         help="path to config file")
-    parser.add_argument('-dst', metavar='DST', default='', type=str, help='Path to the save feature.')
+    parser.add_argument('-dst', metavar='DST', default=None, type=str, help='Path to the save feature. Default: None')
     parser.add_argument('-s', '--save-interval', metavar='INTERVAL',
                         default=5000, type=int, help='Save interval. Default: 5000')
 
@@ -37,32 +32,23 @@ def parse_args():
 
 
 if __name__ == '__main__':
+    # Parameter configuration
     args = parse_args()
     print('args:', args)
     save_interval = args.save_interval
 
     cfg = get_cfg_defaults()
     cfg.merge_from_file(args.cfg)
-    cfg.freeze()
 
     dst_root = os.path.join(cfg.OUTPUT_DIR, 'extract')
-    if args.dst != '':
+    if args.dst is not None:
         dst_root = args.dst
+    print(cfg)
     print(f'extract feats to {dst_root}')
 
-    train_sampler, train_loader, val_loader = build_data(cfg, w_path=True)
-    device = torch.device(f'cuda:{cfg.RANK_ID}') if cfg.DISTRIBUTED else torch.device('cpu')
-    model = build_model(cfg, device)
-    model.eval()
+    logging.setup_logging(local_rank=cfg.RANK_ID, output_dir=None)
 
-    aggregate_type = cfg.EVAL.AGGREGATE_TYPE
-    distance_type = cfg.EVAL.ENHANCE_TYPE
-    feature_helper = FeatureHelper(aggregate_type=aggregate_type, enhance_type=distance_type)
-
-    print('train ...')
-    extractor = ExtractHelper(train_loader, model, feature_helper)
-    extractor.run(dst_root, save_prefix='train', save_interval=save_interval)
-
-    print('test ...')
-    extractor = ExtractHelper(val_loader, model, feature_helper)
-    extractor.run(dst_root, save_prefix='val', save_interval=save_interval)
+    # Extract
+    extractor = ExtractHelper(cfg)
+    print('extract ...')
+    extractor.run(dst_root, save_prefix='part_', save_interval=save_interval)

@@ -13,10 +13,25 @@
 
 import os
 import time
+import torch
 import pickle
 
 from tqdm import tqdm
+from yacs.config import CfgNode
+
+from torch.utils.data import Dataset
+from torch.utils.data._utils.collate import default_collate
+
+from zcls2.data.dataloader.collate import fast_collate
+from zcls2.util import logging
+
+logger = logging.get_logger(__name__)
+
 from simpleir.configs.key_words import KEY_FEAT
+from simpleir.data.build import build_transform
+from simpleir.data.build import build_dataset
+from simpleir.models.build import build_model
+from simpleir.eval.feature.helper import FeatureHelper
 
 
 def save_part_feat(feat_dict, part_file_path):
@@ -30,22 +45,79 @@ def save_part_feat(feat_dict, part_file_path):
         pickle.dump(feat_dict, f)
 
 
+def create_val_loader(cfg):
+    val_transform, val_target_transform = build_transform(cfg, is_train=False)
+    val_dataset = build_dataset(cfg, val_transform, val_target_transform, is_train=False)
+
+    test_batch_size = cfg.DATALOADER.TEST_BATCH_SIZE
+
+    if cfg.CHANNELS_LAST:
+        memory_format = torch.channels_last
+    else:
+        memory_format = torch.contiguous_format
+
+    if cfg.DATALOADER.COLLATE_FN == 'fast':
+        collate_fn = lambda b: fast_collate(b, memory_format)
+    else:
+        collate_fn = default_collate
+
+    # Ensure the consistency of output sequence. Set shuffle=False and num_workers=0
+    val_loader = torch.utils.data.DataLoader(
+        val_dataset,
+        batch_size=test_batch_size, shuffle=False,
+        num_workers=0, pin_memory=True,
+        sampler=None,
+        collate_fn=collate_fn)
+
+    return val_loader
+
+
+def load_model(model, model_path, device=torch.device('cpu')):
+    logger.info("=> loading checkpoint '{}'".format(model_path))
+    checkpoint = torch.load(model_path, map_location=device)
+
+    if 'state_dict' in checkpoint.keys():
+        state_dict = checkpoint['state_dict']
+    else:
+        raise ValueError(f'There is no key `state_dict` in {model_path}')
+
+    state_dict = {k.replace('module.', ''): v for k, v in state_dict.items()}
+    model.load_state_dict(state_dict, strict=True)
+    logger.info("=> loaded checkpoint '{}'".format(model_path, ))
+
+
 class ExtractHelper:
     """
     A helper class to extract feature maps from model, and then aggregate them.
     """
 
-    def __init__(self, data_loader, model, feature):
-        self.data_loader = data_loader
+    def __init__(self, cfg: CfgNode):
+        # Load data / model / feature_helper
+        val_loader = create_val_loader(cfg)
+
+        device = torch.device(f'cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+        model = build_model(cfg, device)
+
+        # Optionally resume from a checkpoint
+        if os.path.isfile(cfg.RESUME):
+            logger.info(f"=> Resume now")
+            load_model(model, cfg.RESUME, device)
+        model.eval()
+
+        aggregate_type = cfg.EVAL.FEATURE.AGGREGATE_TYPE
+        distance_type = cfg.EVAL.FEATURE.ENHANCE_TYPE
+        feature_helper = FeatureHelper(aggregate_type=aggregate_type, enhance_type=distance_type)
+
+        self.data_loader = val_loader
         self.model = model
-        self.feature = feature
+        self.feature = feature_helper
+        self.device = device
 
-    def run(self, dst_root, save_prefix='', save_interval: int = 5000):
-        if save_prefix != '':
-            save_prefix = save_prefix + '_'
+        self.classes = self.data_loader.dataset.classes
 
+    def run(self, dst_root, save_prefix='part_', save_interval: int = 5000):
         feat_dict = dict()
-        feat_dict['classes'] = self.data_loader.dataset.classes
+        feat_dict['classes'] = self.classes
         feat_dict['feats'] = list()
         feat_num = 0
 
@@ -55,10 +127,10 @@ class ExtractHelper:
             images, targets, paths = batch
 
             # 提取特征
-            outputs = self.model(images)[KEY_FEAT].detach().cpu()
-            feats = self.feature.run(outputs)
+            feats = self.model(images.to(self.device))[KEY_FEAT].detach().cpu()
+            new_feats = self.feature.run(feats)
 
-            for path, target, feat in zip(paths, targets, feats):
+            for path, target, feat in zip(paths, targets.numpy(), new_feats.numpy()):
                 feat_dict['feats'].append({
                     'path': path,
                     'label': target,
@@ -66,15 +138,15 @@ class ExtractHelper:
                 })
                 feat_num += 1
             if feat_num > save_interval:
-                save_part_feat(feat_dict, os.path.join(dst_root, f'{save_prefix}part_{part_count}.csv'))
+                save_part_feat(feat_dict, os.path.join(dst_root, f'{save_prefix}{part_count}.csv'))
                 part_count += 1
 
                 del feat_dict
                 feat_dict = dict()
-                feat_dict['classes'] = self.data_loader.dataset.classes
+                feat_dict['classes'] = self.classes
                 feat_dict['feats'] = list()
                 feat_num = 0
         if feat_num > 1:
-            save_part_feat(feat_dict, os.path.join(dst_root, f'{save_prefix}part_{part_count}.csv'))
+            save_part_feat(feat_dict, os.path.join(dst_root, f'{save_prefix}{part_count}.csv'))
         end = time.time()
         print('time: ', end - start)

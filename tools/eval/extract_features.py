@@ -21,10 +21,9 @@ logger = logging.get_logger(__name__)
 def parse_args():
     parser = argparse.ArgumentParser(description="Extract features")
     parser.add_argument('cfg',
-                        type=str,
-                        metavar="CONFIG",
-                        help="path to config file")
-    parser.add_argument('-dst', metavar='DST', default=None, type=str, help='Path to the save feature. Default: None')
+                        type=str, metavar="CONFIG", help="path to config file")
+    parser.add_argument('--gallery', default=False, action="store_true",
+                        help='Path to the query set or galley set. Default: False (for query set)')
     parser.add_argument('-s', '--save-interval', metavar='INTERVAL',
                         default=5000, type=int, help='Save interval. Default: 5000')
 
@@ -40,15 +39,15 @@ if __name__ == '__main__':
     cfg = get_cfg_defaults()
     cfg.merge_from_file(args.cfg)
 
-    dst_root = os.path.join(cfg.OUTPUT_DIR, 'extract')
-    if args.dst is not None:
-        dst_root = args.dst
-    print(cfg)
+    if args.gallery:
+        dst_root = cfg.EVAL.INDEX.GALLERY_DIR
+    else:
+        dst_root = cfg.EVAL.FEATURE.QUERY_DIR
     print(f'extract feats to {dst_root}')
 
     logging.setup_logging(local_rank=cfg.RANK_ID, output_dir=None)
 
     # Extract
-    extractor = ExtractHelper(cfg)
+    extractor = ExtractHelper(cfg, is_gallery=args.gallery)
     print('extract ...')
     extractor.run(dst_root, save_prefix='part_', save_interval=save_interval)

@@ -45,9 +45,9 @@ def save_part_feat(feat_dict, part_file_path):
         pickle.dump(feat_dict, f)
 
 
-def create_val_loader(cfg):
+def create_loader(cfg, is_gallery=False):
     val_transform, val_target_transform = build_transform(cfg, is_train=False)
-    val_dataset = build_dataset(cfg, val_transform, val_target_transform, is_train=False)
+    data_set = build_dataset(cfg, val_transform, val_target_transform, is_train=is_gallery, w_path=True)
 
     test_batch_size = cfg.DATALOADER.TEST_BATCH_SIZE
 
@@ -63,7 +63,7 @@ def create_val_loader(cfg):
 
     # Ensure the consistency of output sequence. Set shuffle=False and num_workers=0
     val_loader = torch.utils.data.DataLoader(
-        val_dataset,
+        data_set,
         batch_size=test_batch_size, shuffle=False,
         num_workers=0, pin_memory=True,
         sampler=None,
@@ -91,9 +91,9 @@ class ExtractHelper:
     A helper class to extract feature maps from model, and then aggregate them.
     """
 
-    def __init__(self, cfg: CfgNode):
+    def __init__(self, cfg: CfgNode, is_gallery=False):
         # Load data / model / feature_helper
-        val_loader = create_val_loader(cfg)
+        val_loader = create_loader(cfg, is_gallery=is_gallery)
 
         device = torch.device(f'cuda:0') if torch.cuda.is_available() else torch.device('cpu')
         model = build_model(cfg, device)

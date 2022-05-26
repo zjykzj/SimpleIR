@@ -5,8 +5,8 @@
 @file: make_query_gallery_set.py
 @author: zj
 @description: 创建查询集和图库
-1. 针对不同的数据集格式，应该拥有不一样的划分标准。比如对于Caltech-101、oxford5k
-2. 对于划分过程中的随机操作，具有可复现性
+1. 针对不同的数据集格式，应该拥有不一样的划分标准。比如Caltech-101、Oxford5k
+2. 对于划分过程中的随机操作，固定随机数种子，具备可复现性
 """
 
 import argparse

@@ -42,16 +42,16 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
     distance_type = cfg.EVAL.INDEX.DISTANCE_TYPE
     rank_type = cfg.EVAL.INDEX.RANK_TYPE
     re_rank_type = cfg.EVAL.INDEX.RE_RANK_TYPE
-    train_dir = cfg.EVAL.INDEX.TRAIN_DIR
+    gallery_dir = cfg.EVAL.INDEX.GALLERY_DIR
     max_num = cfg.EVAL.INDEX.MAX_CATE_NUM
 
     eval_type = cfg.EVAL.METRIC.EVAL_TYPE
     eval_helper = EvalHelper(max_num=max_num,
-                        top_k_list=top_k,
-                        aggregate_type=aggregate_type, enhance_type=enhance_type,
-                        distance_type=distance_type, rank_type=rank_type, re_rank_type=re_rank_type,
-                        train_dir=train_dir,
-                        eval_type=eval_type)
+                             top_k_list=top_k,
+                             aggregate_type=aggregate_type, enhance_type=enhance_type,
+                             distance_type=distance_type, rank_type=rank_type, re_rank_type=re_rank_type,
+                             gallery_dir=gallery_dir,
+                             eval_type=eval_type)
 
     prefetcher = data_prefetcher(cfg, val_loader)
     input, target, paths = prefetcher.next()

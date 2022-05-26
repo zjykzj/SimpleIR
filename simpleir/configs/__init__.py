@@ -21,6 +21,8 @@ def add_custom_config(_C: CfgNode) -> None:
     _C.EVAL.FEATURE.AGGREGATE_TYPE = 'IDENTITY'
     # Enhance type
     _C.EVAL.FEATURE.ENHANCE_TYPE = 'IDENTITY'
+    # Feats dir of Query set
+    _C.EVAL.FEATURE.QUERY_DIR = ''
 
     _C.EVAL.INDEX = CfgNode()
     # Maximum number of each category saved in the gallery
@@ -31,8 +33,8 @@ def add_custom_config(_C: CfgNode) -> None:
     _C.EVAL.INDEX.RANK_TYPE = 'NORMAL'
     # Re_rank type
     _C.EVAL.INDEX.RE_RANK_TYPE = 'IDENTITY'
-    # Pretrained feats
-    _C.EVAL.INDEX.TRAIN_DIR = ''
+    # Feats dir of gallery set
+    _C.EVAL.INDEX.GALLERY_DIR = ''
 
     _C.EVAL.METRIC = CfgNode()
     _C.EVAL.METRIC.EVAL_TYPE = 'ACCURACY'

@@ -18,12 +18,12 @@ from .ranker import do_rank, RankType
 from .re_ranker import do_re_rank, ReRankType
 
 
-def load_feats(feat_dir: str) -> Dict:
+def load_feats(feat_dir: str, prefix='part_') -> Dict:
     assert os.path.isdir(feat_dir), feat_dir
 
     gallery_dict = dict()
 
-    file_list = glob.glob(os.path.join(feat_dir, 'part_*.pkl'))
+    file_list = glob.glob(os.path.join(feat_dir, f'{prefix}*.pkl'))
     for file_path in file_list:
         with open(file_path, 'rb') as f:
             tmp_dict = pickle.load(f)
@@ -39,7 +39,7 @@ class IndexHelper:
     """
 
     def __init__(self, top_k: int = 10, max_num: int = 5, distance_type='EUCLIDEAN',
-                 rank_type: str = 'NORMAL', re_rank_type='IDENTITY', train_dir: str = '') -> None:
+                 rank_type: str = 'NORMAL', re_rank_type='IDENTITY', gallery_dir: str = '') -> None:
         super().__init__()
         self.top_k = top_k
 
@@ -53,8 +53,8 @@ class IndexHelper:
         self.gallery_dict = dict()
         self.max_num = max_num
 
-        if train_dir != '':
-            self.gallery_dict = load_feats(train_dir)
+        if gallery_dir != '':
+            self.gallery_dict = load_feats(gallery_dir)
 
     def run(self, feats: torch.Tensor, targets: torch.Tensor) -> List[List]:
         # Get gallery set

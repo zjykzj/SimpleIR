@@ -1,6 +1,20 @@
 
 # CHANGE
 
+## v0.8.0
+
+* New features
+  1. build(python): upgrade zcls2 ~= 0.4.3 to zcls2 ~= 0.4.4. [c70132c1ac](https://github.com/zjykzj/SimpleIR/tree/c70132c1ac8ad163ba2c63a95114d5a1dd8156ed)
+  2. feat(index): create IndexMode for different way to index. [7ba156c2](https://github.com/zjykzj/SimpleIR/tree/7ba156c267f5d4a90ee75abda71de49349f45d8a)
+  3. perf(extract_features.py): add feats extract choice for gallery set or query set. [24ea2184](https://github.com/zjykzj/SimpleIR/tree/24ea2184bec070b11808707baae31e78346db8d9)
+  4. perf(extract): update ExtractHelper use. [95c4ef0ea](https://github.com/zjykzj/SimpleIR/tree/95c4ef0ea59756e9161afcdd4b7daff22e1947f6)
+* Bug fixes
+* Breaking changes
+  1. refactor(index): update. [fceb900e52796a](https://github.com/zjykzj/SimpleIR/tree/fceb900e52796aff3036a1db165124ed82268a17)
+  2. refactor(extract): modify ExtractHelper to Extractor. [b1806547](https://github.com/zjykzj/SimpleIR/tree/b1806547cc8fe1e78879790a2a0d584864b9792c)
+  3. refactor(configs): modify _C.EVAL.INDEX.TRAIN_DIR to GALLERY_DIR and add _C.EVAL.FEATURE.QUERY_DIR. [ee628cd](https://github.com/zjykzj/SimpleIR/tree/ee628cdcfd5f1c7015d233181106c26b6367ad86)
+  4. refactor(simpleir): refactor configs and metric module. [ac8ba8fe06](https://github.com/zjykzj/SimpleIR/tree/ac8ba8fe061b1c8b2fbd6e91b0223de5d271240e)
+
 ## v0.7.0
 
 * New features

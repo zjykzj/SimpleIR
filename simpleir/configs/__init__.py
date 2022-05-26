@@ -35,6 +35,13 @@ def add_custom_config(_C: CfgNode) -> None:
     _C.EVAL.INDEX.RE_RANK_TYPE = 'IDENTITY'
     # Feats dir of gallery set
     _C.EVAL.INDEX.GALLERY_DIR = ''
+    # Index mode
+    # mode = 0: Make query as gallery and Batch update gallery set
+    # mode = 1: Make query as gallery and single update gallery set
+    # mode = 2: Set gallery set and No update
+    # mode = 3: Set gallery set and Batch update gallery set
+    # mode = 4: Set gallery set and single update gallery set
+    _C.EVAL.INDEX.MODE = 0
 
     _C.EVAL.METRIC = CfgNode()
     _C.EVAL.METRIC.EVAL_TYPE = 'ACCURACY'

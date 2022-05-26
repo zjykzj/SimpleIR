@@ -7,10 +7,9 @@
 @description: 
 """
 
-from typing import List, Dict
+from typing import List
 import time
 
-import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -44,13 +43,14 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
     re_rank_type = cfg.EVAL.INDEX.RE_RANK_TYPE
     gallery_dir = cfg.EVAL.INDEX.GALLERY_DIR
     max_num = cfg.EVAL.INDEX.MAX_CATE_NUM
+    index_mode = cfg.EVAL.INDEX.MODE
 
     eval_type = cfg.EVAL.METRIC.EVAL_TYPE
     eval_helper = EvalHelper(max_num=max_num,
                              top_k_list=top_k,
                              aggregate_type=aggregate_type, enhance_type=enhance_type,
                              distance_type=distance_type, rank_type=rank_type, re_rank_type=re_rank_type,
-                             gallery_dir=gallery_dir,
+                             gallery_dir=gallery_dir, index_mode=index_mode,
                              eval_type=eval_type)
 
     prefetcher = data_prefetcher(cfg, val_loader)

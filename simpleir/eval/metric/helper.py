@@ -19,7 +19,7 @@ class EvaluateType(Enum):
     MAP = 'MAP'
 
 
-class EvaluateHelper:
+class MetricHelper:
     """
     Feature evaluate
     """

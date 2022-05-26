@@ -22,7 +22,7 @@ from zcls2.util.misc import to_python_float
 logger = logging.get_logger(__name__)
 
 from simpleir.configs.key_words import KEY_FEAT
-from simpleir.metric.helper import MetricHelper
+from simpleir.eval.helper import EvalHelper
 from simpleir.utils.prefetcher import data_prefetcher
 
 
@@ -36,22 +36,22 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
     model.eval()
     end = time.time()
 
-    aggregate_type = cfg.METRIC.FEATURE.AGGREGATE_TYPE
-    enhance_type = cfg.METRIC.FEATURE.ENHANCE_TYPE
+    aggregate_type = cfg.EVAL.FEATURE.AGGREGATE_TYPE
+    enhance_type = cfg.EVAL.FEATURE.ENHANCE_TYPE
 
-    distance_type = cfg.METRIC.INDEX.DISTANCE_TYPE
-    rank_type = cfg.METRIC.INDEX.RANK_TYPE
-    re_rank_type = cfg.METRIC.INDEX.RE_RANK_TYPE
-    train_dir = cfg.METRIC.INDEX.TRAIN_DIR
-    max_num = cfg.METRIC.INDEX.MAX_CATE_NUM
+    distance_type = cfg.EVAL.INDEX.DISTANCE_TYPE
+    rank_type = cfg.EVAL.INDEX.RANK_TYPE
+    re_rank_type = cfg.EVAL.INDEX.RE_RANK_TYPE
+    train_dir = cfg.EVAL.INDEX.TRAIN_DIR
+    max_num = cfg.EVAL.INDEX.MAX_CATE_NUM
 
-    eval_type = cfg.METRIC.EVAL.EVAL_TYPE
-    metric = MetricHelper(max_num=max_num,
-                          top_k_list=top_k,
-                          aggregate_type=aggregate_type, enhance_type=enhance_type,
-                          distance_type=distance_type, rank_type=rank_type, re_rank_type=re_rank_type,
-                          train_dir=train_dir,
-                          eval_type=eval_type)
+    eval_type = cfg.EVAL.METRIC.EVAL_TYPE
+    metric = EvalHelper(max_num=max_num,
+                        top_k_list=top_k,
+                        aggregate_type=aggregate_type, enhance_type=enhance_type,
+                        distance_type=distance_type, rank_type=rank_type, re_rank_type=re_rank_type,
+                        train_dir=train_dir,
+                        eval_type=eval_type)
 
     prefetcher = data_prefetcher(cfg, val_loader)
     input, target, paths = prefetcher.next()

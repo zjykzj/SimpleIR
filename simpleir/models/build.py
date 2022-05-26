@@ -27,7 +27,7 @@ def build_model(cfg: CfgNode, device: torch.device = torch.device('cpu')) -> nn.
     num_classes = cfg.MODEL.NUM_CLASSES
     sync_bn = cfg.MODEL.SYNC_BN
 
-    feat_type = cfg.METRIC.FEATURE.FEAT_TYPE
+    feat_type = cfg.EVAL.FEATURE.FEAT_TYPE
 
     # create model
     if is_pretrained:

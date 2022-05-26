@@ -18,7 +18,7 @@ import argparse
 from simpleir.configs import get_cfg_defaults
 from simpleir.data.build import build_data
 from simpleir.models.build import build_model
-from simpleir.metric.feature.helper import FeatureHelper
+from simpleir.eval.feature.helper import FeatureHelper
 from simpleir.utils.extract.helper import ExtractHelper
 
 
@@ -55,8 +55,8 @@ if __name__ == '__main__':
     model = build_model(cfg, device)
     model.eval()
 
-    aggregate_type = cfg.METRIC.AGGREGATE_TYPE
-    distance_type = cfg.METRIC.ENHANCE_TYPE
+    aggregate_type = cfg.EVAL.AGGREGATE_TYPE
+    distance_type = cfg.EVAL.ENHANCE_TYPE
     feature_helper = FeatureHelper(aggregate_type=aggregate_type, enhance_type=distance_type)
 
     print('train ...')

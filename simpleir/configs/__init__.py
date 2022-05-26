@@ -12,30 +12,30 @@ from yacs.config import CfgNode
 
 def add_custom_config(_C: CfgNode) -> None:
     # Add your own customized configs.
-    _C.METRIC = CfgNode()
+    _C.EVAL = CfgNode()
 
-    _C.METRIC.FEATURE = CfgNode()
+    _C.EVAL.FEATURE = CfgNode()
     # Feat type
-    _C.METRIC.FEATURE.FEAT_TYPE = 'avgpool'
+    _C.EVAL.FEATURE.FEAT_TYPE = 'avgpool'
     # Aggregate type
-    _C.METRIC.FEATURE.AGGREGATE_TYPE = 'IDENTITY'
+    _C.EVAL.FEATURE.AGGREGATE_TYPE = 'IDENTITY'
     # Enhance type
-    _C.METRIC.FEATURE.ENHANCE_TYPE = 'IDENTITY'
+    _C.EVAL.FEATURE.ENHANCE_TYPE = 'IDENTITY'
 
-    _C.METRIC.INDEX = CfgNode()
+    _C.EVAL.INDEX = CfgNode()
     # Maximum number of each category saved in the gallery
-    _C.METRIC.INDEX.MAX_CATE_NUM = 5
+    _C.EVAL.INDEX.MAX_CATE_NUM = 5
     # Distance type
-    _C.METRIC.INDEX.DISTANCE_TYPE = 'EUCLIDEAN'
+    _C.EVAL.INDEX.DISTANCE_TYPE = 'EUCLIDEAN'
     # Rank type
-    _C.METRIC.INDEX.RANK_TYPE = 'NORMAL'
+    _C.EVAL.INDEX.RANK_TYPE = 'NORMAL'
     # Re_rank type
-    _C.METRIC.INDEX.RE_RANK_TYPE = 'IDENTITY'
+    _C.EVAL.INDEX.RE_RANK_TYPE = 'IDENTITY'
     # Pretrained feats
-    _C.METRIC.INDEX.TRAIN_DIR = ''
+    _C.EVAL.INDEX.TRAIN_DIR = ''
 
-    _C.METRIC.EVAL = CfgNode()
-    _C.METRIC.EVAL.EVAL_TYPE = 'ACCURACY'
+    _C.EVAL.METRIC = CfgNode()
+    _C.EVAL.METRIC.EVAL_TYPE = 'ACCURACY'
 
 
 def get_cfg_defaults() -> CfgNode:

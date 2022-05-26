@@ -12,10 +12,10 @@ import torch
 
 from .feature.helper import FeatureHelper
 from .index.helper import IndexHelper
-from .evaluate.helper import EvaluateHelper
+from .metric.helper import MetricHelper
 
 
-class MetricHelper:
+class EvalHelper:
     """
     Calculation accuracy. 
     """
@@ -35,7 +35,7 @@ class MetricHelper:
                                  rank_type=rank_type,
                                  re_rank_type=re_rank_type,
                                  train_dir=train_dir)
-        self.eval = EvaluateHelper(top_k_list=top_k_list, eval_type=eval_type)
+        self.eval = MetricHelper(top_k_list=top_k_list, eval_type=eval_type)
 
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)

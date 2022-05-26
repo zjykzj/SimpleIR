@@ -11,28 +11,34 @@
 
 import argparse
 
-from simpleir.utils.index.build import build_indexer
+from simpleir.configs import get_cfg_defaults
+from simpleir.utils.index.indexer import Indexer
+
+from zcls2.util import logging
+
+logger = logging.get_logger(__name__)
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Make Query and Gallery Set")
-    parser.add_argument('-g', '--gallery', metavar='GALLERY', default='./data/extract/caltech101/gallery', type=str,
-                        help='Path to gallery features')
-    parser.add_argument('-q', '--query', metavar='QUERY', default='./data/extract/caltech101/query', type=str,
-                        help='Path to query features')
-    parser.add_argument('-s', '--similarity', metavar='SIMILARITY', default='abs_diff', type=str,
-                        help='Way to calculate similarity')
+    parser = argparse.ArgumentParser(description="Index and eval query set")
+    parser.add_argument('cfg',
+                        type=str,
+                        metavar="CONFIG",
+                        help="path to config file")
 
     return parser.parse_args()
 
 
 if __name__ == '__main__':
+    # Parameter configuration
     args = parse_args()
-    print(args)
+    print('args:', args)
+    save_interval = args.save_interval
 
-    root_gallery = args.gallery
-    root_query = args.query
-    similarity = args.similarity
+    cfg = get_cfg_defaults()
+    cfg.merge_from_file(args.cfg)
 
-    indexer = build_indexer(root_gallery, root_query)
-    indexer.run(similarity=similarity)
+    logging.setup_logging(local_rank=cfg.RANK_ID, output_dir=None)
+
+    indexer = Indexer(cfg)
+    indexer.run()

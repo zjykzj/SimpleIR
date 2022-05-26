@@ -86,7 +86,7 @@ def load_model(model, model_path, device=torch.device('cpu')):
     logger.info("=> loaded checkpoint '{}'".format(model_path, ))
 
 
-class ExtractHelper:
+class Extractor:
     """
     A helper class to extract feature maps from model, and then aggregate them.
     """

@@ -11,7 +11,7 @@ import os
 import argparse
 
 from simpleir.configs import get_cfg_defaults
-from simpleir.utils.extract.helper import ExtractHelper
+from simpleir.utils.extract.helper import Extractor
 
 from zcls2.util import logging
 
@@ -48,6 +48,6 @@ if __name__ == '__main__':
     logging.setup_logging(local_rank=cfg.RANK_ID, output_dir=None)
 
     # Extract
-    extractor = ExtractHelper(cfg, is_gallery=args.gallery)
+    extractor = Extractor(cfg, is_gallery=args.gallery)
     print('extract ...')
     extractor.run(dst_root, save_prefix='part_', save_interval=save_interval)

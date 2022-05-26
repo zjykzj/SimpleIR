@@ -18,7 +18,7 @@ INSTALL_REQUIRES = [
     "yacs >= 0.1.8",
     "tqdm >= 4.63.0",
     "scikit_learn >= 0.24.2",
-    "zcls2 ~= 0.4.3"
+    "zcls2 ~= 0.4.4"
 ]
 CLASSIFIERS = [
     "Programming Language :: Python :: 3",

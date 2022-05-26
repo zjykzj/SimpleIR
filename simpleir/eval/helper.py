@@ -35,7 +35,7 @@ class EvalHelper:
                                  rank_type=rank_type,
                                  re_rank_type=re_rank_type,
                                  train_dir=train_dir)
-        self.eval = MetricHelper(top_k_list=top_k_list, eval_type=eval_type)
+        self.metric = MetricHelper(top_k_list=top_k_list, eval_type=eval_type)
 
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
@@ -43,7 +43,7 @@ class EvalHelper:
     def run(self, feats: torch.Tensor, targets: torch.Tensor) -> List:
         new_feats = self.feature.run(feats)
         pred_top_k_list = self.index.run(new_feats, targets)
-        res = self.eval.run(pred_top_k_list, targets.numpy())
+        res = self.metric.run(pred_top_k_list, targets.numpy())
         return res
 
     def clear(self) -> None:

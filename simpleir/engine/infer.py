@@ -46,7 +46,7 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
     max_num = cfg.EVAL.INDEX.MAX_CATE_NUM
 
     eval_type = cfg.EVAL.METRIC.EVAL_TYPE
-    metric = EvalHelper(max_num=max_num,
+    eval_helper = EvalHelper(max_num=max_num,
                         top_k_list=top_k,
                         aggregate_type=aggregate_type, enhance_type=enhance_type,
                         distance_type=distance_type, rank_type=rank_type, re_rank_type=re_rank_type,
@@ -66,7 +66,7 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
 
         # measure accuracy and record loss
         # prec_list = metric.run(output[KEY_FEAT].detach().cpu().numpy(), target.detach().cpu().numpy(),
-        prec_list = metric.run(output[KEY_FEAT].detach().cpu(), target.detach().cpu())
+        prec_list = eval_helper.run(output[KEY_FEAT].detach().cpu(), target.detach().cpu())
 
         reduced_loss = loss.data
 

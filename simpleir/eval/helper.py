@@ -47,5 +47,8 @@ class EvalHelper:
         res = self.metric.run(pred_top_k_list, targets.numpy())
         return res
 
+    def init(self) -> None:
+        self.index.init()
+
     def clear(self) -> None:
         self.index.clear()

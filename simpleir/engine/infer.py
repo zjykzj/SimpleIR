@@ -57,6 +57,7 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
     i = 0
     while input is not None:
         i += 1
+        eval_helper.init()
 
         # compute output
         with torch.no_grad():

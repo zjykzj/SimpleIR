@@ -46,11 +46,10 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
     index_mode = cfg.EVAL.INDEX.MODE
 
     eval_type = cfg.EVAL.METRIC.EVAL_TYPE
-    eval_helper = EvalHelper(max_num=max_num,
-                             top_k_list=top_k,
+    eval_helper = EvalHelper(top_k_list=top_k,
                              aggregate_type=aggregate_type, enhance_type=enhance_type,
                              distance_type=distance_type, rank_type=rank_type, re_rank_type=re_rank_type,
-                             gallery_dir=gallery_dir, index_mode=index_mode,
+                             gallery_dir=gallery_dir, max_num=max_num, index_mode=index_mode,
                              eval_type=eval_type)
 
     prefetcher = data_prefetcher(cfg, val_loader)
@@ -95,7 +94,7 @@ def validate(cfg: CfgNode, val_loader: DataLoader, model: nn.Module, criterion: 
 
         input, target, paths = prefetcher.next()
 
-    metric.clear()
+    eval_helper.clear()
 
     logger_str = ' * '
     for k, top in zip(top_k, top_list):

@@ -25,8 +25,6 @@ def add_custom_config(_C: CfgNode) -> None:
     _C.EVAL.FEATURE.QUERY_DIR = ''
 
     _C.EVAL.INDEX = CfgNode()
-    # Maximum number of each category saved in the gallery
-    _C.EVAL.INDEX.MAX_CATE_NUM = 5
     # Distance type
     _C.EVAL.INDEX.DISTANCE_TYPE = 'EUCLIDEAN'
     # Rank type
@@ -35,6 +33,8 @@ def add_custom_config(_C: CfgNode) -> None:
     _C.EVAL.INDEX.RE_RANK_TYPE = 'IDENTITY'
     # Feats dir of gallery set
     _C.EVAL.INDEX.GALLERY_DIR = ''
+    # Maximum number of each category saved in the gallery if MAX_CATE_NUM > 0
+    _C.EVAL.INDEX.MAX_CATE_NUM = 0
     # Index mode
     # mode = 0: Make query as gallery and Batch update gallery set
     # mode = 1: Make query as gallery and single update gallery set

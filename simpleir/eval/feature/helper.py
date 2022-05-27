@@ -24,7 +24,7 @@ class FeatureHelper:
         self.aggregate_type = AggregateType[aggregate_type]
         self.enhance_type = EnhanceType[enhance_type]
 
-    def run(self, feats: torch.Tensor):
+    def run(self, feats: torch.Tensor) -> torch.Tensor:
         feats = do_aggregate(feats, aggregate_type=self.aggregate_type)
 
         # Flatten the eigenvector into a one-dimensional vector

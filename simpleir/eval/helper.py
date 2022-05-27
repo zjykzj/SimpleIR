@@ -21,20 +21,20 @@ class EvalHelper:
     """
 
     def __init__(self,
-                 max_num: int = 5,
                  top_k_list: Tuple = (1, 5),
                  aggregate_type='IDENTITY', enhance_type='IDENTITY',
                  distance_type: str = 'EUCLIDEAN', rank_type='NORMAL', re_rank_type='IDENTITY',
-                 gallery_dir: str = '', index_mode: int = 0,
+                 gallery_dir: str = '', max_num: int = 0, index_mode: int = 0,
                  eval_type='ACCURACY') -> None:
         super().__init__()
         self.feature = FeatureHelper(aggregate_type=aggregate_type, enhance_type=enhance_type)
         assert len(top_k_list) >= 1
-        self.index = IndexHelper(top_k=top_k_list[-1], max_num=max_num,
+        self.index = IndexHelper(top_k=top_k_list[-1],
                                  distance_type=distance_type,
                                  rank_type=rank_type,
                                  re_rank_type=re_rank_type,
                                  gallery_dir=gallery_dir,
+                                 max_num=max_num,
                                  index_mode=index_mode)
         self.metric = MetricHelper(top_k_list=top_k_list, eval_type=eval_type)
 

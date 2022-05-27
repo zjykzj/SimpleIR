@@ -1,6 +1,15 @@
 
 # CHANGE
 
+## v0.8.1
+
+* New features
+  1. perf(data): explicitly set val_sampler=None. [c46bc963](https://github.com/zjykzj/SimpleIR/tree/c46bc9635d5bb8c975b324a28ea1cd9f5f06c6c0)
+  2. perf(index): init/clean gallery_dict each epoch and update single mode. [e1d8c73a](https://github.com/zjykzj/SimpleIR/tree/e1d8c73a56204b77373951509e52ef45b253c21d)
+  3. feat(eval.py): new. [2ee957e2f](https://github.com/zjykzj/SimpleIR/tree/2ee957e2f26e39909505cc22de90369c44bb7741)
+* Bug fixes
+* Breaking changes
+  
 ## v0.8.0
 
 * New features

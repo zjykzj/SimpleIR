@@ -11,9 +11,9 @@ from typing import Tuple
 
 from yacs.config import CfgNode
 from torch.utils.data import IterableDataset, DataLoader, Sampler
+from torch.utils.data.distributed import DistributedSampler
 
 from zcls2.data.transform.build import build_transform
-from zcls2.data.sampler.build import build_sampler
 
 from .dataloader.build import build_dataloader
 from .dataset.build import build_dataset
@@ -26,11 +26,13 @@ def build_data(cfg: CfgNode, w_path: bool = False) -> Tuple[Sampler, DataLoader,
     val_transform, val_target_transform = build_transform(cfg, is_train=False)
     val_dataset = build_dataset(cfg, val_transform, val_target_transform, is_train=False)
 
+    train_sampler = None
+    val_sampler = None
     if isinstance(train_dataset, IterableDataset):
-        train_sampler, val_sampler = None, None
         shuffle = False
     else:
-        train_sampler, val_sampler = build_sampler(cfg, train_dataset, val_dataset)
+        if cfg.DISTRIBUTED:
+            train_sampler = DistributedSampler(train_dataset)
         shuffle = train_sampler is None
 
     train_loader, val_loader = build_dataloader(cfg,

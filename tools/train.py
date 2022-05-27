@@ -11,16 +11,11 @@ import torch.utils.data.distributed
 from yacs.config import CfgNode
 from argparse import Namespace
 
-# from zcls2.config import get_cfg_defaults
-# from zcls2.data.build import build_data
 from zcls2.data.transform.build import create_mixup_fn
 from zcls2.data.dataset.mp_dataset import MPDataset
 from zcls2.optim.optimizer.build import build_optimizer
 from zcls2.optim.lr_scheduler.build import build_lr_scheduler
-# from zcls2.model.criterion.build import build_criterion
-# from zcls2.model.model.build import build_model
 from zcls2.engine.trainer import train
-# from zcls2.engine.infer import validate
 from zcls2.util.distributed import init_dist
 from zcls2.util.parser import parse, load_cfg
 from zcls2.util.collect_env import collect_env_info
@@ -194,6 +189,7 @@ def main():
             end = time.time()
             logger.info("One epoch validate need: {:.3f}".format((end - start)))
         torch.distributed.barrier()
+
 
 if __name__ == '__main__':
     main()

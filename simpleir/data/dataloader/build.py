@@ -18,7 +18,8 @@ from zcls2.data.dataloader.collate import fast_collate
 
 
 def build_dataloader(cfg: CfgNode, train_dataset: Dataset, val_dataset: Dataset,
-                     train_sampler: Sampler, val_sampler: Sampler, shuffle: bool) -> Tuple[Any, Any]:
+                     train_sampler: Sampler = None, val_sampler: Sampler = None,
+                     shuffle: bool = False) -> Tuple[Any, Any]:
     train_batch_size = cfg.DATALOADER.TRAIN_BATCH_SIZE
     test_batch_size = cfg.DATALOADER.TEST_BATCH_SIZE
     num_workers = cfg.DATALOADER.NUM_WORKERS

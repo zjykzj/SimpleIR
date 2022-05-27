@@ -102,7 +102,7 @@ def main():
         resume(cfg, model, device=device)
 
     # # Data loading code
-    train_sampler, train_loader, val_loader = build_data(cfg)
+    _, _, val_loader = build_data(cfg)
 
     if cfg.EVALUATE:
         logger.info("=> Evaluate now")

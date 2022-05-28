@@ -14,8 +14,6 @@ from argparse import Namespace
 from zcls2.util.distributed import init_dist
 from zcls2.util.parser import parse, load_cfg
 from zcls2.util.collect_env import collect_env_info
-from zcls2.util.misc import resume
-
 from zcls2.util import logging
 
 logger = logging.get_logger(__name__)
@@ -93,10 +91,13 @@ def main():
     # # Data loading code
     _, _, val_loader = build_data(cfg)
 
+    start = time.time()
     if cfg.EVALUATE:
         logger.info("=> Evaluate now")
         validate(cfg, val_loader, model, criterion)
         return
+    end = time.time()
+    logger.info("One epoch eval need: {:.3f}".format((end - start)))
 
 
 if __name__ == '__main__':

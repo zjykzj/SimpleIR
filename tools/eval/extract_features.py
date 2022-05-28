@@ -7,11 +7,10 @@
 @description:
 """
 
-import os
 import argparse
 
 from simpleir.configs import get_cfg_defaults
-from simpleir.utils.extract.helper import Extractor
+from simpleir.utils.extract.extractor import Extractor
 
 from zcls2.util import logging
 

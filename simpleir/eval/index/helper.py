@@ -6,27 +6,28 @@
 @author: zj
 @description: 
 """
-import glob
 from typing import Dict, List
 
-import os
 import torch
-import pickle
 
 from enum import Enum
+from zcls2.util import logging
+
+logger = logging.get_logger(__name__)
 
 from .distancer import DistanceType, do_distance
 from .ranker import do_rank, RankType
 from .re_ranker import do_re_rank, ReRankType
+from simpleir.utils.util import load_feats
 
 
 class IndexMode(Enum):
     """
     Index mode
-    mode = 0: Make query as gallery and Batch update gallery set
+    mode = 0: Make query as gallery and batch update gallery set
     mode = 1: Make query as gallery and single update gallery set
-    mode = 2: Set gallery set and No update
-    mode = 3: Set gallery set and Batch update gallery set
+    mode = 2: Set gallery set and no update
+    mode = 3: Set gallery set and batch update gallery set
     mode = 4: Set gallery set and single update gallery set
     """
     ZERO = 0
@@ -36,24 +37,9 @@ class IndexMode(Enum):
     FOUR = 4
 
 
-def load_feats(feat_dir: str, prefix='part_') -> Dict:
-    assert os.path.isdir(feat_dir), feat_dir
-
-    gallery_dict = dict()
-
-    file_list = glob.glob(os.path.join(feat_dir, f'{prefix}*.pkl'))
-    for file_path in file_list:
-        with open(file_path, 'rb') as f:
-            tmp_dict = pickle.load(f)
-
-            gallery_dict.update(tmp_dict['feats'])
-
-    return gallery_dict
-
-
 class IndexHelper:
     """
-    Object index. Including Rank and Re_Rank module
+    Object retrieval. Including Rank and Re_Rank module
     """
 
     def __init__(self, top_k: int = 10, distance_type='EUCLIDEAN',
@@ -81,6 +67,7 @@ class IndexHelper:
             IndexMode.THREE,
             IndexMode.FOUR
         ] and self.gallery_dir != '':
+            logger.info(f"Loaded feats from {self.gallery_dir}")
             self.gallery_dict = load_feats(self.gallery_dir)
 
             if self.max_num > 0:

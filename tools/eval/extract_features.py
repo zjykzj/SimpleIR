@@ -4,7 +4,13 @@
 @date: 2022/4/19 上午10:55
 @file: extract_features.py
 @author: zj
-@description:
+@description: Extract features
+
+USAGE 1: CUDA_VISIBLE_DEVICES=0 python tools/eval/extract_features.py <config-file>
+
+Default for query set. Add `--gallery` param to extract gallery set
+
+USAGE 2: CUDA_VISIBLE_DEVICES=0 python tools/eval/extract_features.py <config-file> --gallery
 """
 
 import argparse
@@ -32,21 +38,21 @@ def parse_args():
 if __name__ == '__main__':
     # Parameter configuration
     args = parse_args()
-    print('args:', args)
     save_interval = args.save_interval
 
     cfg = get_cfg_defaults()
     cfg.merge_from_file(args.cfg)
 
+    logging.setup_logging(local_rank=cfg.RANK_ID, output_dir=None)
+    logger.info(f"Loaded args: {args}")
+
     if args.gallery:
         dst_root = cfg.EVAL.INDEX.GALLERY_DIR
     else:
         dst_root = cfg.EVAL.FEATURE.QUERY_DIR
-    print(f'extract feats to {dst_root}')
-
-    logging.setup_logging(local_rank=cfg.RANK_ID, output_dir=None)
+    logger.info(f'extract feats to {dst_root}')
 
     # Extract
     extractor = Extractor(cfg, is_gallery=args.gallery)
-    print('extract ...')
+    logger.info('extract ...')
     extractor.run(dst_root, save_prefix='part_', save_interval=save_interval)

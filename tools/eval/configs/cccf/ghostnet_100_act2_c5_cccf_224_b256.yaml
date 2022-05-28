@@ -11,11 +11,12 @@ EVAL:
     ENHANCE_TYPE: 'IDENTITY'
     QUERY_DIR: 'outputs/ghostnet_100_act2_c5_cccf_224_b256/query/'
   INDEX:
-    MAX_CATE_NUM: 5
     DISTANCE_TYPE: 'EUCLIDEAN'
     RANK_TYPE: 'NORMAL'
     RE_RANK_TYPE: 'IDENTITY'
     GALLERY_DIR: 'outputs/ghostnet_100_act2_c5_cccf_224_b256/gallery/'
+    MAX_CATE_NUM: 5
+    MODE: 0
   METRIC:
     EVAL_TYPE: 'ACCURACY'
 DATALOADER:

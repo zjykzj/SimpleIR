@@ -83,6 +83,11 @@ class IndexHelper:
         ] and self.gallery_dir != '':
             self.gallery_dict = load_feats(self.gallery_dir)
 
+            if self.max_num > 0:
+                for key in self.gallery_dict.keys():
+                    if len(self.gallery_dict[key]) > self.max_num:
+                        self.gallery_dict[key] = self.gallery_dict[key][:self.max_num]
+
     def get_gallery_set(self):
         gallery_key_list = list()
         gallery_value_list = list()
@@ -95,6 +100,17 @@ class IndexHelper:
             gallery_value_list.extend(values)
 
         return gallery_key_list, gallery_value_list
+
+    def update_gallery_set(self, feat: torch.Tensor, target: torch.Tensor) -> None:
+        truth_key = int(target)
+        # Add feat to the gallery every time.
+        if truth_key not in self.gallery_dict.keys():
+            self.gallery_dict[truth_key] = list()
+
+        self.gallery_dict[truth_key].append(feat)
+        if self.max_num > 0 and len(self.gallery_dict[truth_key]) > self.max_num:
+            # If the category is full, the data added at the beginning will pop up
+            self.gallery_dict[truth_key].pop(0)
 
     def batch_update(self, feats: torch.Tensor, targets: torch.Tensor) -> List:
         gallery_key_list, gallery_value_list = self.get_gallery_set()
@@ -119,15 +135,7 @@ class IndexHelper:
         if self.index_mode is IndexMode.ZERO or self.index_mode is IndexMode.THREE:
             # Update gallery dict
             for idx, (feat, target) in enumerate(zip(feats, targets)):
-                truth_key = int(target)
-
-                # Add feat to the gallery every time.
-                if truth_key not in self.gallery_dict.keys():
-                    self.gallery_dict[truth_key] = list()
-                if self.max_num > 0 and len(self.gallery_dict[truth_key]) > self.max_num:
-                    # If the category is full, the data added at the beginning will pop up
-                    self.gallery_dict[truth_key].pop(0)
-                self.gallery_dict[truth_key].append(feat)
+                self.update_gallery_set(feat, target)
         else:
             assert self.index_mode is IndexMode.TWO
             pass
@@ -160,14 +168,7 @@ class IndexHelper:
             else:
                 pred_top_k_list.append([-1 for _ in range(self.top_k)])
 
-            truth_key = int(target)
-            # Add feat to the gallery every time.
-            if truth_key not in self.gallery_dict.keys():
-                self.gallery_dict[truth_key] = list()
-            if self.max_num > 0 and len(self.gallery_dict[truth_key]) > self.max_num:
-                # If the category is full, the data added at the beginning will pop up
-                self.gallery_dict[truth_key].pop(0)
-            self.gallery_dict[truth_key].append(feat)
+            self.update_gallery_set(feat, target)
 
         return pred_top_k_list
 

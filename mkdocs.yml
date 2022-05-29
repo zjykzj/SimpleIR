@@ -1,5 +1,5 @@
 # 站点名称
-site_name: 'SimpleIR(v0.8.1)'
+site_name: 'SimpleIR(v0.8.2)'
 # 仓库链接
 repo_url: https://github.com/zjykzj/SimpleIR.git
 # 作者
@@ -13,7 +13,7 @@ site_dir: 'site'
 # 额外信息
 extra:
     # 版本号
-    version: 0.8.1
+    version: 0.8.2
 # 主题
 theme: 
     # name: 'readthedocs'

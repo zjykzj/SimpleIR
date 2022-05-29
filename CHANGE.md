@@ -1,6 +1,18 @@
 
 # CHANGE
 
+## v0.8.2
+
+* New features
+  1. perf(index): update load_feats() use. [5854d8fa5](https://github.com/zjykzj/SimpleIR/tree/5854d8fa5bbf6303539a77a29d88e32c589326d2)
+  2. perf(retrieval_images): update retrieval images use. [f1f558ec33](https://github.com/zjykzj/SimpleIR/tree/f1f558ec3350dc73ec61b2f1096d537548e4683b)
+  3. perf(eval.py): add one epoch eval time cal. [d3a09ca0e7](https://github.com/zjykzj/SimpleIR/tree/d3a09ca0e7389ec793367a97480af6243389f3dd)
+  4. perf(eval.py): upgrade pretrained model use. [2ce4c00a9](https://github.com/zjykzj/SimpleIR/tree/2ce4c00a9fa53d7ee6e78a73a34ff5672604a865)
+  5. perf(index): update max_num and gallery_dict use. [a437e9ef4](https://github.com/zjykzj/SimpleIR/tree/a437e9ef49a4efa67eb3a881eeb271bd5ec1c623)
+* Bug fixes
+  1. fix(extract_features.py): fix Extractor import path. [121b466c4](https://github.com/zjykzj/SimpleIR/tree/121b466c4d0724d32811dfe1d1f0f2b24f3775a1)
+* Breaking changes
+
 ## v0.8.1
 
 * New features

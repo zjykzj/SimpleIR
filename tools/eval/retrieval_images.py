@@ -48,6 +48,7 @@ if __name__ == '__main__':
         cfg.EVAL.INDEX.MODE = args.mode
     logger.info(f'Index Mode: {cfg.EVAL.INDEX.MODE}')
 
+    # Retrieval
     indexer = RetrievalHelper(cfg)
     logger.info('Retrieval ...')
     indexer.run()

@@ -19,7 +19,7 @@ import pickle
 from tqdm import tqdm
 from yacs.config import CfgNode
 
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 from torch.utils.data._utils.collate import default_collate
 
 from zcls2.data.dataloader.collate import fast_collate
@@ -32,9 +32,10 @@ from simpleir.data.build import build_transform
 from simpleir.data.build import build_dataset
 from simpleir.models.build import build_model
 from simpleir.eval.feature.helper import FeatureHelper
+from simpleir.utils.prefetcher import data_prefetcher
 
 
-def save_part_feat(feat_dict, part_file_path):
+def save_part_feat(feat_dict, part_file_path) -> None:
     assert not os.path.isfile(part_file_path), part_file_path
 
     file_dir = os.path.split(part_file_path)[0]
@@ -45,7 +46,7 @@ def save_part_feat(feat_dict, part_file_path):
         pickle.dump(feat_dict, f)
 
 
-def create_loader(cfg, is_gallery=False):
+def create_loader(cfg: CfgNode, is_gallery: bool = False) -> DataLoader:
     val_transform, val_target_transform = build_transform(cfg, is_train=False)
     data_set = build_dataset(cfg, val_transform, val_target_transform, is_train=is_gallery, w_path=True)
 
@@ -62,7 +63,7 @@ def create_loader(cfg, is_gallery=False):
         collate_fn = default_collate
 
     # Ensure the consistency of output sequence. Set shuffle=False and num_workers=0
-    val_loader = torch.utils.data.DataLoader(
+    val_loader = DataLoader(
         data_set,
         batch_size=test_batch_size, shuffle=False,
         num_workers=0, pin_memory=True,
@@ -72,7 +73,7 @@ def create_loader(cfg, is_gallery=False):
     return val_loader
 
 
-def load_model(model, model_path, device=torch.device('cpu')):
+def load_model(model, model_path, device=torch.device('cpu')) -> None:
     logger.info("=> loading checkpoint '{}'".format(model_path))
     checkpoint = torch.load(model_path, map_location=device)
 
@@ -91,7 +92,7 @@ class Extractor:
     A helper class to extract feature maps from model, and then aggregate them.
     """
 
-    def __init__(self, cfg: CfgNode, is_gallery=False):
+    def __init__(self, cfg: CfgNode, is_gallery: bool = False) -> None:
         # Load data / model / feature_helper
         val_loader = create_loader(cfg, is_gallery=is_gallery)
 
@@ -108,6 +109,7 @@ class Extractor:
         distance_type = cfg.EVAL.FEATURE.ENHANCE_TYPE
         feature_helper = FeatureHelper(aggregate_type=aggregate_type, enhance_type=distance_type)
 
+        self.cfg = cfg
         self.data_loader = val_loader
         self.model = model
         self.feature = feature_helper
@@ -115,7 +117,7 @@ class Extractor:
 
         self.classes = self.data_loader.dataset.classes
 
-    def run(self, dst_root, save_prefix='part_', save_interval: int = 5000):
+    def run(self, dst_root, save_prefix: str = 'part_', save_interval: int = 5000) -> None:
         feat_dict = dict()
         feat_dict['classes'] = self.classes
         feat_dict['feats'] = list()
@@ -123,9 +125,8 @@ class Extractor:
 
         part_count = 0
         start = time.time()
-        for batch in tqdm(self.data_loader):
-            images, targets, paths = batch
-
+        prefetcher = data_prefetcher(self.cfg, self.data_loader)
+        for images, targets, paths in tqdm(prefetcher):
             # 提取特征
             feats = self.model(images.to(self.device))[KEY_FEAT].detach().cpu()
             new_feats = self.feature.run(feats)

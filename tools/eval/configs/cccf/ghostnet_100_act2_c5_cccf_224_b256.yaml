@@ -31,7 +31,7 @@ TRANSFORM:
   TEST_METHODS: ('Resize', 'CenterCrop', 'ToTensor')
   TEST_RESIZE: (256,)
   TEST_CROP: (224,)
-  NORMALIZE: ((0.485, 0.456, 0.406), (0.229, 0.224, 0.225), False, 255)
+  NORMALIZE: ((0.485, 0.456, 0.406), (0.229, 0.224, 0.225), False, 255.0)
 MODEL:
   ARCH: 'ghostnet_100'
   PRETRAINED: True

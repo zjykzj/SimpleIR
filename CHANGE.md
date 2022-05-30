@@ -1,6 +1,14 @@
 
 # CHANGE
 
+## v0.8.3
+
+* New features
+  1. build(python): upgrade zcls2 ~= 0.4.4 to zcls2 ~= 0.4.5. [00b7ff9cb3](https://github.com/zjykzj/SimpleIR/tree/00b7ff9cb3f3f42efca5c30921d2265071622c2a)
+  2. perf(extractor.py): add prefetcher use and update typing hints. [8de4978f1](https://github.com/zjykzj/SimpleIR/tree/8de4978f141edf01a3f80561e27a07a2f6c43232)
+* Bug fixes
+* Breaking changes
+
 ## v0.8.2
 
 * New features

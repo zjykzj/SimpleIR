@@ -17,7 +17,6 @@ from yacs.config import CfgNode
 
 import numpy as np
 from zcls2.util.meter import AverageMeter
-
 from zcls2.util import logging
 
 logger = logging.get_logger(__name__)
@@ -28,7 +27,7 @@ from simpleir.eval.metric.helper import MetricHelper
 
 class RetrievalHelper:
 
-    def __init__(self, cfg: CfgNode):
+    def __init__(self, cfg: CfgNode) -> None:
         self.top_k_list = cfg.TRAIN.TOP_K
 
         distance_type = cfg.EVAL.INDEX.DISTANCE_TYPE
@@ -51,13 +50,14 @@ class RetrievalHelper:
 
         self.query_dir = cfg.EVAL.FEATURE.QUERY_DIR
 
-    def run(self, prefix='part_'):
+    def run(self, prefix: str = 'part_') -> None:
         batch_time = AverageMeter()
         top_list = [AverageMeter() for _ in self.top_k_list]
 
         logger.info(f"Loaded feats from {self.query_dir}")
         file_list = glob.glob(os.path.join(self.query_dir, f'{prefix}*.csv'))
         file_len = len(file_list)
+
         end = time.time()
         for idx, file_path in enumerate(file_list):
             with open(file_path, 'rb') as f:
@@ -70,9 +70,9 @@ class RetrievalHelper:
                     tmp_label = tmp_feat_dict['label']
 
                     query_targets.append(tmp_label)
-                    query_feats.append(torch.from_numpy(tmp_feat))
+                    query_feats.append(tmp_feat)
 
-            query_feats = torch.stack(query_feats)
+            query_feats = torch.from_numpy(np.array(query_feats))
             query_targets = torch.from_numpy(np.array(query_targets, dtype=int))
 
             pred_top_k_list = self.index.run(query_feats, query_targets)

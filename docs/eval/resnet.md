@@ -16,7 +16,7 @@
 
 | cfg |    model   |   top1/top3/top5/top10   |       loss       | optimizer | lr-scheduler | epoch | pretrained |
 |:---:|:----------:|:-------------:|:----------------:|:---------:|:------------:|:-----:|:-----:|
-|  [r50_avgpool_c5_cccf_224_b256_e90_g4](../../configs/cccf/resnet/r50_avgpool_c5_cccf_224_b256_e90_g4.yaml)   |  resnet50  | 44.413 / 61.038 / 67.892 / 76.531  | CrossEntropyLoss |    SGD    |  MultiStepLR |   90  |   True  |
+|  [r50_avgpool_c5_cccf_224_b256_e90_g4](../../configs/cccf/resnet/r50_avgpool_c5_cccf_224_b256_e90_g4.yaml)   |  resnet50  | 56.087 / 72.485 / 78.927 / 85.996  | CrossEntropyLoss |    SGD    |  MultiStepLR |   90  |   True  |
 
 ### SCORES (Eval)
 

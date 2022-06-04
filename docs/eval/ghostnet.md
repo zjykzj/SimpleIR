@@ -19,60 +19,32 @@
 
 ### SCORES (Eval)
 
-[comment]: <> (| cfg |    model   |   top1/top3/top5/top10   |   feat_type   | max_num | aggregate | enhance | distance | rank |)
-
-[comment]: <> (|:---:|:----------:|:-------------:|:----------------:|:---------:|:------------:|:-----:|:-----:|:-----:|)
-
-[comment]: <> (|  [ghostnet_100_act2_c50_cosine_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_act2_c50_cosine_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 58.102 / 72.389 / 77.354 / 83.366   | act2 |    50    |  identity |   identity  |   cosine  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_conv_head_c50_cosine_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_conv_head_c50_cosine_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 58.093 / 72.380 / 77.373 / 83.375   | conv_head |    50    |  identity |   identity  |   cosine  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_fc_c50_cosine_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_fc_c50_cosine_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 55.390 / 70.407 / 76.185 / 82.422   | fc |    50    |  identity |   identity  |   cosine  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_conv_head_c5_cosine_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_conv_head_c5_cosine_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 54.904 / 70.341 / 75.970 / 83.207  | conv_head |    5    |  identity |   identity  |   cosine  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_act2_c5_cosine_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_act2_c5_cosine_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 54.904 / 70.341 / 75.961 / 83.226  | act2 |    5    |  identity |   identity  |   cosine  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_act2_c50_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_act2_c50_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 52.445 / 67.377 / 73.277 / 79.785   | act2 |    50    |  identity |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_conv_head_c50_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_conv_head_c50_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 52.445 / 67.377 / 73.277 / 79.776   | conv_head |    50    |  identity |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_act2_c60_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_act2_c60_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 52.436 / 67.415 / 73.324 / 79.719  | act2 |    60    |  identity |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_act2_c70_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_act2_c70_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 52.417 / 67.415 / 73.305 / 79.701  | act2 |    70    |  identity |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_act2_c40_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_act2_c40_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 52.258 / 67.377 / 73.268 / 79.738   | act2 |    40    |  identity |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_act2_c30_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_act2_c30_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 51.903 / 67.181 / 73.249 / 79.645   | act2 |    30    |  identity |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_fc_c50_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_fc_c50_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 51.716 / 67.546 / 73.932 / 80.888  | fc |    50    |  identity |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_fc_c5_cosine_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_fc_c5_cosine_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 51.697 / 67.742 / 74.596 / 81.917  | fc |    5    |  identity |   identity  |   cosine  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_act2_c20_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_act2_c20_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 51.360 / 66.919 / 72.894 / 79.364   | act2 |    20    |  identity |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_act2_c10_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_act2_c10_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 50.229 / 65.732 / 72.052 / 79.243  | act2 |    10    |  identity |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_conv_head_c5_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_conv_head_c5_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 48.172 / 63.759 / 70.201 / 77.887  | conv_head |    5    |  identity |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_act2_c5_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_act2_c5_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 48.172 / 63.740 / 70.201 / 77.878  | act2 |    5    |  identity |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_fc_c5_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_fc_c5_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 47.564 / 64.778 / 71.763 / 80.112  | fc |    5    |  identity |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_blocks_gem_c5_cosine_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_blocks_gem_c5_cosine_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 43.385 / 59.645 / 66.227 / 73.922  | blocks |    5    |  gem |   identity  |   cosine  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_blocks_gap_c5_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_blocks_gap_c5_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 41.206 / 56.802 / 63.806 / 72.099  | blocks |    5    |  gap |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_global_pool_c5_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_global_pool_c5_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 41.197 / 56.812 / 63.824 / 72.137  | global_pool |    5    |  identity |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_blocks_crow_c5_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_blocks_crow_c5_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 39.785 / 54.867 / 61.169 / 69.799  | blocks |    5    |  crow |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_blocks_gem_c5_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_blocks_gem_c5_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 38.308 / 54.053 / 61.178 / 70.173  | blocks |    5    |  gem |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_blocks_gmp_c5_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_blocks_gmp_c5_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 33.857 / 49.687 / 56.980 / 66.339  | blocks |    5    |  gmp |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_blocks_spoc_c5_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_blocks_spoc_c5_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 28.957 / 41.861 / 48.153 / 56.260  | blocks |    5    |  spoc |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_blocks_r_mac_c5_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_blocks_r_mac_c5_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 23.114 / 35.718 / 42.338 / 51.304  | blocks |    5    |  r_mac |   identity  |   euclidean  | normal  |)
-
-[comment]: <> (|  [ghostnet_100_blocks_c5_cccf_224_b256_e90_g4]&#40;../configs/cccf/ghostnet/ghostnet_100_blocks_c5_cccf_224_b256_e90_g4.yaml&#41;   |  ghostnet_100  | 6.255 / 9.696 / 11.650 / 16.568  | blocks |    5    |  identity |   identity  |   euclidean  | normal  |)
+| cfg |    model   |   top1/top3/top5/top10   |   feat_type   | max_num | aggregate | enhance | distance | rank | re_rank | index_mode |
+|:---:|:----------:|:-------------:|:----------------:|:---------:|:------------:|:-----:|:-----:|:-----:|:-----:|:-----:|
+|  [ghostnet_100_act2_c50_cosine_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_act2_c50_cosine_cccf_224_b256.yaml)   |  ghostnet_100  | 66.809 / 80.152 / 84.811 / 89.895   | act2 |    50    |  identity |   identity  |   cosine  | normal  |   identity  |   0  |
+|  [ghostnet_100_conv_head_c50_cosine_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_conv_head_c50_cosine_cccf_224_b256.yaml)   |  ghostnet_100  | 66.809 / 80.152 / 84.811 / 89.892   | conv_head |    50    |  identity |   identity  |   cosine  | normal  |   identity  |   0  |
+|  [ghostnet_100_fc_c50_cosine_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_fc_c50_cosine_cccf_224_b256.yaml)   |  ghostnet_100  | 63.932 / 78.560 / 83.630 / 89.278   | fc |    50    |  identity |   identity  |   cosine  | normal  |   identity  |   0  |
+|  [ghostnet_100_act2_c70_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_act2_c70_cccf_224_b256.yaml)   |  ghostnet_100  | 62.263 / 76.875 / 82.288 / 88.121  | act2 |    70    |  identity |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_act2_c60_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_act2_c60_cccf_224_b256.yaml)   |  ghostnet_100  | 62.127 / 76.725 / 82.155 / 88.008  | act2 |    60    |  identity |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_conv_head_c50_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_conv_head_c50_cccf_224_b256.yaml)   |  ghostnet_100  | 61.692 / 76.489 / 82.006 / 87.955   | conv_head |    50    |  identity |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_act2_c50_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_act2_c50_cccf_224_b256.yaml)   |  ghostnet_100  | 61.683 / 76.491 / 82.003 / 87.952   | act2 |    50    |  identity |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_act2_c40_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_act2_c40_cccf_224_b256.yaml)   |  ghostnet_100  | 61.248 / 76.178 / 81.896 / 87.924   | act2 |    40    |  identity |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_fc_c50_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_fc_c50_cccf_224_b256.yaml)   |  ghostnet_100  | 61.171 / 76.727 / 82.485 / 88.558  | fc |    50    |  identity |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_act2_c30_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_act2_c30_cccf_224_b256.yaml)   |  ghostnet_100  | 60.580 / 75.680 / 81.545 / 87.758   | act2 |    30    |  identity |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_conv_head_c5_cosine_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_conv_head_c5_cosine_cccf_224_b256.yaml)   |  ghostnet_100  | 59.965 / 76.061 / 82.071 / 88.796  | conv_head |    5    |  identity |   identity  |   cosine  | normal  |   identity  |   0  |
+|  [ghostnet_100_act2_c5_cosine_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_act2_c5_cosine_cccf_224_b256.yaml)   |  ghostnet_100  | 59.958 / 76.066 / 82.069 / 88.799  | act2 |    5    |  identity |   identity  |   cosine  | normal  |   identity  |   0  |
+|  [ghostnet_100_act2_c20_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_act2_c20_cccf_224_b256.yaml)   |  ghostnet_100  | 59.341 / 74.930 / 80.860 / 87.237   | act2 |    20    |  identity |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_fc_c5_cosine_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_fc_c5_cosine_cccf_224_b256.yaml)   |  ghostnet_100  | 56.823 / 73.834 / 80.432 / 87.595  | fc |    5    |  identity |   identity  |   cosine  | normal  |   identity  |   0  |
+|  [ghostnet_100_act2_c10_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_act2_c10_cccf_224_b256.yaml)   |  ghostnet_100  | 56.403 / 72.807 / 79.161 / 85.909  | act2 |    10    |  identity |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_fc_c5_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_fc_c5_cccf_224_b256.yaml)   |  ghostnet_100  | 52.987 / 70.589 / 77.698 / 85.729  | fc |    5    |  identity |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_act2_c5_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_act2_c5_cccf_224_b256.yaml)   |  ghostnet_100  | 52.887 / 69.544 / 76.302 / 83.906  | act2 |    5    |  identity |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_conv_head_c5_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_conv_head_c5_cccf_224_b256.yaml)   |  ghostnet_100  | 52.882 / 69.547 / 76.307 / 83.908  | conv_head |    5    |  identity |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_blocks_gem_c5_cosine_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_blocks_gem_c5_cosine_cccf_224_b256.yaml)   |  ghostnet_100  | 47.546 / 64.049 / 70.951 / 78.609  | blocks |    5    |  gem |   identity  |   cosine  | normal  |   identity  |   0  |
+|  [ghostnet_100_blocks_gap_c5_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_blocks_gap_c5_cccf_224_b256.yaml)   |  ghostnet_100  | 46.113 / 62.518 / 69.773 / 78.317  | blocks |    5    |  gap |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_global_pool_c5_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_global_pool_c5_cccf_224_b256.yaml)   |  ghostnet_100  | 46.110 / 62.513 / 69.773 / 78.317  | global_pool |    5    |  identity |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_blocks_crow_c5_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_blocks_crow_c5_cccf_224_b256.yaml)   |  ghostnet_100  | 44.532 / 60.295 / 67.057 / 75.238  | blocks |    5    |  crow |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_blocks_gem_c5_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_blocks_gem_c5_cccf_224_b256.yaml)   |  ghostnet_100  | 43.193 / 59.453 / 66.529 / 75.456  | blocks |    5    |  gem |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_blocks_gmp_c5_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_blocks_gmp_c5_cccf_224_b256.yaml)   |  ghostnet_100  | 38.350 / 54.525 / 61.709 / 71.012  | blocks |    5    |  gmp |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_blocks_spoc_c5_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_blocks_spoc_c5_cccf_224_b256.yaml)   |  ghostnet_100  | 32.148 / 46.092 / 52.478 / 60.970  | blocks |    5    |  spoc |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_blocks_r_mac_c5_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_blocks_r_mac_c5_cccf_224_b256.yaml)   |  ghostnet_100  | 25.395 / 38.602 / 45.014 / 53.717  | blocks |    5    |  r_mac |   identity  |   euclidean  | normal  |   identity  |   0  |
+|  [ghostnet_100_blocks_c5_cccf_224_b256](../configs/cccf/ghostnet/ghostnet_100_blocks_c5_cccf_224_b256.yaml)   |  ghostnet_100  | 7.845 / 11.945 / 14.773 / 19.593  | blocks |    5    |  identity |   identity  |   euclidean  | normal  |   identity  |   0  |

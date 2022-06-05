@@ -2,7 +2,7 @@ PRINT_FREQ: 10
 DIST_BACKEND: "nccl"
 INIT_METHOD: "env://"
 OUTPUT_DIR: 'outputs/r50_avgpool_c50_cccf_224_b256_e90_g4'
-RESUME: "outputs/r50_avgpool_cccf_224_b256_e90_g4/model_best.pth.tar"
+RESUME: "outputs/r50_avgpool_c5_cccf_224_b256_e90_g4/model_best.pth.tar"
 TRAIN:
   EVAL_EPOCH: 1
   START_EPOCH: 1

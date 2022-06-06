@@ -8,6 +8,7 @@
 """
 from typing import Any, Optional, Callable
 
+import torch
 from torchvision.datasets.folder import default_loader
 from zcls2.data.dataset import general_dataset
 
@@ -33,9 +34,9 @@ class GeneralDataset(general_dataset.GeneralDataset):
             target = self.target_transform(target)
 
         if self.w_path:
-            return image, target, img_path
+            return image, torch.tensor(int(target)), img_path
         else:
-            return image, target
+            return image, torch.tensor(int(target))
 
     def __len__(self) -> int:
         return super().__len__()

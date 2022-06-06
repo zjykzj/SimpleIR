@@ -126,12 +126,16 @@ class Extractor:
         part_count = 0
         start = time.time()
         prefetcher = data_prefetcher(self.cfg, self.data_loader)
+
         for images, targets, paths in tqdm(prefetcher):
+            if images is None:
+                break
+
             # 提取特征
             feats = self.model(images.to(self.device))[KEY_FEAT].detach().cpu()
             new_feats = self.feature.run(feats)
 
-            for path, target, feat in zip(paths, targets.numpy(), new_feats.numpy()):
+            for path, target, feat in zip(paths, targets.detach().cpu().numpy(), new_feats.numpy()):
                 feat_dict['feats'].append({
                     'path': path,
                     'label': target,
@@ -139,7 +143,7 @@ class Extractor:
                 })
                 feat_num += 1
             if feat_num > save_interval:
-                save_part_feat(feat_dict, os.path.join(dst_root, f'{save_prefix}{part_count}.csv'))
+                save_part_feat(feat_dict, os.path.join(dst_root, f'{save_prefix}{part_count}.pkl'))
                 part_count += 1
 
                 del feat_dict
@@ -148,6 +152,6 @@ class Extractor:
                 feat_dict['feats'] = list()
                 feat_num = 0
         if feat_num > 1:
-            save_part_feat(feat_dict, os.path.join(dst_root, f'{save_prefix}{part_count}.csv'))
+            save_part_feat(feat_dict, os.path.join(dst_root, f'{save_prefix}{part_count}.pkl'))
         end = time.time()
         print('time: ', end - start)

@@ -50,8 +50,11 @@ class MetricHelper:
             res.append(100.0 * k / total_num)
         return res
 
+    def map(self, pred_top_k_list: List[List], targets: np.ndarray) -> List:
+        pass
+
     def run(self, pred_top_k_list: List[List], targets: np.ndarray) -> List:
         if self.eval_type is EvaluateType.ACCURACY:
             return self.accuracy(pred_top_k_list, targets)
         if self.eval_type is EvaluateType.MAP:
-            return list()
+            return self.map(pred_top_k_list, targets)

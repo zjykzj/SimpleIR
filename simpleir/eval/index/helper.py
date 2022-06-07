@@ -6,9 +6,10 @@
 @author: zj
 @description: 
 """
-from typing import Dict, List
+from typing import Dict, List, Tuple, Union, Any
 
 import torch
+from torch import Tensor
 
 from enum import Enum
 from zcls2.util import logging
@@ -42,11 +43,10 @@ class IndexHelper:
     Object retrieval. Including Rank and Re_Rank module
     """
 
-    def __init__(self, top_k: int = 10, distance_type='EUCLIDEAN',
+    def __init__(self, distance_type='EUCLIDEAN',
                  rank_type: str = 'NORMAL', re_rank_type='IDENTITY',
                  gallery_dir: str = '', max_num: int = 0, index_mode: int = 0) -> None:
         super().__init__()
-        self.top_k = top_k
 
         self.distance_type = DistanceType[distance_type]
         self.rank_type = RankType[rank_type]
@@ -75,7 +75,7 @@ class IndexHelper:
                     if len(self.gallery_dict[key]) > self.max_num:
                         self.gallery_dict[key] = self.gallery_dict[key][:self.max_num]
 
-    def get_gallery_set(self):
+    def get_gallery_set(self) -> Tuple[Tensor, Tensor]:
         gallery_key_list = list()
         gallery_value_list = list()
 
@@ -86,7 +86,9 @@ class IndexHelper:
             gallery_key_list.extend([key for _ in range(len(values))])
             gallery_value_list.extend(values)
 
-        return gallery_key_list, gallery_value_list
+        gallery_targets = torch.tensor(gallery_key_list).int() if len(gallery_key_list) > 0 else list()
+        gallery_feats = torch.stack(gallery_value_list).float() if len(gallery_key_list) > 0 else list()
+        return gallery_targets, gallery_feats
 
     def update_gallery_set(self, feat: torch.Tensor, target: torch.Tensor) -> None:
         truth_key = int(target)
@@ -95,84 +97,78 @@ class IndexHelper:
             self.gallery_dict[truth_key] = list()
 
         self.gallery_dict[truth_key].append(feat)
-        if self.max_num > 0 and len(self.gallery_dict[truth_key]) > self.max_num:
+
+        if 0 < self.max_num < len(self.gallery_dict[truth_key]):
             # If the category is full, the data added at the beginning will pop up
             self.gallery_dict[truth_key].pop(0)
 
-    def batch_update(self, feats: torch.Tensor, targets: torch.Tensor) -> List:
-        gallery_key_list, gallery_value_list = self.get_gallery_set()
+    def batch_update(self, query_feats: torch.Tensor, query_targets: torch.Tensor) -> Tuple[List[List], Dict]:
+        gallery_targets, gallery_feats = self.get_gallery_set()
 
-        pred_top_k_list = None
-        if len(gallery_value_list) != 0:
+        rank_list = None
+        if len(gallery_targets) != 0:
             # distance
-            distance_array = do_distance(feats, torch.stack(gallery_value_list), distance_type=self.distance_type)
+            batch_dists = do_distance(query_feats, gallery_feats, distance_type=self.distance_type)
 
             # rank
-            sort_array, pred_top_k_list = do_rank(distance_array, gallery_key_list, top_k=self.top_k,
-                                                  rank_type=self.rank_type)
+            batch_sorts, rank_list = do_rank(batch_dists, gallery_targets, rank_type=self.rank_type)
 
             # re_rank
             if self.is_re_rank:
-                sort_array, pred_top_k_list = do_re_rank(feats.numpy(), torch.stack(gallery_value_list).numpy(),
-                                                         gallery_key_list, sort_array,
-                                                         top_k=self.top_k, rank_type=self.rank_type,
-                                                         re_rank_type=self.re_rank_type)
+                _, rank_list = do_re_rank(query_feats, gallery_feats, gallery_targets, batch_sorts,
+                                          rank_type=self.rank_type, re_rank_type=self.re_rank_type)
 
         # update
         if self.index_mode is IndexMode.ZERO or self.index_mode is IndexMode.THREE:
             # Update gallery dict
-            for idx, (feat, target) in enumerate(zip(feats, targets)):
+            for idx, (feat, target) in enumerate(zip(query_feats, query_targets)):
                 self.update_gallery_set(feat, target)
         else:
             assert self.index_mode is IndexMode.TWO
             pass
 
-        return pred_top_k_list
+        return rank_list, self.gallery_dict
 
-    def single_update(self, feats: torch.Tensor, targets: torch.Tensor) -> List:
+    def single_update(self, query_feats: torch.Tensor, query_targets: torch.Tensor) -> Tuple[List[List], Dict]:
         assert self.index_mode is IndexMode.ONE or self.index_mode is IndexMode.FOUR
 
         # Update gallery dict
-        pred_top_k_list = list()
-        for idx, (feat, target) in enumerate(zip(feats, targets)):
-            gallery_key_list, gallery_value_list = self.get_gallery_set()
+        rank_list = list()
+        for idx, (feat, target) in enumerate(zip(query_feats, query_targets)):
+            gallery_targets, gallery_feats = self.get_gallery_set()
 
-            if len(gallery_value_list) != 0:
+            if len(gallery_feats) != 0:
                 # distance
-                distance_array = do_distance(feat, torch.stack(gallery_value_list), distance_type=self.distance_type)
+                batch_dists = do_distance(feat, gallery_feats, distance_type=self.distance_type)
 
                 # rank
-                sort_array, tmp_pred_top_k_list = do_rank(distance_array, gallery_key_list, top_k=self.top_k,
-                                                          rank_type=self.rank_type)
+                batch_sorts, tmp_rank_list = do_rank(batch_dists, gallery_targets, rank_type=self.rank_type)
 
                 # re_rank
                 if self.is_re_rank:
-                    sort_array, tmp_pred_top_k_list = do_re_rank(feat.numpy(), torch.stack(gallery_value_list).numpy(),
-                                                                 gallery_key_list, sort_array,
-                                                                 top_k=self.top_k, rank_type=self.rank_type,
-                                                                 re_rank_type=self.re_rank_type)
-                pred_top_k_list.append(tmp_pred_top_k_list[0])
+                    _, tmp_rank_list = do_re_rank(feat, gallery_feats, gallery_targets, batch_sorts,
+                                                  rank_type=self.rank_type, re_rank_type=self.re_rank_type)
+
+                rank_list.append(tmp_rank_list[0])
             else:
-                pred_top_k_list.append([-1 for _ in range(self.top_k)])
+                rank_list.append([-1 for _ in range(gallery_targets)])
 
             self.update_gallery_set(feat, target)
 
-        return pred_top_k_list
+        return rank_list, self.gallery_dict
 
-    def run(self, feats: torch.Tensor, targets: torch.Tensor) -> List[List]:
+    def run(self, query_feats: torch.Tensor, query_targets: torch.Tensor) -> Tuple[Any, Any]:
         if self.index_mode is IndexMode.ZERO:
-            pred_top_k_list = self.batch_update(feats, targets)
-        elif self.index_mode is IndexMode.ONE:
-            pred_top_k_list = self.single_update(feats, targets)
-        elif self.index_mode is IndexMode.TWO:
-            pred_top_k_list = self.batch_update(feats, targets)
-        elif self.index_mode is IndexMode.THREE:
-            pred_top_k_list = self.batch_update(feats, targets)
-        else:
-            assert self.index_mode is IndexMode.FOUR
-            pred_top_k_list = self.single_update(feats, targets)
-
-        return pred_top_k_list
+            return self.batch_update(query_feats, query_targets)
+        if self.index_mode is IndexMode.ONE:
+            return self.single_update(query_feats, query_targets)
+        if self.index_mode is IndexMode.TWO:
+            return self.batch_update(query_feats, query_targets)
+        if self.index_mode is IndexMode.THREE:
+            return self.batch_update(query_feats, query_targets)
+        if self.index_mode is IndexMode.FOUR:
+            return self.single_update(query_feats, query_targets)
+        return None, None
 
     def clear(self) -> None:
         del self.gallery_dict

@@ -29,22 +29,22 @@ class EvalHelper:
         super().__init__()
         self.feature = FeatureHelper(aggregate_type=aggregate_type, enhance_type=enhance_type)
         assert len(top_k_list) >= 1
-        self.index = IndexHelper(top_k=top_k_list[-1],
-                                 distance_type=distance_type,
+        self.index = IndexHelper(distance_type=distance_type,
                                  rank_type=rank_type,
                                  re_rank_type=re_rank_type,
                                  gallery_dir=gallery_dir,
                                  max_num=max_num,
-                                 index_mode=index_mode)
+                                 index_mode=index_mode
+                                 )
         self.metric = MetricHelper(top_k_list=top_k_list, eval_type=eval_type)
 
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
 
-    def run(self, feats: torch.Tensor, targets: torch.Tensor) -> List:
-        new_feats = self.feature.run(feats)
-        pred_top_k_list = self.index.run(new_feats, targets)
-        res = self.metric.run(pred_top_k_list, targets.numpy())
+    def run(self, query_feats: torch.Tensor, query_targets: torch.Tensor) -> List:
+        new_query_feats = self.feature.run(query_feats)
+        rank_list, gallery_dict = self.index.run(new_query_feats, query_targets)
+        res = self.metric.run(rank_list, gallery_dict, query_targets.numpy())
         return res
 
     def init(self) -> None:

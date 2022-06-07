@@ -7,7 +7,7 @@
 @description: 
 """
 
-from typing import Tuple, List
+from typing import Tuple, List, Dict
 
 from enum import Enum
 
@@ -30,15 +30,15 @@ class MetricHelper:
         self.top_k_list = top_k_list
         self.eval_type = EvaluateType[eval_type]
 
-    def accuracy(self, pred_top_k_list: List[List], targets: np.ndarray) -> List:
+    def accuracy(self, pred_list: List[List], targets: np.ndarray) -> List:
         top_k_similarity_list = [0 for _ in self.top_k_list]
-        if pred_top_k_list is None:
+        if pred_list is None:
             pass
         else:
-            assert len(pred_top_k_list) == len(targets)
+            assert len(pred_list) == len(targets)
             for idx, target in enumerate(targets):
                 truth_key = int(target)
-                sorted_list = pred_top_k_list[idx]
+                sorted_list = pred_list[idx]
 
                 for i, k in enumerate(self.top_k_list):
                     if truth_key in sorted_list[:k]:
@@ -53,8 +53,8 @@ class MetricHelper:
     def map(self, pred_top_k_list: List[List], targets: np.ndarray) -> List:
         pass
 
-    def run(self, pred_top_k_list: List[List], targets: np.ndarray) -> List:
+    def run(self, pred_list: List[List], gallery_dict: Dict, targets: np.ndarray) -> List:
         if self.eval_type is EvaluateType.ACCURACY:
-            return self.accuracy(pred_top_k_list, targets)
+            return self.accuracy(pred_list, targets)
         if self.eval_type is EvaluateType.MAP:
-            return self.map(pred_top_k_list, targets)
+            return self.map(pred_list, targets)

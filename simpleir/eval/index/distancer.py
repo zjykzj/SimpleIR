@@ -61,8 +61,7 @@ def cosine_distance(query_feats: torch.Tensor, gallery_feats: torch.Tensor) -> t
 
 
 def do_distance(query_feats: torch.Tensor, gallery_feats: torch.Tensor,
-                distance_type: DistanceType = DistanceType.EUCLIDEAN) \
-        -> np.ndarray:
+                distance_type: DistanceType = DistanceType.EUCLIDEAN) -> torch.Tensor:
     """
     Calculate distance (Euclidean distance / Cosine distance)
     """
@@ -70,10 +69,10 @@ def do_distance(query_feats: torch.Tensor, gallery_feats: torch.Tensor,
         query_feats = query_feats.reshape(1, -1)
 
     if distance_type is DistanceType.EUCLIDEAN:
-        distance_array = euclidean_distance(query_feats, gallery_feats).numpy()
+        batch_dists = euclidean_distance(query_feats, gallery_feats)
     elif distance_type is DistanceType.COSINE:
-        distance_array = cosine_distance(query_feats, gallery_feats).numpy()
+        batch_dists = cosine_distance(query_feats, gallery_feats)
     else:
         raise ValueError(f'{distance_type} does not support')
 
-    return distance_array
+    return batch_dists

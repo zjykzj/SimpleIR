@@ -1,6 +1,20 @@
 
 # CHANGE
 
+## v0.8.4
+
+* New features
+  1. perf(rerank): add torch qe operation. [41d39ddd8f](https://github.com/zjykzj/SimpleIR/tree/41d39ddd8f3db97038b1cfde6b353f614fa55495)
+  2. refactor(eval): use torch.Tensor replace np.ndarray. [1f0d01a7a](https://github.com/zjykzj/SimpleIR/tree/1f0d01a7af2aa4270d87f680095fcdc0172198fd)
+  3. feat(utils): add torch/numpy argsort use. [3dd48d6af8](https://github.com/zjykzj/SimpleIR/tree/3dd48d6af8cbfd38ebd544b44eaaea097b3cb37f)
+  4. perf(oxford5k): update data split way and save way. [613e17c1910](https://github.com/zjykzj/SimpleIR/tree/613e17c191020a90f8fd7fa1f286ec43ed90591a)
+  5. feat(eval): add split_file for Caltech101/CUB/Indoor/Oxford5k, derived from pyretri. [9bc86019](https://github.com/zjykzj/SimpleIR/tree/9bc860191a16b6a235e01e76c6848c789fe6413e)
+  6. feat(split): add Oxford5k support. [b38ce794b](https://github.com/zjykzj/SimpleIR/tree/b38ce794bee25fa16ddb538fc94448968399c5d8)
+* Bug fixes
+  1. fix(prefetcher): update next() use. [50f8364](https://github.com/zjykzj/SimpleIR/tree/50f83646a4557ee575898f8abad7355ca469af4a) 
+  2. fix(prefetcher): make data_prefetcher be Iterator. [707bae18b](https://github.com/zjykzj/SimpleIR/tree/707bae18b11d0a11adc2470adbe567da1138d3af)
+* Breaking changes
+
 ## v0.8.3
 
 * New features

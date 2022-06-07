@@ -68,13 +68,7 @@ class data_prefetcher():
             self.next_input = self.next_input.float()
             self.next_input = self.next_input.sub_(self.mean).div_(self.std)
 
-    def __iter__(self):
-        return self
-
-    def __len__(self):
-        return self.len
-
-    def __next__(self):
+    def next(self):
         torch.cuda.current_stream().wait_stream(self.stream)
         input = self.next_input
         target = self.next_target
@@ -86,3 +80,12 @@ class data_prefetcher():
         self.preload()
         # return input, target
         return input, target, path
+
+    def __iter__(self):
+        return self
+
+    def __len__(self):
+        return self.len
+
+    def __next__(self):
+        return self.next()

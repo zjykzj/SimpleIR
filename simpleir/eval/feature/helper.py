@@ -25,10 +25,10 @@ class FeatureHelper:
         self.enhance_type = EnhanceType[enhance_type]
 
     def run(self, feats: torch.Tensor) -> torch.Tensor:
-        feats = do_aggregate(feats, aggregate_type=self.aggregate_type)
+        aggregated_feats = do_aggregate(feats, aggregate_type=self.aggregate_type)
 
         # Flatten the eigenvector into a one-dimensional vector
-        feats = feats.reshape(feats.shape[0], -1)
+        reshape_feats = aggregated_feats.reshape(aggregated_feats.shape[0], -1)
 
-        feats = do_enhance(feats, enhance_type=self.enhance_type)
-        return feats
+        enhanced_feats = do_enhance(reshape_feats, enhance_type=self.enhance_type)
+        return enhanced_feats

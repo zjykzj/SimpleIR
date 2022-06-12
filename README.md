@@ -13,10 +13,21 @@
   <a href="https://github.com/RichardLitt/standard-readme"><img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square"></a>
   <a href="https://conventionalcommits.org"><img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg"></a>
   <a href="http://commitizen.github.io/cz-cli/"><img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg"></a>
+  <a href="https://libraries.io/pypi/simpleir"><img src="https://img.shields.io/librariesio/github/zjykzj/SimpleIR"></a>
+<br>
   <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/badge/PYPI-simpleir-brightgreen"></a>
+  <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/v/simpleir"></a>
+  <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/dd/simpleir?style=plastic"></a>
+  <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/l/simpleir"></a>
+<br>
   <a href='https://zcls2.readthedocs.io/en/latest/?badge=latest'>
       <img src='https://readthedocs.org/projects/simpleir/badge/?version=latest' alt='Documentation Status' />
   </a>
+  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/v/tag/zjykzj/simpleir"></a>
+  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/forks/zjykzj/simpleir?style=social"></a>
+  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/stars/zjykzj/simpleir?style=social"></a>
+  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/downloads/zjykzj/simpleir/total"></a>
+  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/commit-activity/y/zjykzj/simpleir"></a>
 </p>
 
 ## Table of Contents

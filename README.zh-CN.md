@@ -16,6 +16,7 @@
   <a href="https://libraries.io/pypi/simpleir"><img src="https://img.shields.io/librariesio/github/zjykzj/SimpleIR"></a>
 <br>
   <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/badge/PYPI-simpleir-brightgreen"></a>
+  <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/pyversions/simpleir"></a>
   <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/v/simpleir"></a>
   <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/l/simpleir"></a>
   <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/dd/simpleir?style=plastic"></a>

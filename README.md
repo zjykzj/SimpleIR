@@ -17,13 +17,14 @@
 <br>
   <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/badge/PYPI-simpleir-brightgreen"></a>
   <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/v/simpleir"></a>
-  <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/dd/simpleir?style=plastic"></a>
   <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/l/simpleir"></a>
+  <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/dd/simpleir?style=plastic"></a>
 <br>
   <a href='https://zcls2.readthedocs.io/en/latest/?badge=latest'>
       <img src='https://readthedocs.org/projects/simpleir/badge/?version=latest' alt='Documentation Status' />
   </a>
   <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/v/tag/zjykzj/simpleir"></a>
+  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/repo-size/zjykzj/simpleir"></a>
   <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/forks/zjykzj/simpleir?style=social"></a>
   <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/stars/zjykzj/simpleir?style=social"></a>
   <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/downloads/zjykzj/simpleir/total"></a>

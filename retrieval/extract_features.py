@@ -127,7 +127,6 @@ def main():
     res_dict = process(data_loader, model, save_dir=args.save_dir)
 
     info_dict = {
-        'description': '',
         'feat': args.layer,
         'model': args.model_arch,
         'pretrained': args.pretrained,

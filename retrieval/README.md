@@ -1,22 +1,68 @@
 # README
 
-1. 特征提取阶段的特征保存
-2. 特征检索阶段的检索保存
-3. 针对不同评估策略的计算
+There are three steps for image retrieval, that is
 
-特征保存：
+1. Feature extraction
+2. Feature retrieval
+3. Retrieval evaluation
 
-1. 按照图片名保存对应特征
-2. 另外创建一个info.pkl文件，保存使用的模型架构／预训练路径／提取特征位置／类别列表／内容列表（包括图片名对应的标签）
+## Feature Extraction
 
-特征检索：
+First, you should appoint `model_arch` and feature `layer`, then you should input image paths. we provide `General` dataset class, it needs two files: 
 
-1. 给定特征集路径，读取info.pkl文件，依次读取图像特征
-2. 依次计算查询特征和检索特征的检索
-3. 按照图片名保存检索结果，另外生成一个info.pkl文件，保存相关信息，包括呢内容列表／类别名
+1. data.csv: each line represents an image path and its corresponding label in the following format:
+    ```text
+    /path/to/img1.jpg,,label1
+    /path/to/img２.jpg,,label2
+    ... 
+    ```
+2. cls.csv: each line represents a class name, and it corresponds to the label:
+    ```text
+    cls1
+    cls2
+    ...
+    ```
 
-特征评估
+Then, execute the program according to the following code
 
-1. 给定检索结果路径，读取info.pkl文件，依次读取检索结果
-2. 计算结果，比如准确率/mAP
+```shell
+python extract_features.py --model-arch resnet50 --layer fc --dataset General --image-dir data/train/ --save-dir data/gallery_fc
+python extract_features.py --model-arch resnet50 --layer fc --dataset General --image-dir data/test/ --save-dir data/query_fc
+```
+
+Finally, you can find features in `save-dir`. The features of each image are saved according to the image name, and you can find `info.pkl`, it includes the following contents:
+
+```text
+'feat': layer,
+'model': model_arch,
+'pretrained': pretrained,
+'classes': classes,
+'content': {'img_name1': label, 'img_name2': label, ...}
+```
+
+## Feature Retrieval
+
+Set the query set `query-dir` and the gallery set `gallery-dir` to perform feature retrieval
+
+```shell
+python retrieval_features.py --query-dir data/query_fc --gallery-dir data/gallery_fc --save-dir data/retrieval_fc
+python retrieval_features.py --query-dir data/query_fc --gallery-dir data/gallery_fc --save-dir data/retrieval_fc --topk 20
+```
+
+In the `save-dir`, you can find the sorting results of each query feature retrieval. There is also a file `info.pkl`, it includes the following contents:
+
+```text
+'classes': query_cls_list,
+'content': {query_name1: label1, query_name2: label2, ...},
+'query_dir': query_dir,
+'gallery_dir': gallery_dir
+```
+
+## Retrieval Evaluation
+
+Given the retrieval result path, read `info.pkl` file, read the retrieval results in turn. Evaluate retrieval performance, such as ACCURACY/mAP:
+
+```shell
+python evaluate_features.py --retrieval-dir data/retrieval_fc --eval-type ACC
+```
 

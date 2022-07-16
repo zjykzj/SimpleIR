@@ -4,7 +4,7 @@
 @date: 2022/7/14 下午3:44
 @file: retrieval_features.py
 @author: zj
-@description: Retreval features. You should set --query-dir and --gallery-dir. The results will save in --save-dir
+@description: Retrieval features. You should set --query-dir and --gallery-dir. The results will save in --save-dir
 for example,
 1. python retrieval_features.py --query-dir data/query_fc --gallery-dir data/gallery_fc --save-dir data/retrieval_fc
 2. python retrieval_features.py --query-dir data/query_fc --gallery-dir data/gallery_fc --save-dir data/retrieval_fc --topk 20

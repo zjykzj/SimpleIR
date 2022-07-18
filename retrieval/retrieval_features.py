@@ -19,6 +19,7 @@ You can find info.pkl in save-dir at the end of the program. It's a dict and sav
 import os
 import argparse
 import pickle
+import joblib
 
 from collections import OrderedDict
 
@@ -27,7 +28,6 @@ from torch import Tensor
 import torch.nn.functional as F
 
 import numpy as np
-from numpy import ndarray
 
 from tqdm import tqdm
 from typing import List
@@ -39,6 +39,14 @@ def parse_args():
                         help='Dir for loading query features. Default: None')
     parser.add_argument('--gallery-dir', metavar='GALLERY', default=None, type=str,
                         help='Dir for loading gallery features. Default: None')
+
+    parser.add_argument('--post-process', metavar='POST', default=None, type=int,
+                        help='The way to post process, including reducing dimension or feature enhanced.\n'
+                             'pp = 1: Perform L2-Norm only.\n'
+                             'pp = 2: Perform L2-Norm -> PCA -> L2-Norm.\n'
+                             'Default: None')
+    parser.add_argument('--pca', metavar='PCA', default=None, type=str,
+                        help="Path of PCA model. Default: None")
 
     parser.add_argument('--save-dir', metavar='SAVE', default=None, type=str,
                         help='Dir for saving retrieval results. Default: None')
@@ -67,6 +75,24 @@ def load_features(feat_dir):
         img_name_list.append(img_name)
 
     return feat_list, label_list, info_dict['classes'], img_name_list
+
+
+def normalize(inputs: Tensor):
+    return F.normalize(inputs, p=2.0, dim=1)
+
+
+def post_process(feature_list, pp=None, pca_path=None):
+    if pp is not None:
+        feature_list = normalize(torch.from_numpy(np.array(feature_list))).numpy()
+        if pp != 1:
+            assert pp == 2
+            assert os.path.exists(pca_path), pca_path
+            pca = joblib.load(pca_path)
+
+            feature_list = pca.transform(feature_list)
+            feature_list = normalize(torch.from_numpy(np.array(feature_list))).numpy()
+
+    return feature_list
 
 
 def euclidean_distance(x1: Tensor, x2: Tensor) -> Tensor:
@@ -110,50 +136,38 @@ def process(query_feat_tensor: Tensor, gallery_feat_tensor: Tensor, gallery_targ
     return batch_ranks[0]
 
 
-def normalize(inputs: Tensor):
-    return F.normalize(inputs, p=2.0, dim=1)
-
-
 def main():
     args = parse_args()
-    print('args:', args)
+    print('Args:', args)
 
     save_dir = args.save_dir
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
-    # 加载特征
-    print(f'save query features from {args.query_dir}')
+    print(f'Save query features from {args.query_dir}')
     query_feat_list, query_label_list, query_cls_list, query_name_list = load_features(args.query_dir)
-    print(f'save gallery features from {args.gallery_dir}')
+    print(f'Save gallery features from {args.gallery_dir}')
     gallery_feat_list, gallery_label_list, gallery_cls_list, _ = load_features(args.gallery_dir)
     assert query_cls_list == gallery_cls_list
 
+    print('Feature post process ...')
+    pp_query_feat_list = post_process(query_feat_list, pp=args.post_process, pca_path=args.pca)
+    pp_gallery_feat_list = post_process(query_feat_list, pp=args.post_process, pca_path=args.pca)
+
     # 检索特征
-    print('batch process')
+    print('Batch process ...')
     content_dict = OrderedDict()
     topk = args.topk
-    assert topk is None or (topk > 0 and topk <= len(query_feat_list))
-    for query_feat, query_label, query_name in tqdm(zip(query_feat_list, query_label_list, query_name_list)):
-        query_feat_list = [query_feat]
-        query_feat_tensor = torch.from_numpy(np.array(query_feat_list))
+    assert topk is None or (topk > 0 and topk <= len(pp_query_feat_list))
 
-        gallery_feat_tensor = torch.from_numpy(np.array(gallery_feat_list))
-        gallery_target_tensor = torch.from_numpy(np.array(gallery_label_list))
+    gallery_feat_tensor = torch.from_numpy(np.array(pp_gallery_feat_list))
+    gallery_target_tensor = torch.from_numpy(np.array(gallery_label_list))
+    for query_feat, query_label, query_name in tqdm(zip(pp_query_feat_list, query_label_list, query_name_list)):
+        tmp_query_feat_list = [query_feat]
+        query_feat_tensor = torch.from_numpy(np.array(tmp_query_feat_list))
 
         rank_label_list = process(query_feat_tensor, gallery_feat_tensor, gallery_target_tensor)
         # print(rank_label_list)
-
-        # query_feat_tensor = normalize(query_feat_tensor)
-        # gallery_feat_tensor = normalize(gallery_feat_tensor)
-        #
-        # rank_gallery_feat_array = np.array(gallery_feat_list)[rank_label_list[:10]]
-        # new_query_feat = np.sum(rank_gallery_feat_array, axis=0) + query_feat
-        #
-        # new_query_feat_list = [new_query_feat]
-        # new_query_feat_tensor = torch.from_numpy(np.array(new_query_feat_list))
-        #
-        # rank_label_list = process(new_query_feat_tensor, gallery_feat_tensor, gallery_target_tensor)
 
         save_path = os.path.join(save_dir, f'{query_name}.csv')
         np.savetxt(save_path, np.array(rank_label_list)[:topk], fmt='%d', delimiter=' ')

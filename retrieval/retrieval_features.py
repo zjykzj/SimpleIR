@@ -32,6 +32,10 @@ import numpy as np
 from tqdm import tqdm
 from typing import List
 
+dis_list = ['euclidean', 'cosine']
+
+retrieval_list = ['sort', 'knn']
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Retrieval features")
@@ -40,13 +44,10 @@ def parse_args():
     parser.add_argument('--gallery-dir', metavar='GALLERY', default=None, type=str,
                         help='Dir for loading gallery features. Default: None')
 
-    parser.add_argument('--post-process', metavar='POST', default=None, type=int,
-                        help='The way to post process, including reducing dimension or feature enhanced.\n'
-                             'pp = 1: Perform L2-Norm only.\n'
-                             'pp = 2: Perform L2-Norm -> PCA -> L2-Norm.\n'
-                             'Default: None')
-    parser.add_argument('--pca', metavar='PCA', default=None, type=str,
-                        help="Path of PCA model. Default: None")
+    parser.add_argument('--distance', metavar='DISTANCE', default='euclidean', type=str, choices=dis_list,
+                        help='The way to compute distance. Default: euclidean')
+    parser.add_argument('--retrieval', metavar='RETRIEVAL', default='sort', type=str, choices=retrieval_list,
+                        help='The way to retrieval. Default: srot')
 
     parser.add_argument('--save-dir', metavar='SAVE', default=None, type=str,
                         help='Dir for saving retrieval results. Default: None')
@@ -107,6 +108,24 @@ def euclidean_distance(x1: Tensor, x2: Tensor) -> Tensor:
     return res
 
 
+def cosine_distance(x1: Tensor, x2: Tensor) -> Tensor:
+    """
+    Calculate the distance between query set features and gallery set features.
+
+    Args:
+        x1 (torch.tensor): query set features.
+        x2 (torch.tensor): gallery set features.
+
+    Returns:
+        dis (torch.tensor): the cosine distance between query set features and gallery set features.
+    """
+    assert len(x1.shape) == len(x2.shape) == 2 and x1.shape[1] == x2.shape[1]
+    similarity_matrix = F.cosine_similarity(x1.unsqueeze(1),
+                                            x2.unsqueeze(0), dim=2)
+
+    return 1 - similarity_matrix
+
+
 def argsort(data: torch.Tensor) -> torch.Tensor:
     if len(data.shape) == 1:
         data = data.reshape(1, -1)
@@ -124,14 +143,24 @@ def normal_rank(batch_sorts: Tensor, gallery_targets: Tensor) -> List[List]:
     return rank_list
 
 
-def process(query_feat_tensor: Tensor, gallery_feat_tensor: Tensor, gallery_target_tensor: Tensor):
+def process(query_feat_tensor: Tensor, gallery_feat_tensor: Tensor, gallery_target_tensor: Tensor,
+            dis='euclidean', retrieval='sort'):
     """
     计算该查询特征与检索集特征之间的相似度，进行排序, 返回排序后的标签
     """
-    batch_dists = euclidean_distance(query_feat_tensor, gallery_feat_tensor)
-    # The more smaller distance, the more similar object
-    batch_sorts = argsort(batch_dists)
-    batch_ranks = normal_rank(batch_sorts, gallery_target_tensor)
+    if dis == 'euclidean':
+        batch_dists = euclidean_distance(query_feat_tensor, gallery_feat_tensor)
+    elif dis == 'cosine':
+        batch_dists = cosine_distance(query_feat_tensor, gallery_feat_tensor)
+    else:
+        raise ValueError(f'{dis} does not support.')
+
+    if retrieval == 'sort':
+        # The more smaller distance, the more similar object
+        batch_sorts = argsort(batch_dists)
+        batch_ranks = normal_rank(batch_sorts, gallery_target_tensor)
+    else:
+        raise ValueError(f'{retrieval} does not support')
 
     return batch_ranks[0]
 
@@ -166,7 +195,8 @@ def main():
         tmp_query_feat_list = [query_feat]
         query_feat_tensor = torch.from_numpy(np.array(tmp_query_feat_list))
 
-        rank_label_list = process(query_feat_tensor, gallery_feat_tensor, gallery_target_tensor)
+        rank_label_list = process(query_feat_tensor, gallery_feat_tensor, gallery_target_tensor,
+                                  dis=args.dis, retrieval=args.retrieval)
         # print(rank_label_list)
 
         save_path = os.path.join(save_dir, f'{query_name}.csv')

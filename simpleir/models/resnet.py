@@ -24,6 +24,7 @@ except ImportError:
 
 from zcls2.config.key_word import KEY_OUTPUT
 from simpleir.configs.key_words import KEY_FEAT
+from .model_base import ModelBase
 
 __all__ = [
     'ResNet',
@@ -32,7 +33,7 @@ __all__ = [
 ]
 
 
-class ResNet(TResNet):
+class ResNet(TResNet, ModelBase):
     _feat_list = [
         'layer4',
         'avgpool',
@@ -56,18 +57,6 @@ class ResNet(TResNet):
         self.feature_buffer = dict()
         self.feat_type = feat_type
         self._register_hook()
-
-    def _register_hook(self) -> None:
-        """
-        Register hooks to output inner feature map.
-        """
-
-        def hook(feature_buffer, fea_name, module, input, output):
-            feature_buffer[fea_name] = output.data
-
-        for fea_name in self._feat_list:
-            assert fea_name in self.feature_modules, 'unknown feature {}!'.format(fea_name)
-            self.feature_modules[fea_name].register_forward_hook(partial(hook, self.feature_buffer, fea_name))
 
     def forward(self, x: Tensor) -> Dict:
         res = super(ResNet, self).forward(x)

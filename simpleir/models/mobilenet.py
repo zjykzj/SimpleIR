@@ -16,11 +16,12 @@ from torchvision.models.mobilenetv3 import _mobilenet_v3_conf, model_urls, load_
 
 from zcls2.config.key_word import KEY_OUTPUT
 from simpleir.configs.key_words import KEY_FEAT
+from .model_base import ModelBase
 
 __all__ = ["MobileNetV3", "mobilenet_v3_large", "mobilenet_v3_small"]
 
 
-class MobileNetV3(TMobileNetV3):
+class MobileNetV3(TMobileNetV3, ModelBase):
     _feat_list = [
         'blocks', 'avgpool', 'linear', 'hardswish', 'classifier'
     ]
@@ -42,18 +43,6 @@ class MobileNetV3(TMobileNetV3):
         self.feature_buffer = dict()
         self.feat_type = feat_type
         self._register_hook()
-
-    def _register_hook(self) -> None:
-        """
-        Register hooks to output inner feature map.
-        """
-
-        def hook(feature_buffer, fea_name, module, input, output):
-            feature_buffer[fea_name] = output.data
-
-        for fea_name in self._feat_list:
-            assert fea_name in self.feature_modules, 'unknown feature {}!'.format(fea_name)
-            self.feature_modules[fea_name].register_forward_hook(partial(hook, self.feature_buffer, fea_name))
 
     def forward(self, x: Tensor) -> Dict:
         x = super().forward(x)

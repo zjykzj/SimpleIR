@@ -6,16 +6,16 @@
 @author: zj
 @description: Custom MobileNetV3, derived from zcls2
 """
-from functools import partial
-
 from zcls2.model.model.ghostnet import default_cfgs, build_model_with_cfg
 from zcls2.model.model.ghostnet import GhostNet as ZGhostNet
+
 from simpleir.configs.key_words import KEY_FEAT
+from .model_base import ModelBase
 
 __all__ = ["GhostNet", "ghostnet_050", "ghostnet_100", "ghostnet_130"]
 
 
-class GhostNet(ZGhostNet):
+class GhostNet(ZGhostNet, ModelBase):
     _feat_list = [
         'blocks', 'global_pool', 'conv_head', 'act2', 'fc'
     ]
@@ -35,18 +35,6 @@ class GhostNet(ZGhostNet):
         self.feature_buffer = dict()
         self.feat_type = feat_type
         self._register_hook()
-
-    def _register_hook(self) -> None:
-        """
-        Register hooks to output inner feature map.
-        """
-
-        def hook(feature_buffer, fea_name, module, input, output):
-            feature_buffer[fea_name] = output.data
-
-        for fea_name in self._feat_list:
-            assert fea_name in self.feature_modules, 'unknown feature {}!'.format(fea_name)
-            self.feature_modules[fea_name].register_forward_hook(partial(hook, self.feature_buffer, fea_name))
 
     def forward(self, x):
         res = super(GhostNet, self).forward(x)

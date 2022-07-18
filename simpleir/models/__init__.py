@@ -6,3 +6,11 @@
 @author: zj
 @description: 
 """
+
+from .model_base import *
+from .ghostnet import *
+from .mobilenet import *
+from .resnet import *
+from .tiny_autocoder import *
+
+from .build import *

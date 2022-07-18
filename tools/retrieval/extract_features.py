@@ -36,8 +36,7 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 
 from simpleir.configs.key_words import KEY_FEAT
-
-from model import *
+from simpleir.models import *
 from dataset import *
 
 PROCESS_WAYS = ['l2', 'pca', 'pca_w']
@@ -73,7 +72,7 @@ def load_model(arch='resnet50', pretrained=None, layer='fc'):
     model = eval(arch)()
     assert isinstance(model, torch.nn.Module)
 
-    assert hasattr(model, 'support_feat')
+    assert isinstance(model, ModelBase)
     if not model.support_feat(layer):
         raise ValueError(f'{arch} does not support {layer}')
 

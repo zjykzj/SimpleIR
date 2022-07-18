@@ -22,7 +22,7 @@ import os
 import pickle
 
 import torch
-import argparse
+from argparse import ArgumentParser, RawTextHelpFormatter
 
 from collections import OrderedDict
 
@@ -38,12 +38,12 @@ from dataset import *
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Extract features")
-    parser.add_argument('--model-arch', metavar="ARCH", default='resnet50',
+    parser = ArgumentParser(description="Extract features", formatter_class=RawTextHelpFormatter)
+    parser.add_argument('--model-arch', metavar="ARCH", default='resnet50', type=str,
                         help='Model arch for extracting features. Default: resnet50')
-    parser.add_argument('--pretrained', metavar='PRETRAINED', default=None,
+    parser.add_argument('--pretrained', metavar='PRETRAINED', default=None, type=str,
                         help='Pretrained model params path. Default: None')
-    parser.add_argument('--layer', metavar='LAYER', default='fc',
+    parser.add_argument('--layer', metavar='LAYER', default='fc', type=str,
                         help='Location of model extracted features. Default: fc')
 
     parser.add_argument('--dataset', metavar='DATASET', default='General',
@@ -82,12 +82,13 @@ def custom_fn(batches):
     return torch.stack(images), torch.stack(targets), paths
 
 
-def load_data(data_root, dataset='GeneralDataset'):
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.ToTensor(),
-        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-    ])
+def load_data(data_root, dataset='GeneralDataset', transform=None):
+    if transform is None:
+        transform = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+        ])
 
     data_set = eval(dataset)(root=data_root, transform=transform, w_path=True)
 

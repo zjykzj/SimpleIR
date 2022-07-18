@@ -98,15 +98,10 @@ def custom_fn(batches):
 
 def load_data(data_root, dataset='General', transform=None):
     if transform is None:
-        # transform = transforms.Compose([
-        #     transforms.Resize((224, 224)),
-        #     transforms.ToTensor(),
-        #     transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-        # ])
         transform = transforms.Compose([
-            transforms.Resize((256, 256)),
+            transforms.Resize((224, 224)),
             transforms.ToTensor(),
-            transforms.Normalize((0., 0., 0.), (1., 1., 1.))
+            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
         ])
 
     data_set = eval(dataset)(root=data_root, transform=transform, w_path=True)
@@ -191,7 +186,6 @@ def post_process(pp=None, rd=512, save_dir=None):
     if pp is None:
         return
 
-    # 加载全部特征
     feat_list, feat_name_list = load_features(save_dir)
     features = np.array(feat_list)
 
@@ -213,7 +207,6 @@ def post_process(pp=None, rd=512, save_dir=None):
     else:
         pass
 
-    # 保存全部特征
     save_features(features, feat_name_list, save_dir)
 
 

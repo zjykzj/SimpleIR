@@ -19,7 +19,6 @@ You can find info.pkl in save-dir at the end of the program. It's a dict and sav
 import os
 import argparse
 import pickle
-import joblib
 
 from collections import OrderedDict
 
@@ -128,7 +127,7 @@ def normal_rank(batch_sorts: Tensor, gallery_targets: Tensor) -> List[List]:
 def process(query_feat_tensor: Tensor, gallery_feat_tensor: Tensor, gallery_target_tensor: Tensor,
             distance='euclidean', retrieval='sort'):
     """
-    计算该查询特征与检索集特征之间的相似度，进行排序, 返回排序后的标签
+    Calculate the similarity between the query feature and the search set feature, sort, and return the sorted label
     """
     if distance == 'euclidean':
         batch_dists = euclidean_distance(query_feat_tensor, gallery_feat_tensor)
@@ -161,7 +160,7 @@ def main():
     gallery_feat_list, gallery_label_list, gallery_cls_list, _ = load_features(args.gallery_dir)
     assert query_cls_list == gallery_cls_list
 
-    # 检索特征
+    # Retrieval features
     print('Batch process ...')
     content_dict = OrderedDict()
     topk = args.topk

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@date: 2022/7/14 下午3:44
+@date: 2022/7/16 下午3:44
 @file: retrieval_features.py
 @author: zj
 @description: Retrieval features. You should set --query-dir and --gallery-dir. The results will save in --save-dir

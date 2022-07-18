@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@date: 2022/7/15 上午11:54
+@date: 2022/7/16 上午11:54
 @file: evaluate_features.py
 @author: zj
 @description: Evaluate retrieval results. You should set --retrieval-dir and --eval-type

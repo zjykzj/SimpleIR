@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@date: 2022/7/14 上午11:45
+@date: 2022/7/16 上午11:45
 @file: extract_features.py
 @author: zj
 @description: Extract features. You should set --image-dir and --save-dir

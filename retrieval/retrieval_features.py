@@ -78,24 +78,6 @@ def load_features(feat_dir):
     return feat_list, label_list, info_dict['classes'], img_name_list
 
 
-def normalize(inputs: Tensor):
-    return F.normalize(inputs, p=2.0, dim=1)
-
-
-def post_process(feature_list, pp=None, pca_path=None):
-    if pp is not None:
-        feature_list = normalize(torch.from_numpy(np.array(feature_list))).numpy()
-        if pp != 1:
-            assert pp == 2
-            assert os.path.exists(pca_path), pca_path
-            pca = joblib.load(pca_path)
-
-            feature_list = pca.transform(feature_list)
-            feature_list = normalize(torch.from_numpy(np.array(feature_list))).numpy()
-
-    return feature_list
-
-
 def euclidean_distance(x1: Tensor, x2: Tensor) -> Tensor:
     """
     refer to [TORCH.CDIST](https://pytorch.org/docs/stable/generated/torch.cdist.html)
@@ -144,16 +126,16 @@ def normal_rank(batch_sorts: Tensor, gallery_targets: Tensor) -> List[List]:
 
 
 def process(query_feat_tensor: Tensor, gallery_feat_tensor: Tensor, gallery_target_tensor: Tensor,
-            dis='euclidean', retrieval='sort'):
+            distance='euclidean', retrieval='sort'):
     """
     计算该查询特征与检索集特征之间的相似度，进行排序, 返回排序后的标签
     """
-    if dis == 'euclidean':
+    if distance == 'euclidean':
         batch_dists = euclidean_distance(query_feat_tensor, gallery_feat_tensor)
-    elif dis == 'cosine':
+    elif distance == 'cosine':
         batch_dists = cosine_distance(query_feat_tensor, gallery_feat_tensor)
     else:
-        raise ValueError(f'{dis} does not support.')
+        raise ValueError(f'{distance} does not support.')
 
     if retrieval == 'sort':
         # The more smaller distance, the more similar object
@@ -179,24 +161,20 @@ def main():
     gallery_feat_list, gallery_label_list, gallery_cls_list, _ = load_features(args.gallery_dir)
     assert query_cls_list == gallery_cls_list
 
-    print('Feature post process ...')
-    pp_query_feat_list = post_process(query_feat_list, pp=args.post_process, pca_path=args.pca)
-    pp_gallery_feat_list = post_process(query_feat_list, pp=args.post_process, pca_path=args.pca)
-
     # 检索特征
     print('Batch process ...')
     content_dict = OrderedDict()
     topk = args.topk
-    assert topk is None or (topk > 0 and topk <= len(pp_query_feat_list))
+    assert topk is None or (topk > 0 and topk <= len(query_feat_list))
 
-    gallery_feat_tensor = torch.from_numpy(np.array(pp_gallery_feat_list))
+    gallery_feat_tensor = torch.from_numpy(np.array(gallery_feat_list))
     gallery_target_tensor = torch.from_numpy(np.array(gallery_label_list))
-    for query_feat, query_label, query_name in tqdm(zip(pp_query_feat_list, query_label_list, query_name_list)):
+    for query_feat, query_label, query_name in tqdm(zip(query_feat_list, query_label_list, query_name_list)):
         tmp_query_feat_list = [query_feat]
         query_feat_tensor = torch.from_numpy(np.array(tmp_query_feat_list))
 
         rank_label_list = process(query_feat_tensor, gallery_feat_tensor, gallery_target_tensor,
-                                  dis=args.dis, retrieval=args.retrieval)
+                                  distance=args.distance, retrieval=args.retrieval)
         # print(rank_label_list)
 
         save_path = os.path.join(save_dir, f'{query_name}.csv')

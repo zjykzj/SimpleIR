@@ -2,7 +2,7 @@
 
 #set -eux
 
-# Usage: bash tools/train.sh <config-file> <master-port>
+# Usage: bash tools/bash_train.sh <config-file> <master-port>
 
 if [ $# == 0 ]; then
   echo "USAGE: CUDA_VISIBLE_DEVICES=0,1,2,3 bash tools/train.sh <config-file> <master-port>"

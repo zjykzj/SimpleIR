@@ -14,7 +14,7 @@ if __name__ == '__main__':
     from simpleir.configs import get_cfg_defaults
 
     cfg = get_cfg_defaults()
-    cfg.merge_from_file('tools/eval/configs/oxford/ghostnet_100_act2_c5_oxford_224_b256.yaml')
+    cfg.merge_from_file('tools/retrieval/configs/oxford/ghostnet_100_act2_c5_oxford_224_b256.yaml')
 
     loader = create_loader(cfg)
     res = data_prefetcher(cfg, loader)

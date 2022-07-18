@@ -4,9 +4,9 @@
 @date: 2022/7/16 上午11:54
 @file: evaluate_features.py
 @author: zj
-@description: Evaluate retrieval results. You should set --retrieval-dir and --eval-type
+@description: Evaluate retrieval results. You should set --retrieval-dir and --retrieval-type
 for example,
-1. python evaluate_features.py --retrieval-dir data/retrieval_fc --eval-type ACC
+1. python evaluate_features.py --retrieval-dir data/retrieval_fc --retrieval-type ACC
 """
 
 import os
@@ -24,7 +24,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Retrieval features")
     parser.add_argument('--retrieval-dir', metavar='RETRIEVAL', default=None, type=str,
                         help='Dir for loading retrieval results. Default: None')
-    parser.add_argument('--eval-type', metavar='EVAL', default='ACC', type=str,
+    parser.add_argument('--retrieval-type', metavar='EVAL', default='ACC', type=str,
                         help='Which evaluation method. Default: ACC')
 
     return parser.parse_args()

@@ -21,7 +21,7 @@ How to Use Classify Model to Realize Image Retrieval?
 
 ```shell
 cd demo/resnet/
-bash train.sh
+bash bash_train.sh
 ```
 
 ## AutoCoder Model
@@ -30,5 +30,5 @@ How to Use AutoCoder Model to Realize Image Retrieval?
 
 ```shell
 cd demo/autocoder/
-bash train.sh
+bash bash_train.sh
 ```

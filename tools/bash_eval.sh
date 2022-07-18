@@ -2,7 +2,7 @@
 
 #set -eux
 
-# Usage: bash tools/eval.sh <config-file>
+# Usage: bash tools/retrieval.sh <config-file>
 
 if [ $# == 0 ]; then
   echo "USAGE: CUDA_VISIBLE_DEVICES=0 bash tools/eval.sh <config-file>"
@@ -17,6 +17,6 @@ fi
 
 export PYTHONPATH=.
 
-python tools/eval.py -cfg "${cfg_file}" \
+python tools/retrieval.py -cfg "${cfg_file}" \
   --opt-level O1 \
   --evaluate

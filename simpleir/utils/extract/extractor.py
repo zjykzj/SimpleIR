@@ -2,7 +2,7 @@
 
 """
 @date: 2022/4/19 上午11:00
-@file: helper.py
+@file: Retriever.py
 @author: zj
 @description: 图像特征提取辅助类
 1. 批量计算图像特征
@@ -19,7 +19,7 @@ import pickle
 from tqdm import tqdm
 from yacs.config import CfgNode
 
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 from torch.utils.data._utils.collate import default_collate
 
 from zcls2.data.dataloader.collate import fast_collate
@@ -31,7 +31,7 @@ from simpleir.configs.key_words import KEY_FEAT
 from simpleir.data.build import build_transform
 from simpleir.data.build import build_dataset
 from simpleir.models.build import build_model
-from simpleir.eval.feature.helper import FeatureHelper
+from simpleir.utils.extract.helper import FeatureHelper
 from simpleir.utils.prefetcher import data_prefetcher
 
 

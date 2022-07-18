@@ -21,7 +21,7 @@ from zcls2.util.misc import to_python_float
 logger = logging.get_logger(__name__)
 
 from simpleir.configs.key_words import KEY_FEAT
-from simpleir.eval.helper import EvalHelper
+from simpleir.engine.eval import EvalHelper
 from simpleir.utils.prefetcher import data_prefetcher
 
 

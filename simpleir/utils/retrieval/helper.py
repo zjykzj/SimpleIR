@@ -1,104 +1,175 @@
 # -*- coding: utf-8 -*-
 
 """
-@date: 2022/4/19 下午8:18
-@file: helper.py
+@date: 2022/5/16 下午2:52
+@file: Retriever.py
 @author: zj
 @description: 
 """
-
-import os
-import glob
-import time
-import pickle
+from typing import Dict, List, Tuple, Union, Any
 
 import torch
-from yacs.config import CfgNode
+from torch import Tensor
 
-import numpy as np
-from zcls2.util.meter import AverageMeter
+from enum import Enum
 from zcls2.util import logging
 
 logger = logging.get_logger(__name__)
 
-from simpleir.eval.index.helper import IndexHelper
-from simpleir.eval.metric.helper import MetricHelper
+from .distancer import DistanceType, do_distance
+from .ranker import do_rank, RankType
+from .re_ranker import do_re_rank, ReRankType
+from simpleir.utils.util import load_feats
 
 
-class RetrievalHelper:
+class IndexMode(Enum):
+    """
+    Index mode
+    mode = 0: Make query as gallery and batch update gallery set
+    mode = 1: Make query as gallery and single update gallery set
+    mode = 2: Set gallery set and no update
+    mode = 3: Set gallery set and batch update gallery set
+    mode = 4: Set gallery set and single update gallery set
+    """
+    ZERO = 0
+    ONE = 1
+    TWO = 2
+    THREE = 3
+    FOUR = 4
 
-    def __init__(self, cfg: CfgNode) -> None:
-        self.top_k_list = cfg.TRAIN.TOP_K
 
-        distance_type = cfg.EVAL.INDEX.DISTANCE_TYPE
-        rank_type = cfg.EVAL.INDEX.RANK_TYPE
-        re_rank_type = cfg.EVAL.INDEX.RE_RANK_TYPE
-        gallery_dir = cfg.EVAL.INDEX.GALLERY_DIR
-        max_num = cfg.EVAL.INDEX.MAX_CATE_NUM
-        index_mode = cfg.EVAL.INDEX.MODE
-        self.index = IndexHelper(top_k=self.top_k_list[-1],
-                                 distance_type=distance_type,
-                                 rank_type=rank_type,
-                                 re_rank_type=re_rank_type,
-                                 gallery_dir=gallery_dir,
-                                 max_num=max_num,
-                                 index_mode=index_mode)
-        self.index.init()
+class IndexHelper:
+    """
+    Object retrieval. Including Rank and Re_Rank module
+    """
 
-        eval_type = cfg.EVAL.METRIC.EVAL_TYPE
-        self.metric = MetricHelper(top_k_list=self.top_k_list, eval_type=eval_type)
+    def __init__(self, distance_type='EUCLIDEAN',
+                 rank_type: str = 'NORMAL', re_rank_type='IDENTITY',
+                 gallery_dir: str = '', max_num: int = 0, index_mode: int = 0) -> None:
+        super().__init__()
 
-        self.query_dir = cfg.EVAL.FEATURE.QUERY_DIR
+        self.distance_type = DistanceType[distance_type]
+        self.rank_type = RankType[rank_type]
+        self.re_rank_type = ReRankType[re_rank_type]
 
-    def run(self, prefix: str = 'part_') -> None:
-        batch_time = AverageMeter()
-        top_list = [AverageMeter() for _ in self.top_k_list]
+        self.is_re_rank = re_rank_type != 'IDENTITY'
 
-        logger.info(f"Loaded feats from {self.query_dir}")
-        file_list = glob.glob(os.path.join(self.query_dir, f'{prefix}*.csv'))
-        file_len = len(file_list)
+        # Feature set, each category saves N features, first in first out
+        self.gallery_dict = dict()
+        self.max_num = max_num
+        self.gallery_dir = gallery_dir
 
-        end = time.time()
-        for idx, file_path in enumerate(file_list):
-            with open(file_path, 'rb') as f:
-                tmp_feats_list = pickle.load(f)['feats']
+        self.index_mode = IndexMode(index_mode)
 
-                query_feats = list()
-                query_targets = list()
-                for i, tmp_feat_dict in enumerate(tmp_feats_list):
-                    tmp_feat = tmp_feat_dict['feat']
-                    tmp_label = tmp_feat_dict['label']
+    def init(self):
+        if self.index_mode in [
+            IndexMode.TWO,
+            IndexMode.THREE,
+            IndexMode.FOUR
+        ] and self.gallery_dir != '':
+            logger.info(f"Loaded feats from {self.gallery_dir}")
+            self.gallery_dict = load_feats(self.gallery_dir)
 
-                    query_targets.append(tmp_label)
-                    query_feats.append(tmp_feat)
+            if self.max_num > 0:
+                for key in self.gallery_dict.keys():
+                    if len(self.gallery_dict[key]) > self.max_num:
+                        self.gallery_dict[key] = self.gallery_dict[key][:self.max_num]
 
-            query_feats = torch.from_numpy(np.array(query_feats))
-            query_targets = torch.from_numpy(np.array(query_targets, dtype=int))
+    def get_gallery_set(self) -> Tuple[Tensor, Tensor]:
+        gallery_key_list = list()
+        gallery_value_list = list()
 
-            pred_top_k_list = self.index.run(query_feats, query_targets)
-            prec_list = self.metric.run(pred_top_k_list, query_targets.numpy())
+        for idx, (key, values) in enumerate(self.gallery_dict.items()):
+            if len(values) == 0:
+                continue
 
-            one_query_len = len(query_feats)
-            for i, prec in enumerate(prec_list):
-                top_list[i].update(prec, one_query_len)
+            gallery_key_list.extend([key for _ in range(len(values))])
+            gallery_value_list.extend(values)
 
-            # measure elapsed time
-            batch_time.update(time.time() - end)
-            end = time.time()
+        gallery_targets = torch.tensor(gallery_key_list).int() if len(gallery_key_list) > 0 else list()
+        gallery_feats = torch.stack(gallery_value_list).float() if len(gallery_key_list) > 0 else list()
+        return gallery_targets, gallery_feats
 
-            logger_str = 'Retrieval: [{0}/{1}] ' \
-                         'Time {batch_time.val:.3f} ({batch_time.avg:.3f}) ' \
-                         'Speed {2:.3f} ({3:.3f}) '.format(
-                idx, file_len,
-                one_query_len / batch_time.val, one_query_len / batch_time.avg,
-                batch_time=batch_time)
-            for k, top in zip(self.top_k_list, top_list):
-                logger_str += f'Prec@{k} {top.val:.3f} ({top.avg:.3f}) '
-            logger.info(logger_str)
+    def update_gallery_set(self, feat: torch.Tensor, target: torch.Tensor) -> None:
+        truth_key = int(target)
+        # Add feat to the gallery every time.
+        if truth_key not in self.gallery_dict.keys():
+            self.gallery_dict[truth_key] = list()
 
-        logger_str = ' * '
-        for k, top in zip(self.top_k_list, top_list):
-            logger_str += f'Prec@{k} {top.avg:.3f} '
-        logger.info(logger_str)
+        self.gallery_dict[truth_key].append(feat)
 
-        self.index.clear()
+        if 0 < self.max_num < len(self.gallery_dict[truth_key]):
+            # If the category is full, the data added at the beginning will pop up
+            self.gallery_dict[truth_key].pop(0)
+
+    def batch_update(self, query_feats: torch.Tensor, query_targets: torch.Tensor) -> Tuple[List[List], Dict]:
+        gallery_targets, gallery_feats = self.get_gallery_set()
+
+        rank_list = None
+        if len(gallery_targets) != 0:
+            # distance
+            batch_dists = do_distance(query_feats, gallery_feats, distance_type=self.distance_type)
+
+            # rank
+            batch_sorts, rank_list = do_rank(batch_dists, gallery_targets, rank_type=self.rank_type)
+
+            # re_rank
+            if self.is_re_rank:
+                _, rank_list = do_re_rank(query_feats, gallery_feats, gallery_targets, batch_sorts,
+                                          rank_type=self.rank_type, re_rank_type=self.re_rank_type)
+
+        # update
+        if self.index_mode is IndexMode.ZERO or self.index_mode is IndexMode.THREE:
+            # Update gallery dict
+            for idx, (feat, target) in enumerate(zip(query_feats, query_targets)):
+                self.update_gallery_set(feat, target)
+        else:
+            assert self.index_mode is IndexMode.TWO
+            pass
+
+        return rank_list, self.gallery_dict
+
+    def single_update(self, query_feats: torch.Tensor, query_targets: torch.Tensor) -> Tuple[List[List], Dict]:
+        assert self.index_mode is IndexMode.ONE or self.index_mode is IndexMode.FOUR
+
+        # Update gallery dict
+        rank_list = list()
+        for idx, (feat, target) in enumerate(zip(query_feats, query_targets)):
+            gallery_targets, gallery_feats = self.get_gallery_set()
+
+            if len(gallery_feats) != 0:
+                # distance
+                batch_dists = do_distance(feat, gallery_feats, distance_type=self.distance_type)
+
+                # rank
+                batch_sorts, tmp_rank_list = do_rank(batch_dists, gallery_targets, rank_type=self.rank_type)
+
+                # re_rank
+                if self.is_re_rank:
+                    _, tmp_rank_list = do_re_rank(feat, gallery_feats, gallery_targets, batch_sorts,
+                                                  rank_type=self.rank_type, re_rank_type=self.re_rank_type)
+
+                rank_list.append(tmp_rank_list[0])
+            else:
+                rank_list.append([-1 for _ in range(gallery_targets)])
+
+            self.update_gallery_set(feat, target)
+
+        return rank_list, self.gallery_dict
+
+    def run(self, query_feats: torch.Tensor, query_targets: torch.Tensor) -> Tuple[Any, Any]:
+        if self.index_mode is IndexMode.ZERO:
+            return self.batch_update(query_feats, query_targets)
+        if self.index_mode is IndexMode.ONE:
+            return self.single_update(query_feats, query_targets)
+        if self.index_mode is IndexMode.TWO:
+            return self.batch_update(query_feats, query_targets)
+        if self.index_mode is IndexMode.THREE:
+            return self.batch_update(query_feats, query_targets)
+        if self.index_mode is IndexMode.FOUR:
+            return self.single_update(query_feats, query_targets)
+        return None, None
+
+    def clear(self) -> None:
+        del self.gallery_dict
+        self.gallery_dict = dict()

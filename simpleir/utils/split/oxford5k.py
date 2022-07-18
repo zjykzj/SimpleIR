@@ -29,7 +29,7 @@ def parse_class(img_path: str) -> str:
 
 
 class Oxford5k:
-    split_file = 'tools/eval/split_file/oxford_split.txt'
+    split_file = 'tools/retrieval/split_file/oxford_split.txt'
 
     def __init__(self, ):
         assert os.path.isfile(self.split_file)

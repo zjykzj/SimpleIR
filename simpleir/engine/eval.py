@@ -2,7 +2,7 @@
 
 """
 @date: 2022/4/27 下午5:09
-@file: helper.py
+@file: eval.py
 @author: zj
 @description: 
 """
@@ -10,9 +10,9 @@ from typing import List, Tuple
 
 import torch
 
-from .feature.helper import FeatureHelper
-from .index.helper import IndexHelper
-from .metric.helper import MetricHelper
+from simpleir.utils.extract.helper import FeatureHelper
+from simpleir.utils.retrieval.helper import IndexHelper
+from simpleir.utils.metric.helper import MetricHelper
 
 
 class EvalHelper:

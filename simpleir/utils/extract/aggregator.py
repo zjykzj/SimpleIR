@@ -6,7 +6,10 @@
 @author: zj
 @description: 
 """
+import os.path
+
 import torch
+from torch import Tensor
 from enum import Enum
 
 from .aggregate.r_mac import get_regions
@@ -23,7 +26,7 @@ class AggregateType(Enum):
     CROW = 'CROW'
 
 
-def gap(feats: torch.Tensor) -> torch.Tensor:
+def gap(feats: Tensor) -> Tensor:
     """
     Global average pooling.
 
@@ -36,7 +39,7 @@ def gap(feats: torch.Tensor) -> torch.Tensor:
     return feats
 
 
-def gmp(feats: torch.Tensor) -> torch.Tensor:
+def gmp(feats: Tensor) -> Tensor:
     """
     Global maximum pooling.
 
@@ -49,7 +52,7 @@ def gmp(feats: torch.Tensor) -> torch.Tensor:
     return feats
 
 
-def gem(feats: torch.Tensor, p: float = 3.0) -> torch.Tensor:
+def gem(feats: Tensor, p: float = 3.0) -> Tensor:
     """
     Generalized-mean pooling.
     If p = 1, GeM is equal to global average pooling;
@@ -67,7 +70,7 @@ def gem(feats: torch.Tensor, p: float = 3.0) -> torch.Tensor:
     return feats
 
 
-def r_mac(feats: torch.Tensor, level_n: int = 3) -> torch.Tensor:
+def r_mac(feats: Tensor, level_n: int = 3) -> Tensor:
     """
     Regional Maximum activation of convolutions (R-MAC).
 
@@ -90,7 +93,7 @@ def r_mac(feats: torch.Tensor, level_n: int = 3) -> torch.Tensor:
     return final_fea
 
 
-def spoc(feats: torch.Tensor, use_prior: bool = True) -> torch.Tensor:
+def spoc(feats: Tensor, use_prior: bool = True) -> Tensor:
     """
     SPoC with center prior.
     """
@@ -106,7 +109,7 @@ def spoc(feats: torch.Tensor, use_prior: bool = True) -> torch.Tensor:
     return feats
 
 
-def crow(feats: torch.Tensor, spatial_a: float = 2.0, spatial_b: float = 2.0) -> torch.Tensor:
+def crow(feats: Tensor, spatial_a: float = 2.0, spatial_b: float = 2.0) -> Tensor:
     """
     Cross-dimensional Weighting for Aggregated Deep Convolutional Features.
     """
@@ -128,23 +131,32 @@ def crow(feats: torch.Tensor, spatial_a: float = 2.0, spatial_b: float = 2.0) ->
     return feats
 
 
-def do_aggregate(feats: torch.Tensor, aggregate_type: AggregateType = AggregateType.IDENTITY) -> torch.Tensor:
+def do_aggregate(feat_tensor: Tensor, aggregate_type: AggregateType = AggregateType.IDENTITY) -> Tensor:
     """
     Feature aggregate. Specifically for conv features
     """
     if aggregate_type is AggregateType.IDENTITY:
-        return feats
+        return feat_tensor
     elif aggregate_type is AggregateType.GAP:
-        return gap(feats)
+        return gap(feat_tensor)
     elif aggregate_type is AggregateType.GMP:
-        return gmp(feats)
+        return gmp(feat_tensor)
     elif aggregate_type is AggregateType.GEM:
-        return gem(feats)
+        return gem(feat_tensor)
     elif aggregate_type is AggregateType.R_MAC:
-        return r_mac(feats)
+        return r_mac(feat_tensor)
     elif aggregate_type is AggregateType.SPOC:
-        return spoc(feats)
+        return spoc(feat_tensor)
     elif aggregate_type is AggregateType.CROW:
-        return crow(feats)
+        return crow(feat_tensor)
     else:
         raise ValueError(f'{aggregate_type} does not support')
+
+
+class Aggregator:
+
+    def __init__(self, aggregate_type='IDENTITY'):
+        self.aggregate_type = AggregateType[aggregate_type]
+
+    def run(self, feat_tensor: torch.Tensor) -> Tensor:
+        return do_aggregate(feat_tensor, self.aggregate_type)

@@ -21,19 +21,28 @@ class DistanceType(Enum):
     COSINE = 'COSINE'
 
 
-def do_distance(query_feats: torch.Tensor, gallery_feats: torch.Tensor,
+def do_distance(query_feat_tensor: torch.Tensor, gallery_feat_tensor: torch.Tensor,
                 distance_type: DistanceType = DistanceType.EUCLIDEAN) -> torch.Tensor:
     """
     Calculate distance (Euclidean distance / Cosine distance)
     """
-    if len(query_feats.shape) == 1:
-        query_feats = query_feats.reshape(1, -1)
+    if len(query_feat_tensor.shape) == 1:
+        query_feat_tensor = query_feat_tensor.reshape(1, -1)
 
     if distance_type is DistanceType.EUCLIDEAN:
-        batch_dists = euclidean_distance(query_feats, gallery_feats)
+        batch_dists_tensor = euclidean_distance(query_feat_tensor, gallery_feat_tensor)
     elif distance_type is DistanceType.COSINE:
-        batch_dists = cosine_distance(query_feats, gallery_feats)
+        batch_dists_tensor = cosine_distance(query_feat_tensor, gallery_feat_tensor)
     else:
         raise ValueError(f'{distance_type} does not support')
 
-    return batch_dists
+    return batch_dists_tensor
+
+
+class Distancer:
+
+    def __init__(self, distance_type: str = 'EUCLIDEAN'):
+        self.distance_type = DistanceType[distance_type]
+
+    def run(self, query_feat_tensor: torch.Tensor, gallery_feat_tensor: torch.Tensor):
+        return do_distance(query_feat_tensor, gallery_feat_tensor, self.distance_type)

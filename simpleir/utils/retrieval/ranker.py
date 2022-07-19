@@ -41,19 +41,28 @@ def knn_rank(batch_sorts: Tensor, gallery_targets: Tensor) -> List[List]:
     return rank_list
 
 
-def do_rank(batch_dists: Tensor, gallery_targets: Tensor,
+def do_rank(batch_dists_tensor: Tensor, gallery_targets_tensor: Tensor,
             rank_type: RankType = RankType.NORMAL) -> Tuple[Tensor, List[List]]:
-    if len(batch_dists.shape) == 1:
-        batch_dists = batch_dists.reshape(1, -1)
+    if len(batch_dists_tensor.shape) == 1:
+        batch_dists = batch_dists_tensor.reshape(1, -1)
 
     # The more smaller distance, the more similar object
-    batch_sorts = argsort(batch_dists)
+    batch_sorts = argsort(batch_dists_tensor)
 
     if rank_type is RankType.NORMAL:
-        rank_list = normal_rank(batch_sorts, gallery_targets)
+        rank_list = normal_rank(batch_sorts, gallery_targets_tensor)
     elif rank_type is RankType.KNN:
-        rank_list = knn_rank(batch_sorts, gallery_targets)
+        rank_list = knn_rank(batch_sorts, gallery_targets_tensor)
     else:
         raise ValueError(f'{rank_type} does not support')
 
     return batch_sorts, rank_list
+
+
+class Ranker:
+
+    def __init__(self, rank_type: str = 'NORMAL'):
+        self.rank_type = RankType[rank_type]
+
+    def run(self, batch_dists_tensor: Tensor, gallery_targets_tensor: Tensor, ):
+        return do_rank(batch_dists_tensor, gallery_targets_tensor, self.rank_type)

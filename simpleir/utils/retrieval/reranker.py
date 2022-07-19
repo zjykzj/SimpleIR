@@ -22,9 +22,9 @@ class ReRankType(Enum):
     QE = 'QE'
 
 
-def do_re_rank(query_feats: Tensor, gallery_feats: Tensor, gallery_targets: Tensor, batch_sorts: Tensor,
-               rank_type: RankType = RankType.NORMAL,
-               re_rank_type: ReRankType = ReRankType.IDENTITY) -> Tuple[np.ndarray, List[List]]:
+def do_rerank(query_feats: Tensor, gallery_feats: Tensor, gallery_targets: Tensor, batch_sorts: Tensor,
+              rank_type: RankType = RankType.NORMAL,
+              re_rank_type: ReRankType = ReRankType.IDENTITY) -> Tuple[np.ndarray, List[List]]:
     if len(query_feats.shape) == 1:
         query_feats = query_feats.reshape(1, -1)
 
@@ -41,3 +41,12 @@ def do_re_rank(query_feats: Tensor, gallery_feats: Tensor, gallery_targets: Tens
         raise ValueError(f'{re_rank_type} does not support')
 
     return batch_sorts, rank_list
+
+
+class ReRanker:
+
+    def __init__(self, re_rank_type='IDENTITY'):
+        self.re_rank_type = ReRankType[re_rank_type]
+
+    def run(self):
+        pass

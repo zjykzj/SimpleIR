@@ -6,170 +6,97 @@
 @author: zj
 @description: 
 """
-from typing import Dict, List, Tuple, Union, Any
+
+import os
+import pickle
+
+import numpy as np
+from tqdm import tqdm
+from collections import OrderedDict
 
 import torch
-from torch import Tensor
 
-from enum import Enum
 from zcls2.util import logging
 
 logger = logging.get_logger(__name__)
 
-from .distancer import DistanceType, do_distance
-from .ranker import do_rank, RankType
-from .re_ranker import do_re_rank, ReRankType
-from simpleir.utils.util import load_feats
+from .distancer import Distancer
+from .ranker import Ranker
+from .reranker import ReRanker
 
 
-class IndexMode(Enum):
-    """
-    Index mode
-    mode = 0: Make query as gallery and batch update gallery set
-    mode = 1: Make query as gallery and single update gallery set
-    mode = 2: Set gallery set and no update
-    mode = 3: Set gallery set and batch update gallery set
-    mode = 4: Set gallery set and single update gallery set
-    """
-    ZERO = 0
-    ONE = 1
-    TWO = 2
-    THREE = 3
-    FOUR = 4
+def load_features(feat_dir: str):
+    assert os.path.isdir(feat_dir), feat_dir
+
+    info_path = os.path.join(feat_dir, 'info.pkl')
+    with open(info_path, 'rb') as f:
+        info_dict = pickle.load(f)
+
+    feat_list = list()
+    label_list = list()
+    img_name_list = list()
+    for img_name, label in tqdm(info_dict['content'].items()):
+        feat_path = os.path.join(feat_dir, f'{img_name}.npy')
+        feat = np.load(feat_path)
+
+        feat_list.append(feat)
+        label_list.append(label)
+        img_name_list.append(img_name)
+
+    return feat_list, label_list, info_dict['classes'], img_name_list
 
 
-class IndexHelper:
-    """
-    Object retrieval. Including Rank and Re_Rank module
-    """
+class RetrievalHelper:
 
-    def __init__(self, distance_type='EUCLIDEAN',
-                 rank_type: str = 'NORMAL', re_rank_type='IDENTITY',
-                 gallery_dir: str = '', max_num: int = 0, index_mode: int = 0) -> None:
-        super().__init__()
-
-        self.distance_type = DistanceType[distance_type]
-        self.rank_type = RankType[rank_type]
-        self.re_rank_type = ReRankType[re_rank_type]
-
-        self.is_re_rank = re_rank_type != 'IDENTITY'
-
-        # Feature set, each category saves N features, first in first out
-        self.gallery_dict = dict()
-        self.max_num = max_num
+    def __init__(self, query_dir: str, gallery_dir: str, save_dir: str, topk=None,
+                 distance_type: str = 'EUCLIDEAN', rank_type: str = 'NORMAL', re_rank_type='IDENTITY',
+                 ):
+        self.query_dir = query_dir
+        assert os.path.isdir(self.query_dir), self.query_dir
         self.gallery_dir = gallery_dir
+        assert os.path.isdir(self.gallery_dir), self.gallery_dir
 
-        self.index_mode = IndexMode(index_mode)
+        self.save_dir = save_dir
+        assert os.path.isdir(self.save_dir), self.save_dir
+        self.topk = topk
 
-    def init(self):
-        if self.index_mode in [
-            IndexMode.TWO,
-            IndexMode.THREE,
-            IndexMode.FOUR
-        ] and self.gallery_dir != '':
-            logger.info(f"Loaded feats from {self.gallery_dir}")
-            self.gallery_dict = load_feats(self.gallery_dir)
+        self.distancer = Distancer(distance_type)
+        self.ranker = Ranker(rank_type)
+        self.reranker = ReRanker(re_rank_type)
 
-            if self.max_num > 0:
-                for key in self.gallery_dict.keys():
-                    if len(self.gallery_dict[key]) > self.max_num:
-                        self.gallery_dict[key] = self.gallery_dict[key][:self.max_num]
+    def run(self):
+        print(f"Loading query features from {self.query_dir}")
+        query_feat_list, query_label_list, query_cls_list, query_name_list = load_features(self.query_dir)
+        print(f"Loading query features from {self.gallery_dir}")
+        gallery_feat_list, gallery_label_list, gallery_cls_list, _ = load_features(self.gallery_dir)
+        assert query_cls_list == gallery_cls_list
 
-    def get_gallery_set(self) -> Tuple[Tensor, Tensor]:
-        gallery_key_list = list()
-        gallery_value_list = list()
+        gallery_feat_tensor = torch.from_numpy(np.array(gallery_feat_list))
+        gallery_target_tensor = torch.from_numpy(np.array(gallery_label_list))
 
-        for idx, (key, values) in enumerate(self.gallery_dict.items()):
-            if len(values) == 0:
-                continue
+        print('Retrieval ...')
+        content_dict = OrderedDict()
+        assert self.topk is None or (0 < self.topk <= len(query_feat_list))
 
-            gallery_key_list.extend([key for _ in range(len(values))])
-            gallery_value_list.extend(values)
+        for query_feat, query_label, query_name in tqdm(zip(query_feat_list, query_label_list, query_name_list)):
+            tmp_query_feat_list = [query_feat]
+            query_feat_tensor = torch.from_numpy(np.array(tmp_query_feat_list))
 
-        gallery_targets = torch.tensor(gallery_key_list).int() if len(gallery_key_list) > 0 else list()
-        gallery_feats = torch.stack(gallery_value_list).float() if len(gallery_key_list) > 0 else list()
-        return gallery_targets, gallery_feats
+            batch_dists_tensor = self.distancer.run(query_feat_tensor, gallery_feat_tensor)
 
-    def update_gallery_set(self, feat: torch.Tensor, target: torch.Tensor) -> None:
-        truth_key = int(target)
-        # Add feat to the gallery every time.
-        if truth_key not in self.gallery_dict.keys():
-            self.gallery_dict[truth_key] = list()
+            batch_sorts, rank_label_list = self.ranker.run(batch_dists_tensor, gallery_target_tensor)
 
-        self.gallery_dict[truth_key].append(feat)
+            save_path = os.path.join(self.save_dir, f'{query_name}.csv')
+            np.savetxt(save_path, np.array(rank_label_list)[:self.topk], fmt='%d', delimiter=' ')
+            content_dict[query_name] = query_label
 
-        if 0 < self.max_num < len(self.gallery_dict[truth_key]):
-            # If the category is full, the data added at the beginning will pop up
-            self.gallery_dict[truth_key].pop(0)
-
-    def batch_update(self, query_feats: torch.Tensor, query_targets: torch.Tensor) -> Tuple[List[List], Dict]:
-        gallery_targets, gallery_feats = self.get_gallery_set()
-
-        rank_list = None
-        if len(gallery_targets) != 0:
-            # distance
-            batch_dists = do_distance(query_feats, gallery_feats, distance_type=self.distance_type)
-
-            # rank
-            batch_sorts, rank_list = do_rank(batch_dists, gallery_targets, rank_type=self.rank_type)
-
-            # re_rank
-            if self.is_re_rank:
-                _, rank_list = do_re_rank(query_feats, gallery_feats, gallery_targets, batch_sorts,
-                                          rank_type=self.rank_type, re_rank_type=self.re_rank_type)
-
-        # update
-        if self.index_mode is IndexMode.ZERO or self.index_mode is IndexMode.THREE:
-            # Update gallery dict
-            for idx, (feat, target) in enumerate(zip(query_feats, query_targets)):
-                self.update_gallery_set(feat, target)
-        else:
-            assert self.index_mode is IndexMode.TWO
-            pass
-
-        return rank_list, self.gallery_dict
-
-    def single_update(self, query_feats: torch.Tensor, query_targets: torch.Tensor) -> Tuple[List[List], Dict]:
-        assert self.index_mode is IndexMode.ONE or self.index_mode is IndexMode.FOUR
-
-        # Update gallery dict
-        rank_list = list()
-        for idx, (feat, target) in enumerate(zip(query_feats, query_targets)):
-            gallery_targets, gallery_feats = self.get_gallery_set()
-
-            if len(gallery_feats) != 0:
-                # distance
-                batch_dists = do_distance(feat, gallery_feats, distance_type=self.distance_type)
-
-                # rank
-                batch_sorts, tmp_rank_list = do_rank(batch_dists, gallery_targets, rank_type=self.rank_type)
-
-                # re_rank
-                if self.is_re_rank:
-                    _, tmp_rank_list = do_re_rank(feat, gallery_feats, gallery_targets, batch_sorts,
-                                                  rank_type=self.rank_type, re_rank_type=self.re_rank_type)
-
-                rank_list.append(tmp_rank_list[0])
-            else:
-                rank_list.append([-1 for _ in range(gallery_targets)])
-
-            self.update_gallery_set(feat, target)
-
-        return rank_list, self.gallery_dict
-
-    def run(self, query_feats: torch.Tensor, query_targets: torch.Tensor) -> Tuple[Any, Any]:
-        if self.index_mode is IndexMode.ZERO:
-            return self.batch_update(query_feats, query_targets)
-        if self.index_mode is IndexMode.ONE:
-            return self.single_update(query_feats, query_targets)
-        if self.index_mode is IndexMode.TWO:
-            return self.batch_update(query_feats, query_targets)
-        if self.index_mode is IndexMode.THREE:
-            return self.batch_update(query_feats, query_targets)
-        if self.index_mode is IndexMode.FOUR:
-            return self.single_update(query_feats, query_targets)
-        return None, None
-
-    def clear(self) -> None:
-        del self.gallery_dict
-        self.gallery_dict = dict()
+        info_dict = {
+            'classes': query_cls_list,
+            'content': content_dict,
+            'query_dir': self.query_dir,
+            'gallery_dir': self.gallery_dir
+        }
+        info_path = os.path.join(self.save_dir, 'info.pkl')
+        print(f'save to {info_path}')
+        with open(info_path, 'wb') as f:
+            pickle.dump(info_dict, f)

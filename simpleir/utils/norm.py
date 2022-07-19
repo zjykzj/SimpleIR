@@ -10,7 +10,7 @@
 import torch
 
 import numpy as np
-from sklearn.preprocessing import normalize
+from sklearn.preprocessing import normalize as sknormalize
 
 
 def l2_norm(feats: torch.Tensor) -> torch.Tensor:
@@ -39,7 +39,7 @@ def l2_norm_v4(feats: torch.Tensor) -> torch.Tensor:
     if len(feats.shape) == 1:
         feats = feats.reshape(1, -1)
 
-    norm_feats = normalize(feats.numpy(), norm="l2", axis=1, return_norm=False)
+    norm_feats = sknormalize(feats.numpy(), norm="l2", axis=1, return_norm=False)
     return torch.from_numpy(norm_feats)
 
 

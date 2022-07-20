@@ -68,7 +68,7 @@ def compute_acc(rank_tensor, label_tensor, topk=(1, 5,)):
 
     print()
     for acc, k in zip(acc_list, topk):
-        print(f"[{k}] ACC: {acc}")
+        print(f"[{k}] ACC: {acc}%")
 
 
 class MetricHelper:
@@ -87,7 +87,7 @@ class MetricHelper:
         label_tensor = torch.from_numpy(np.array(label_list))
 
         if self.eval_type is EvaluateType.ACC:
-            return compute_acc(rank_tensor, label_tensor)
+            compute_acc(rank_tensor, label_tensor)
         elif self.eval_type is EvaluateType.MAP:
             pass
         else:

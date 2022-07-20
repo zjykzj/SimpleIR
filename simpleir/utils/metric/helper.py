@@ -73,7 +73,7 @@ def compute_acc(rank_tensor, label_tensor, topk=(1, 5,)):
 
 class MetricHelper:
 
-    def __init__(self, retrieval_dir, eval_type='ACC', top_k_list=(1, 5,)):
+    def __init__(self, retrieval_dir, eval_type='ACC', top_k_list=(1, 3, 5, 10)):
         self.retrieval_dir = retrieval_dir
         assert os.path.isdir(self.retrieval_dir), self.retrieval_dir
 
@@ -87,7 +87,7 @@ class MetricHelper:
         label_tensor = torch.from_numpy(np.array(label_list))
 
         if self.eval_type is EvaluateType.ACC:
-            compute_acc(rank_tensor, label_tensor)
+            compute_acc(rank_tensor, label_tensor, topk=self.top_k_list)
         elif self.eval_type is EvaluateType.MAP:
             pass
         else:

@@ -33,10 +33,10 @@ def parse_args():
     parser.add_argument('--aggregate', dest='aggregate',
                         metavar='AGGREGATE', default='IDENTITY', type=str,
                         choices=list(AggregateType.__members__.keys()),
-                        help='The way to aggregate features. Default: None')
+                        help='The way to aggregate features. Default: IDENTITY')
     parser.add_argument('--enhance', dest='enhance',
                         metavar='PROCESS', default='IDENTITY', type=str, choices=list(EnhanceType.__members__.keys()),
-                        help='The way to post process. Default: None')
+                        help='The way to post process. Default: IDENTITY')
     parser.add_argument('-rd', '--reduce-dimension', dest='rd',
                         metavar='DIMENSION', default=512, type=int,
                         help='Dimension after dimension reduction. Default: 512')

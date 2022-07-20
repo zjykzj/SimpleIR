@@ -12,7 +12,7 @@ import torch
 from torchvision.datasets.folder import default_loader
 from zcls2.data.dataset import general_dataset
 
-__all__ = ['GeneralDataset']
+__all__ = ['GeneralDataset', 'General']
 
 
 class GeneralDataset(general_dataset.GeneralDataset):
@@ -40,3 +40,6 @@ class GeneralDataset(general_dataset.GeneralDataset):
 
     def __len__(self) -> int:
         return super().__len__()
+
+
+General = GeneralDataset

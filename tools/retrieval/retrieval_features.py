@@ -21,12 +21,12 @@ def parse_args():
     parser.add_argument('--gallery-dir', metavar='GALLERY', default=None, type=str,
                         help='Dir for loading gallery features. Default: None')
 
-    parser.add_argument('--distance', metavar='DISTANCE', default='euclidean', type=str,
+    parser.add_argument('--distance', metavar='DISTANCE', default='EUCLIDEAN', type=str,
                         choices=list(DistanceType.__members__.keys()),
-                        help='The way to compute distance. Default: euclidean')
-    parser.add_argument('--retrieval', metavar='RETRIEVAL', default='sort', type=str,
+                        help='The way to compute distance. Default: EUCLIDEAN')
+    parser.add_argument('--retrieval', metavar='RETRIEVAL', default='NORMAL', type=str,
                         choices=list(RankType.__members__.keys()),
-                        help='The way to retrieval. Default: sort')
+                        help='The way to retrieval. Default: NORMAL')
 
     parser.add_argument('--save-dir', metavar='SAVE', default=None, type=str,
                         help='Dir for saving retrieval results. Default: None')

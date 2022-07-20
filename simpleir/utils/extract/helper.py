@@ -11,14 +11,17 @@ from typing import List
 import os
 import pickle
 
+import numpy as np
 from numpy import ndarray
+
+from collections import OrderedDict
 
 from torch.nn import Module
 from torch.utils.data import DataLoader
 
-from extractor import Extractor
-from aggregator import Aggregator
-from enhancer import Enhancer
+from .extractor import Extractor
+from .aggregator import Aggregator
+from .enhancer import Enhancer
 
 
 def save_features(feat_array: ndarray, feat_name_list: List, feature_dir: str) -> None:
@@ -26,9 +29,9 @@ def save_features(feat_array: ndarray, feat_name_list: List, feature_dir: str) -
 
     for feat, feat_name in zip(feat_array, feat_name_list):
         feat_path = os.path.join(feature_dir, f'{feat_name}.npy')
-        assert os.path.isfile(feat_path), feat_path
 
-        os.remove(feat_path)
+        if os.path.isfile(feat_path):
+            os.remove(feat_path)
         np.save(feat_path, feat)
 
 
@@ -62,7 +65,7 @@ class ExtractHelper(object):
         image_name_list, target_list, feat_tensor = self.extractor.run()
 
         print("Aggregate features ...")
-        aggregated_tensor = self.aggregator.run(feat_tensor).reshape(1, -1)
+        aggregated_tensor = self.aggregator.run(feat_tensor).reshape(feat_tensor.shape[0], -1)
 
         print(f"Enhance features ...")
         enhanced_tensor = self.enhancer.run(aggregated_tensor)
@@ -70,7 +73,7 @@ class ExtractHelper(object):
         print("Save features ...")
         save_features(enhanced_tensor.numpy(), image_name_list, self.save_dir)
 
-        content_dict = dict()
+        content_dict = OrderedDict()
         for image_name, target in zip(image_name_list, target_list):
             content_dict[image_name] = target
 

@@ -23,8 +23,9 @@ def build_args(args: Namespace):
     save_dir = args.save_dir
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
+    topk = args.topk
 
-    retrieval_helper = RetrievalHelper(query_dir, gallery_dir, distance_type, retrieval_type)
+    retrieval_helper = RetrievalHelper(query_dir, gallery_dir, save_dir, topk, distance_type, retrieval_type)
     return retrieval_helper
 
 

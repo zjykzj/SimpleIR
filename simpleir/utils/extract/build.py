@@ -14,6 +14,7 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
+from simpleir.data.dataset import *
 from simpleir.models import *
 
 from .helper import ExtractHelper
@@ -76,10 +77,10 @@ def build_args(args: Namespace) -> ExtractHelper:
     rd = args.rd
 
     model = load_model(arch=model_arch, pretrained=pretrained, layer=layer)
-    print(model)
+    # print(model)
 
     data_loader = load_data(image_dir, dataset=dataset)
-    print(data_loader)
+    # print(data_loader)
 
     extract_helper = ExtractHelper(model=model, model_arch=model_arch, pretrained=pretrained, layer=layer,
                                    data_loader=data_loader, save_dir=save_dir,

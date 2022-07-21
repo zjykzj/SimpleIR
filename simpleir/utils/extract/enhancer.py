@@ -6,7 +6,7 @@
 @author: zj
 @description: 
 """
-
+import logging
 import os
 import joblib
 import torch
@@ -16,6 +16,10 @@ from numpy import ndarray
 from sklearn.decomposition import PCA
 
 from simpleir.utils.norm import l2_norm
+
+from zcls2.util import logging
+
+logger = logging.get_logger(__name__)
 
 
 class EnhanceType(Enum):
@@ -55,11 +59,11 @@ def do_enhance(feat_tensor: torch.Tensor, enhance_type: EnhanceType = EnhanceTyp
 
         if is_gallery:
             pca_model = pca_fit(feat_tensor.numpy(), rd=reduce_dimension, is_whiten=is_whiten)
-            print('Saving PCA model: %s ...' % pca_path)
+            logger.info('Saving PCA model: %s' % pca_path)
             joblib.dump(pca_model, pca_path)
         else:
             assert os.path.isfile(pca_path), pca_path
-            print('Loading PCA model: %s ...' % pca_path)
+            logger.info('Loading PCA model: %s' % pca_path)
             pca_model = joblib.load(pca_path)
 
         # Normalize

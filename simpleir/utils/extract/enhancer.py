@@ -50,16 +50,16 @@ def do_enhance(feat_tensor: torch.Tensor, enhance_type: EnhanceType = EnhanceTyp
         return l2_norm(feat_tensor)
     elif enhance_type is EnhanceType.PCA or enhance_type is EnhanceType.PCA_W:
         assert os.path.isdir(save_dir), save_dir
+        assert pca_path is not None
         is_whiten = enhance_type is EnhanceType.PCA_W
 
         if is_gallery:
             pca_model = pca_fit(feat_tensor.numpy(), rd=reduce_dimension, is_whiten=is_whiten)
-            print('Saving PCA model to %s ...' % save_dir)
-            pca_path = os.path.join(save_dir, 'pca.gz')
+            print('Saving PCA model: %s ...' % pca_path)
             joblib.dump(pca_model, pca_path)
         else:
             assert os.path.isfile(pca_path), pca_path
-            print('Loading PCA model from %s ...' % pca_path)
+            print('Loading PCA model: %s ...' % pca_path)
             pca_model = joblib.load(pca_path)
 
         # Normalize

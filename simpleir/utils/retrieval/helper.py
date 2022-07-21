@@ -16,13 +16,15 @@ from collections import OrderedDict
 
 import torch
 
+from .distancer import Distancer
+from .ranker import Ranker
+from .reranker import ReRanker
+
 from zcls2.util import logging
 
 logger = logging.get_logger(__name__)
 
-from .distancer import Distancer
-from .ranker import Ranker
-from .reranker import ReRanker
+__all__ = ['RetrievalHelper']
 
 
 def load_features(feat_dir: str):
@@ -65,16 +67,16 @@ class RetrievalHelper:
         self.reranker = ReRanker(re_rank_type)
 
     def run(self):
-        print(f"Loading query features from {self.query_dir}")
+        logger.info(f"Loading query features from {self.query_dir}")
         query_feat_list, query_label_list, query_cls_list, query_name_list = load_features(self.query_dir)
-        print(f"Loading query features from {self.gallery_dir}")
+        logger.info(f"Loading query features from {self.gallery_dir}")
         gallery_feat_list, gallery_label_list, gallery_cls_list, _ = load_features(self.gallery_dir)
         assert query_cls_list == gallery_cls_list
 
         gallery_feat_tensor = torch.from_numpy(np.array(gallery_feat_list))
         gallery_target_tensor = torch.from_numpy(np.array(gallery_label_list))
 
-        print('Retrieval ...')
+        logger.info('Retrieval ...')
         content_dict = OrderedDict()
         assert self.topk is None or (0 < self.topk <= len(query_feat_list))
 
@@ -97,6 +99,6 @@ class RetrievalHelper:
             'gallery_dir': self.gallery_dir
         }
         info_path = os.path.join(self.save_dir, 'info.pkl')
-        print(f'save to {info_path}')
+        logger.info(f'save to {info_path}')
         with open(info_path, 'wb') as f:
             pickle.dump(info_dict, f)

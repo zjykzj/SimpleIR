@@ -6,7 +6,6 @@
 @author: zj
 @description: 
 """
-import os.path
 
 import torch
 from torch import Tensor

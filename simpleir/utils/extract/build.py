@@ -8,85 +8,83 @@
 """
 
 import os
+
+from yacs.config import CfgNode
 from argparse import Namespace
 
 import torch
+from torch.nn import Module
 from torch.utils.data import DataLoader
-from torchvision import transforms
 
-from simpleir.data.dataset import *
+from simpleir.configs import get_cfg_defaults
 from simpleir.models import *
+from simpleir.data import build_data
+from simpleir.utils.util import load_model
 
 from .helper import ExtractHelper
 
+from zcls2.util import logging
 
-def load_model(arch='resnet50', pretrained=None, layer='fc'):
-    model = eval(arch)()
-    assert isinstance(model, torch.nn.Module)
+logger = logging.get_logger(__name__)
 
-    assert isinstance(model, ModelBase)
-    if not model.support_feat(layer):
-        raise ValueError(f'{arch} does not support {layer}')
-
-    model = eval(arch)(pretrained=True, feat_type=layer)
-    assert isinstance(model, torch.nn.Module)
-
-    if pretrained is not None:
-        ckpt = torch.load(pretrained, map_location='cpu')
-        model.load_state_dict(ckpt, strict=True)
-
-    model.eval()
-    return model
-
-
-def custom_fn(batches):
-    images = [batch[0] for batch in batches]
-    targets = [batch[1] for batch in batches]
-    paths = [batch[2] for batch in batches]
-
-    return torch.stack(images), torch.stack(targets), paths
-
-
-def load_data(data_root, dataset='General', transform=None):
-    if transform is None:
-        transform = transforms.Compose([
-            transforms.Resize((224, 224)),
-            transforms.ToTensor(),
-            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-        ])
-
-    data_set = eval(dataset)(root=data_root, transform=transform, w_path=True)
-
-    return DataLoader(data_set, collate_fn=custom_fn, shuffle=False, batch_size=32, num_workers=0, pin_memory=True)
+__all__ = ['build_cfg']
 
 
 def build_args(args: Namespace) -> ExtractHelper:
-    model_arch = args.model_arch
-    pretrained = args.pretrained
-    layer = args.layer
+    assert os.path.isdir(args.image_dir), args.image_dir
+    if not os.path.exists(args.save_dir):
+        os.makedirs(args.save_dir)
 
-    image_dir = args.image_dir
-    assert os.path.isdir(image_dir), image_dir
-    dataset = args.dataset
-    save_dir = args.save_dir
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
+    cfg = get_cfg_defaults()
+    cfg.MODEL.ARCH = args.model_arch
+    cfg.RESUME = args.pretrained
+    cfg.RETRIEVAL.EXTRACT.FEAT_TYPE = args.layer
 
-    aggregate = args.aggregate
-    enhance = args.enhance
-    rd = args.rd
+    if args.gallery:
+        cfg.RETRIEVAL.EXTRACT.GALLERY_DIR = args.save_dir
+        cfg.DATASET.GALLERY_DIR = args.image_dir
+    else:
+        cfg.RETRIEVAL.EXTRACT.QUERY_DIR = args.save_dir
+        cfg.DATASET.QUERY_DIR = args.image_dir
+    cfg.DATASET.NAME = args.dataset
 
-    model = load_model(arch=model_arch, pretrained=pretrained, layer=layer)
-    # print(model)
+    cfg.TRANSFORM.TEST_METHODS = ('Resize', 'CenterCrop', 'ToTensor', 'Normalize')
+    cfg.TRANSFORM.TEST_RESIZE = (256,)
+    cfg.TRANSFORM.TEST_CROP = (224, 224)
+    cfg.TRANSFORM.NORMALIZE = ((0.485, 0.456, 0.406), (0.229, 0.224, 0.225), False, 1.0)
 
-    data_loader = load_data(image_dir, dataset=dataset)
-    # print(data_loader)
+    cfg.RETRIEVAL.EXTRACT.AGGREGATE_TYPE = args.aggregate
+    cfg.RETRIEVAL.EXTRACT.ENHANCE_TYPE = args.enhance
+    cfg.RETRIEVAL.EXTRACT.REDUCE_DIMENSION = args.rd
+    cfg.freeze()
 
-    extract_helper = ExtractHelper(model=model, model_arch=model_arch, pretrained=pretrained, layer=layer,
+    device = torch.device(f'cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+    model = build_model(cfg, device)
+
+    # Optionally resume from a checkpoint
+    if cfg.RESUME:
+        logger.info("=> Resume now")
+        load_model(model, cfg.RESUME, device=device)
+
+    # Data loading
+    _, data_loader = build_data(cfg, is_train=False, is_gallery=args.gallery, w_path=True)
+
+    return build_cfg(cfg, model, data_loader, is_gallery=args.gallery, device=device)
+
+
+def build_cfg(cfg: CfgNode, model: Module, data_loader: DataLoader, is_gallery=True, device=torch.device('cpu')):
+    model_arch = cfg.MODEL.ARCH
+    pretrained = cfg.RESUME
+    layer = cfg.RETRIEVAL.EXTRACT.FEAT_TYPE
+
+    save_dir = cfg.RETRIEVAL.EXTRACT.GALLERY_DIR if is_gallery else cfg.RETRIEVAL.EXTRACT.QUERY_DIR
+
+    aggregate = cfg.RETRIEVAL.EXTRACT.AGGREGATE_TYPE
+    enhance = cfg.RETRIEVAL.EXTRACT.ENHANCE_TYPE
+    rd = cfg.RETRIEVAL.EXTRACT.REDUCE_DIMENSION
+
+    extract_helper = ExtractHelper(model=model, device=device,
+                                   model_arch=model_arch, pretrained=pretrained, layer=layer,
                                    data_loader=data_loader, save_dir=save_dir,
                                    aggregate_type=aggregate, enhance_type=enhance, reduce_dimension=rd)
     return extract_helper
-
-
-def build_cfg():
-    pass

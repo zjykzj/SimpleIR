@@ -7,18 +7,29 @@
 @description: 
 """
 
+from yacs.config import CfgNode
 from argparse import Namespace
 
+from simpleir.configs import get_cfg_defaults
 from .helper import MetricHelper
 
+__all__ = ['build_args', 'build_cfg']
 
-def build_args(args: Namespace):
-    retrieval_dir = args.retrieval_dir
-    retrieval_type = args.retrieval_type
 
-    metric_helper = MetricHelper(retrieval_dir, eval_type=retrieval_type)
+def build_args(args: Namespace, top_k_list=(1, 3, 5, 10)):
+    cfg = get_cfg_defaults()
+    cfg.RETRIEVAL.INDEX.RETRIEVAL_DIR = args.retrieval_dir
+    cfg.RETRIEVAL.METRIC.EVAL_TYPE = args.retrieval_type
+    cfg.RETRIEVAL.METRIC.TOP_K = top_k_list
+    cfg.freeze()
+
+    return build_cfg(cfg)
+
+
+def build_cfg(cfg: CfgNode):
+    retrieval_dir = cfg.RETRIEVAL.INDEX.RETRIEVAL_DIR
+    retrieval_type = cfg.RETRIEVAL.METRIC.EVAL_TYPE
+    top_k_list = cfg.RETRIEVAL.METRIC.TOP_K
+
+    metric_helper = MetricHelper(retrieval_dir, eval_type=retrieval_type, top_k_list=top_k_list)
     return metric_helper
-
-
-def build_cfg():
-    pass

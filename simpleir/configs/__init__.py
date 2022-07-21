@@ -11,40 +11,47 @@ from yacs.config import CfgNode
 
 
 def add_custom_config(_C: CfgNode) -> None:
-    # Add your own customized configs.
-    _C.EVAL = CfgNode()
+    # Directory of query set images
+    _C.DATASET.QUERY_DIR = ''
+    # Directory of gallery set images
+    _C.DATASET.GALLERY_DIR = ''
 
-    _C.EVAL.FEATURE = CfgNode()
+    # ---------------------------------------------------------------------------- #
+    # Retrieval
+    # ---------------------------------------------------------------------------- #
+    _C.RETRIEVAL = CfgNode()
+
+    _C.RETRIEVAL.EXTRACT = CfgNode()
     # Feat type
-    _C.EVAL.FEATURE.FEAT_TYPE = 'avgpool'
+    _C.RETRIEVAL.EXTRACT.FEAT_TYPE = 'avgpool'
     # Aggregate type
-    _C.EVAL.FEATURE.AGGREGATE_TYPE = 'IDENTITY'
+    _C.RETRIEVAL.EXTRACT.AGGREGATE_TYPE = 'IDENTITY'
     # Enhance type
-    _C.EVAL.FEATURE.ENHANCE_TYPE = 'IDENTITY'
-    # Feats dir of Query set
-    _C.EVAL.FEATURE.QUERY_DIR = ''
+    _C.RETRIEVAL.EXTRACT.ENHANCE_TYPE = 'IDENTITY'
+    # Reduce dimension
+    _C.RETRIEVAL.EXTRACT.REDUCE_DIMENSION = 512
+    # Directory of query set features
+    _C.RETRIEVAL.EXTRACT.QUERY_DIR = ''
+    # Directory of gallery set features
+    _C.RETRIEVAL.EXTRACT.GALLERY_DIR = ''
 
-    _C.EVAL.INDEX = CfgNode()
+    _C.RETRIEVAL.INDEX = CfgNode()
     # Distance type
-    _C.EVAL.INDEX.DISTANCE_TYPE = 'EUCLIDEAN'
+    _C.RETRIEVAL.INDEX.DISTANCE_TYPE = 'EUCLIDEAN'
     # Rank type
-    _C.EVAL.INDEX.RANK_TYPE = 'NORMAL'
-    # Re_rank type
-    _C.EVAL.INDEX.RE_RANK_TYPE = 'IDENTITY'
-    # Feats dir of gallery set
-    _C.EVAL.INDEX.GALLERY_DIR = ''
-    # Maximum number of each category saved in the gallery if MAX_CATE_NUM > 0
-    _C.EVAL.INDEX.MAX_CATE_NUM = 0
-    # Index mode
-    # mode = 0: Make query as gallery and Batch update gallery set
-    # mode = 1: Make query as gallery and single update gallery set
-    # mode = 2: Set gallery set and No update
-    # mode = 3: Set gallery set and Batch update gallery set
-    # mode = 4: Set gallery set and single update gallery set
-    _C.EVAL.INDEX.MODE = 0
+    _C.RETRIEVAL.INDEX.RANK_TYPE = 'NORMAL'
+    # ReRank type
+    _C.RETRIEVAL.INDEX.RERANK_TYPE = 'IDENTITY'
+    # Directory of retrieval results
+    _C.RETRIEVAL.INDEX.RETRIEVAL_DIR = ''
+    # Save top-N sorting results
+    _C.RETRIEVAL.INDEX.TOP_K = None
 
-    _C.EVAL.METRIC = CfgNode()
-    _C.EVAL.METRIC.EVAL_TYPE = 'ACCURACY'
+    _C.RETRIEVAL.METRIC = CfgNode()
+    # ReRank type
+    _C.RETRIEVAL.METRIC.EVAL_TYPE = 'ACCURACY'
+    # Get the Top-k result
+    _C.RETRIEVAL.METRIC.TOP_K = (1, 3, 5, 10)
 
 
 def get_cfg_defaults() -> CfgNode:

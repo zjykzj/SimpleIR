@@ -119,13 +119,15 @@ def main():
         logger.info("=> Resume now")
         resume(cfg, model, optimizer=optimizer, lr_scheduler=lr_scheduler, device=device)
 
-    # # Data loading code
-    train_sampler, train_loader, val_loader = build_data(cfg)
+    # Data loader
+    train_sampler, train_loader = build_data(cfg, is_train=True, w_path=False)
+    _, query_loader = build_data(cfg, is_train=False, is_gallery=False, w_path=True)
+    _, gallery_loader = build_data(cfg, is_train=False, is_gallery=True, w_path=True)
     mixup_fn = create_mixup_fn(cfg)
 
     if cfg.EVALUATE:
         logger.info("=> Evaluate now")
-        validate(cfg, val_loader, model, criterion)
+        validate(cfg, model, query_loader, gallery_loader, device=device)
         return
 
     warmup = cfg.LR_SCHEDULER.IS_WARMUP
@@ -158,7 +160,7 @@ def main():
             # evaluate on validation set
             start = time.time()
             # prec1, prec5 = validate(cfg, val_loader, model, criterion)
-            prec_list = validate(cfg, val_loader, model, criterion)
+            prec_list = validate(cfg, model, query_loader, gallery_loader, device=device)
             torch.cuda.empty_cache()
 
             is_best = prec_list[0] > best_prec_list[0]

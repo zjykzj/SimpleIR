@@ -22,7 +22,7 @@ from simpleir.configs import get_cfg_defaults
 from simpleir.engine.infer import validate
 from simpleir.data.build import build_data
 from simpleir.models.build import build_model
-from simpleir.criterion.build import build_criterion
+from simpleir.utils.util import load_model
 
 
 def init_cfg(args: Namespace) -> CfgNode:
@@ -53,20 +53,6 @@ def init_cfg(args: Namespace) -> CfgNode:
     return cfg
 
 
-def load_model(model, model_path, device=torch.device('cpu')):
-    logger.info("=> loading checkpoint '{}'".format(model_path))
-    checkpoint = torch.load(model_path, map_location=device)
-
-    if 'state_dict' in checkpoint.keys():
-        state_dict = checkpoint['state_dict']
-    else:
-        raise ValueError(f'There is no key `state_dict` in {model_path}')
-
-    state_dict = {k.replace('module.', ''): v for k, v in state_dict.items()}
-    model.load_state_dict(state_dict, strict=True)
-    logger.info("=> loaded checkpoint '{}'".format(model_path, ))
-
-
 def main():
     global best_prec_list, best_epoch, args
 
@@ -80,22 +66,20 @@ def main():
     device = torch.device(f'cuda:0') if torch.cuda.is_available() else torch.device('cpu')
     model = build_model(cfg, device)
 
-    # define loss function (criterion) and optimizer
-    criterion = build_criterion(cfg).to(device)
-
     # Optionally resume from a checkpoint
     if cfg.RESUME:
         logger.info("=> Resume now")
         load_model(model, cfg.RESUME, device=device)
 
-    # # Data loading code
-    _, _, val_loader = build_data(cfg)
+    # Data loading code
+    _, query_loader = build_data(cfg, is_train=False, is_gallery=False, w_path=True)
+    _, gallery_loader = build_data(cfg, is_train=False, is_gallery=True, w_path=True)
 
     start = time.time()
-    if cfg.EVALUATE:
-        logger.info("=> Evaluate now")
-        validate(cfg, val_loader, model, criterion)
-        return
+    logger.info("=> Evaluate now")
+
+    validate(cfg, model, query_loader, gallery_loader, device=device)
+
     end = time.time()
     logger.info("One epoch eval need: {:.3f}".format((end - start)))
 

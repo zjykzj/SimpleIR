@@ -13,6 +13,10 @@ from simpleir.utils.extract.build import build_args
 from simpleir.utils.extract.aggregator import AggregateType
 from simpleir.utils.extract.enhancer import EnhanceType
 
+from zcls2.util import logging
+
+logger = logging.get_logger(__name__)
+
 
 def parse_args():
     parser = ArgumentParser(description="Extract features", formatter_class=RawTextHelpFormatter)
@@ -23,6 +27,8 @@ def parse_args():
     parser.add_argument('--layer', metavar='LAYER', default='fc', type=str,
                         help='Location of model extracted features. Default: fc')
 
+    parser.add_argument('--gallery', action='store_true',
+                        help='Is it gallery. Default: True')
     parser.add_argument('--dataset', metavar='DATASET', default='General',
                         help='Dataset type for image processing. Default: General')
     parser.add_argument('--image-dir', metavar='IMAGE', default=None,
@@ -46,7 +52,9 @@ def parse_args():
 
 def main():
     args = parse_args()
-    print('args:', args)
+
+    logging.setup_logging(local_rank=0, output_dir=None)
+    logger.info(f'args: {args}')
 
     extract_helper = build_args(args)
     extract_helper.run()

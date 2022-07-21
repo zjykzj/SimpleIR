@@ -6,7 +6,6 @@
 @author: zj
 @description: 
 """
-
 import os
 import pickle
 
@@ -17,9 +16,15 @@ from tqdm import tqdm
 import torch
 from torch import Tensor
 
+from zcls2.util import logging
+
+logger = logging.get_logger(__name__)
+
+__all__ = ['MetricHelper', 'EvaluateType']
+
 
 class EvaluateType(Enum):
-    ACC = 'ACC'
+    ACCURACY = 'ACCURACY'
     MAP = 'MAP'
 
 
@@ -63,17 +68,9 @@ def accuracy(pred: Tensor, target: Tensor, topk=(1,)) -> list:
     return res
 
 
-def compute_acc(rank_tensor, label_tensor, topk=(1, 5,)):
-    acc_list = accuracy(rank_tensor, label_tensor, topk=topk)
-
-    print()
-    for acc, k in zip(acc_list, topk):
-        print(f"[{k}] ACC: {acc}%")
-
-
 class MetricHelper:
 
-    def __init__(self, retrieval_dir, eval_type='ACC', top_k_list=(1, 3, 5, 10)):
+    def __init__(self, retrieval_dir, eval_type='ACCURACY', top_k_list=(1, 3, 5, 10)):
         self.retrieval_dir = retrieval_dir
         assert os.path.isdir(self.retrieval_dir), self.retrieval_dir
 
@@ -86,8 +83,8 @@ class MetricHelper:
         rank_tensor = torch.from_numpy(np.array(rank_list))
         label_tensor = torch.from_numpy(np.array(label_list))
 
-        if self.eval_type is EvaluateType.ACC:
-            compute_acc(rank_tensor, label_tensor, topk=self.top_k_list)
+        if self.eval_type is EvaluateType.ACCURACY:
+            return accuracy(rank_tensor, label_tensor, topk=self.top_k_list)
         elif self.eval_type is EvaluateType.MAP:
             pass
         else:

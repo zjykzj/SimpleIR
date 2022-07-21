@@ -14,6 +14,10 @@ import glob
 import torch
 import pickle
 
+from zcls2.util import logging
+
+logger = logging.get_logger(__name__)
+
 
 def save_model(model, dst_root='outputs', epoch=0):
     if not os.path.exists(dst_root):
@@ -28,14 +32,18 @@ def save_model(model, dst_root='outputs', epoch=0):
     torch.save(state, model_path)
 
 
-def load_model(model, model_path):
-    assert isinstance(model, torch.nn.Module)
-    assert os.path.isfile(model_path), model_path
+def load_model(model, model_path, device=torch.device('cpu')):
+    logger.info("=> loading checkpoint '{}'".format(model_path))
+    checkpoint = torch.load(model_path, map_location=device)
 
-    state = torch.load(model_path)
-    model.load_state_dict(state['net'])
+    if 'state_dict' in checkpoint.keys():
+        state_dict = checkpoint['state_dict']
+    else:
+        raise ValueError(f'There is no key `state_dict` in {model_path}')
 
-    return model
+    state_dict = {k.replace('module.', ''): v for k, v in state_dict.items()}
+    model.load_state_dict(state_dict, strict=True)
+    logger.info("=> loaded checkpoint '{}'".format(model_path, ))
 
 
 def load_feats(feat_dir: str, prefix='part_') -> Dict:

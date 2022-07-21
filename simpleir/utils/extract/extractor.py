@@ -25,16 +25,17 @@ logger = logging.get_logger(__name__)
 
 class Extractor:
 
-    def __init__(self, model: Module, data_loader: DataLoader):
+    def __init__(self, model: Module, data_loader: DataLoader, device=torch.device('cpu')):
         self.model = model
         self.data_loader = data_loader
+        self.device = device
 
     def run(self) -> Tuple[List, list, Tensor]:
         image_name_list = list()
         target_list = list()
         feat_list = list()
         for images, targets, paths in tqdm(self.data_loader):
-            res_dict = self.model.forward(images)
+            res_dict = self.model.forward(images.to(self.device))
             feats_tensor = res_dict[KEY_FEAT].detach().cpu()
 
             for path, target, feat in zip(paths, targets, feats_tensor):

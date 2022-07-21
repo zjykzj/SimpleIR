@@ -7,10 +7,10 @@
 @description: 
 """
 
-from typing import Tuple
+from typing import Tuple, Optional, Any
 
 from yacs.config import CfgNode
-from torch.utils.data import IterableDataset, DataLoader, Sampler
+from torch.utils.data import IterableDataset, DataLoader
 from torch.utils.data.distributed import DistributedSampler
 
 from zcls2.data.transform.build import build_transform
@@ -18,25 +18,22 @@ from zcls2.data.transform.build import build_transform
 from .dataloader.build import build_dataloader
 from .dataset.build import build_dataset
 
+__all__ = ['build_data']
 
-def build_data(cfg: CfgNode, w_path: bool = False) -> Tuple[Sampler, DataLoader, DataLoader]:
-    train_transform, train_target_transform = build_transform(cfg, is_train=True)
-    train_dataset = build_dataset(cfg, train_transform, train_target_transform, is_train=True, w_path=w_path)
 
-    val_transform, val_target_transform = build_transform(cfg, is_train=False)
-    val_dataset = build_dataset(cfg, val_transform, val_target_transform, is_train=False)
+def build_data(cfg: CfgNode, is_train: bool = True, is_gallery: bool = False, w_path: bool = False) -> Tuple[
+    Optional[DistributedSampler[Any]], DataLoader]:
+    transform, target_transform = build_transform(cfg, is_train=is_train)
+    dataset = build_dataset(cfg, transform, target_transform, is_train=is_train, is_gallery=is_gallery, w_path=w_path)
 
-    train_sampler = None
-    val_sampler = None
-    if isinstance(train_dataset, IterableDataset):
-        shuffle = False
-    else:
-        if cfg.DISTRIBUTED:
-            train_sampler = DistributedSampler(train_dataset)
-        shuffle = train_sampler is None
+    # By default, for train, shuffle the indexes; For test, output in sequence
+    # If sampler is set, shuffle is not called
+    sampler = None
+    if not isinstance(dataset, IterableDataset) and cfg.DISTRIBUTED:
+        sampler = DistributedSampler(dataset)
+    shuffle = is_train and sampler is None
 
-    train_loader, val_loader = build_dataloader(cfg,
-                                                train_dataset, val_dataset, train_sampler, val_sampler,
-                                                shuffle)
+    # Ensure the consistency of output sequence. Set shuffle=False and num_workers=0 in test
+    data_loader = build_dataloader(cfg, dataset, sampler, shuffle, is_train=is_train, w_path=w_path)
 
-    return train_sampler, train_loader, val_loader
+    return sampler, data_loader

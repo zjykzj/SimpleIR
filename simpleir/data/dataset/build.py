@@ -22,10 +22,16 @@ def build_dataset(cfg: CfgNode,
                   transform: Optional[transforms.Compose] = None,
                   target_transform: Optional[transforms.Compose] = None,
                   is_train: Optional[bool] = True,
+                  is_gallery: Optional[bool] = False,
                   w_path: Optional[bool] = False,
                   ) -> Dataset:
     dataset_name = cfg.DATASET.NAME
-    data_root = cfg.DATASET.TRAIN_ROOT if is_train else cfg.DATASET.TEST_ROOT
+    if is_train:
+        data_root = cfg.DATASET.TRAIN_ROOT
+    elif is_gallery:
+        data_root = cfg.DATASET.GALLERY_DIR
+    else:
+        data_root = cfg.DATASET.QUERY_DIR
 
     w_path = w_path or not is_train
 

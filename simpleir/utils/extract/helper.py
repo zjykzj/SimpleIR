@@ -16,12 +16,19 @@ from numpy import ndarray
 
 from collections import OrderedDict
 
+import torch
 from torch.nn import Module
 from torch.utils.data import DataLoader
 
 from .extractor import Extractor
 from .aggregator import Aggregator
 from .enhancer import Enhancer
+
+from zcls2.util import logging
+
+logger = logging.get_logger(__name__)
+
+__all__ = ['ExtractHelper']
 
 
 def save_features(feat_array: ndarray, feat_name_list: List, feature_dir: str) -> None:
@@ -37,7 +44,8 @@ def save_features(feat_array: ndarray, feat_name_list: List, feature_dir: str) -
 
 class ExtractHelper(object):
 
-    def __init__(self, model: Module = None, model_arch: str = 'resnet50', pretrained: str = None, layer: str = 'fc',
+    def __init__(self, model: Module = None, device=torch.device('cpu'),
+                 model_arch: str = 'resnet50', pretrained: str = None, layer: str = 'fc',
                  data_loader: DataLoader = None, save_dir: str = None,
                  aggregate_type: str = 'IDENTITY', enhance_type: str = 'IDENTITY', reduce_dimension: int = 512):
         assert model is not None
@@ -55,22 +63,18 @@ class ExtractHelper(object):
         self.enhance_type = enhance_type
         self.reduce_dimension = reduce_dimension
 
-        self.extractor = Extractor(model, data_loader)
+        self.extractor = Extractor(model, data_loader, device)
         self.aggregator = Aggregator(aggregate_type=self.aggregate_type)
         self.enhancer = Enhancer(enhance_type=self.enhance_type, reduce_dimension=self.reduce_dimension,
                                  save_dir=self.save_dir)
 
     def run(self):
-        print("Extract features ...")
         image_name_list, target_list, feat_tensor = self.extractor.run()
 
-        print("Aggregate features ...")
         aggregated_tensor = self.aggregator.run(feat_tensor).reshape(feat_tensor.shape[0], -1)
 
-        print(f"Enhance features ...")
         enhanced_tensor = self.enhancer.run(aggregated_tensor)
 
-        print("Save features ...")
         save_features(enhanced_tensor.numpy(), image_name_list, self.save_dir)
 
         content_dict = OrderedDict()
@@ -78,7 +82,7 @@ class ExtractHelper(object):
             content_dict[image_name] = target
 
         info_path = os.path.join(self.save_dir, 'info.pkl')
-        print(f'Save to {info_path}')
+        logger.info(f'Save to {info_path}')
         info_dict = {
             'model': self.model_arch,
             'pretrained': self.pretrained,

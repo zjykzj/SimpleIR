@@ -12,6 +12,11 @@ import argparse
 from simpleir.utils.retrieval.build import build_args
 from simpleir.utils.retrieval.distancer import DistanceType
 from simpleir.utils.retrieval.ranker import RankType
+from simpleir.utils.retrieval.reranker import ReRankType
+
+from zcls2.util import logging
+
+logger = logging.get_logger(__name__)
 
 
 def parse_args():
@@ -24,9 +29,12 @@ def parse_args():
     parser.add_argument('--distance', metavar='DISTANCE', default='EUCLIDEAN', type=str,
                         choices=list(DistanceType.__members__.keys()),
                         help='The way to compute distance. Default: EUCLIDEAN')
-    parser.add_argument('--retrieval', metavar='RETRIEVAL', default='NORMAL', type=str,
+    parser.add_argument('--rank', metavar='RANK', default='NORMAL', type=str,
                         choices=list(RankType.__members__.keys()),
                         help='The way to retrieval. Default: NORMAL')
+    parser.add_argument('--rerank', metavar='RERANK', default='IDENTITY', type=str,
+                        choices=list(ReRankType.__members__.keys()),
+                        help='The way to retrieval. Default: IDENTITY')
 
     parser.add_argument('--save-dir', metavar='SAVE', default=None, type=str,
                         help='Dir for saving retrieval results. Default: None')
@@ -38,7 +46,9 @@ def parse_args():
 
 def main():
     args = parse_args()
-    print('Args:', args)
+
+    logging.setup_logging(local_rank=0, output_dir=None)
+    logger.info(f'args: {args}')
 
     retrieval_helper = build_args(args)
     retrieval_helper.run()

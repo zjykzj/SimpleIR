@@ -40,7 +40,7 @@ def pca_fit(feat_array: ndarray, rd=512, is_whiten=False) -> PCA:
 
 
 def do_enhance(feat_tensor: torch.Tensor, enhance_type: EnhanceType = EnhanceType.IDENTITY,
-               reduce_dimension=512, save_dir=None) -> torch.Tensor:
+               reduce_dimension=512, is_gallery=False, save_dir=None, pca_path=None) -> torch.Tensor:
     """
     Feature enhancement
     """
@@ -52,10 +52,15 @@ def do_enhance(feat_tensor: torch.Tensor, enhance_type: EnhanceType = EnhanceTyp
         assert os.path.isdir(save_dir), save_dir
         is_whiten = enhance_type is EnhanceType.PCA_W
 
-        pca_model = pca_fit(feat_tensor.numpy(), rd=reduce_dimension, is_whiten=is_whiten)
-        print('Saving PCA model to %s ...' % save_dir)
-        res_path = os.path.join(save_dir, 'pca.gz')
-        joblib.dump(pca_model, res_path)
+        if is_gallery:
+            pca_model = pca_fit(feat_tensor.numpy(), rd=reduce_dimension, is_whiten=is_whiten)
+            print('Saving PCA model to %s ...' % save_dir)
+            pca_path = os.path.join(save_dir, 'pca.gz')
+            joblib.dump(pca_model, pca_path)
+        else:
+            assert os.path.isfile(pca_path), pca_path
+            print('Loading PCA model from %s ...' % pca_path)
+            pca_model = joblib.load(pca_path)
 
         # Normalize
         feat_tensor = l2_norm(feat_tensor)
@@ -71,10 +76,16 @@ def do_enhance(feat_tensor: torch.Tensor, enhance_type: EnhanceType = EnhanceTyp
 
 class Enhancer:
 
-    def __init__(self, enhance_type='IDENTITY', reduce_dimension=512, save_dir=None):
+    def __init__(self, enhance_type='IDENTITY', reduce_dimension=512, is_gallery=False, save_dir=None, pca_path=None):
         self.enhance_type = EnhanceType[enhance_type]
         self.reduce_dimension = reduce_dimension
+        self.is_gallery = is_gallery
         self.save_dir = save_dir
+        self.pca_path = pca_path
 
     def run(self, feat_tensor: torch.Tensor):
-        return do_enhance(feat_tensor, self.enhance_type, self.reduce_dimension, self.save_dir)
+        return do_enhance(feat_tensor, self.enhance_type,
+                          reduce_dimension=self.reduce_dimension,
+                          is_gallery=self.is_gallery,
+                          save_dir=self.save_dir,
+                          pca_path=self.pca_path)

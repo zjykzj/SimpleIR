@@ -43,6 +43,9 @@ def parse_args():
     parser.add_argument('--enhance', dest='enhance',
                         metavar='PROCESS', default='IDENTITY', type=str, choices=list(EnhanceType.__members__.keys()),
                         help='The way to post process. Default: IDENTITY')
+    parser.add_argument('--pca-path', dest='pca',
+                        metavar='PCA', default=None, type=str,
+                        help='Path of PCA model. Default: None')
     parser.add_argument('-rd', '--reduce-dimension', dest='rd',
                         metavar='DIMENSION', default=512, type=int,
                         help='Dimension after dimension reduction. Default: 512')

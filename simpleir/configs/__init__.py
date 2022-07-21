@@ -28,6 +28,8 @@ def add_custom_config(_C: CfgNode) -> None:
     _C.RETRIEVAL.EXTRACT.AGGREGATE_TYPE = 'IDENTITY'
     # Enhance type
     _C.RETRIEVAL.EXTRACT.ENHANCE_TYPE = 'IDENTITY'
+    # PCA model path
+    _C.RETRIEVAL.EXTRACT.PCA_PATH = None
     # Reduce dimension
     _C.RETRIEVAL.EXTRACT.REDUCE_DIMENSION = 512
     # Directory of query set features

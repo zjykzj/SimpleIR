@@ -47,7 +47,8 @@ class ExtractHelper(object):
     def __init__(self, model: Module = None, device=torch.device('cpu'),
                  model_arch: str = 'resnet50', pretrained: str = None, layer: str = 'fc',
                  data_loader: DataLoader = None, save_dir: str = None,
-                 aggregate_type: str = 'IDENTITY', enhance_type: str = 'IDENTITY', reduce_dimension: int = 512):
+                 aggregate_type: str = 'IDENTITY', enhance_type: str = 'IDENTITY',
+                 pca_path=None, reduce_dimension: int = 512, is_gallery=False):
         assert model is not None
         assert data_loader is not None
         assert os.path.exists(save_dir), save_dir
@@ -65,8 +66,9 @@ class ExtractHelper(object):
 
         self.extractor = Extractor(model, data_loader, device)
         self.aggregator = Aggregator(aggregate_type=self.aggregate_type)
-        self.enhancer = Enhancer(enhance_type=self.enhance_type, reduce_dimension=self.reduce_dimension,
-                                 save_dir=self.save_dir)
+        self.enhancer = Enhancer(enhance_type=self.enhance_type, is_gallery=is_gallery,
+                                 reduce_dimension=self.reduce_dimension,
+                                 save_dir=self.save_dir, pca_path=pca_path)
 
     def run(self):
         image_name_list, target_list, feat_tensor = self.extractor.run()

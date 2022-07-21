@@ -51,6 +51,7 @@ def build_args(args: Namespace) -> ExtractHelper:
 
     cfg.RETRIEVAL.EXTRACT.AGGREGATE_TYPE = args.aggregate
     cfg.RETRIEVAL.EXTRACT.ENHANCE_TYPE = args.enhance
+    cfg.RETRIEVAL.EXTRACT.PCA_PATH = args.pca
     cfg.RETRIEVAL.EXTRACT.REDUCE_DIMENSION = args.rd
     cfg.freeze()
 
@@ -80,10 +81,13 @@ def build_cfg(cfg: CfgNode, model: Module, data_loader: DataLoader, is_gallery=T
 
     aggregate = cfg.RETRIEVAL.EXTRACT.AGGREGATE_TYPE
     enhance = cfg.RETRIEVAL.EXTRACT.ENHANCE_TYPE
+    pca_path = cfg.RETRIEVAL.EXTRACT.PCA_PATH
     rd = cfg.RETRIEVAL.EXTRACT.REDUCE_DIMENSION
 
     extract_helper = ExtractHelper(model=model, device=device,
                                    model_arch=model_arch, pretrained=pretrained, layer=layer,
                                    data_loader=data_loader, save_dir=save_dir,
-                                   aggregate_type=aggregate, enhance_type=enhance, reduce_dimension=rd)
+                                   aggregate_type=aggregate, enhance_type=enhance,
+                                   is_gallery=is_gallery,
+                                   pca_path=pca_path, reduce_dimension=rd)
     return extract_helper

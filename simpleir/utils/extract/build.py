@@ -31,10 +31,6 @@ __all__ = ['build_cfg']
 
 
 def build_args(args: Namespace) -> ExtractHelper:
-    assert os.path.isdir(args.image_dir), args.image_dir
-    if not os.path.exists(args.save_dir):
-        os.makedirs(args.save_dir)
-
     cfg = get_cfg_defaults()
     cfg.MODEL.ARCH = args.model_arch
     cfg.RESUME = args.pretrained
@@ -65,6 +61,7 @@ def build_args(args: Namespace) -> ExtractHelper:
     if cfg.RESUME:
         logger.info("=> Resume now")
         load_model(model, cfg.RESUME, device=device)
+    model.eval()
 
     # Data loading
     _, data_loader = build_data(cfg, is_train=False, is_gallery=args.gallery, w_path=True)
@@ -78,6 +75,8 @@ def build_cfg(cfg: CfgNode, model: Module, data_loader: DataLoader, is_gallery=T
     layer = cfg.RETRIEVAL.EXTRACT.FEAT_TYPE
 
     save_dir = cfg.RETRIEVAL.EXTRACT.GALLERY_DIR if is_gallery else cfg.RETRIEVAL.EXTRACT.QUERY_DIR
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
 
     aggregate = cfg.RETRIEVAL.EXTRACT.AGGREGATE_TYPE
     enhance = cfg.RETRIEVAL.EXTRACT.ENHANCE_TYPE

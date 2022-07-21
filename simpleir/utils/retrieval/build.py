@@ -19,9 +19,6 @@ __all__ = ['build_args', 'build_cfg']
 
 
 def build_args(args: Namespace):
-    if not os.path.exists(args.save_dir):
-        os.makedirs(args.save_dir)
-
     cfg = get_cfg_defaults()
     cfg.RETRIEVAL.EXTRACT.QUERY_DIR = args.query_dir
     cfg.RETRIEVAL.EXTRACT.GALLERY_DIR = args.gallery_dir
@@ -42,6 +39,8 @@ def build_cfg(cfg: CfgNode):
     gallery_dir = cfg.RETRIEVAL.EXTRACT.GALLERY_DIR
 
     save_dir = cfg.RETRIEVAL.INDEX.RETRIEVAL_DIR
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
     topk = cfg.RETRIEVAL.INDEX.TOP_K
 
     distance_type = cfg.RETRIEVAL.INDEX.DISTANCE_TYPE

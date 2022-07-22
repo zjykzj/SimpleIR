@@ -41,6 +41,8 @@ def main():
     for top, k in zip(top_list, top_k_list):
         if args.retrieval_type == EvaluateType.ACCURACY.value:
             logger.info(f"ACC@{k}: {top}%")
+        elif args.retrieval_type == EvaluateType.PRECISION.value:
+            logger.info(f"Pre@{k}: {top}%")
         else:
             logger.info(f"MAP@{k}: {top}%")
 

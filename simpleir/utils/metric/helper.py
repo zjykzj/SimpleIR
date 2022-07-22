@@ -25,6 +25,7 @@ __all__ = ['MetricHelper', 'EvaluateType']
 
 class EvaluateType(Enum):
     ACCURACY = 'ACCURACY'
+    PRECISION = 'PRECISION'
     MAP = 'MAP'
 
 
@@ -48,7 +49,7 @@ def load_retrieval(retrieval_dir):
 
 
 def accuracy(pred: Tensor, target: Tensor, topk=(1,)) -> list:
-    """Computes the precision@k for the specified values of k"""
+    """Computes the ACC@K for the specified values of k"""
     maxk = max(topk)
     batch_size = target.size(0)
 
@@ -65,6 +66,21 @@ def accuracy(pred: Tensor, target: Tensor, topk=(1,)) -> list:
             if tmp.float().sum(0) >= 1:
                 correct_k += 1
         res.append(correct_k * (100.0 / batch_size))
+    return res
+
+
+def precision(pred: Tensor, target: Tensor, topk=(1,)) -> list:
+    """Computes the Pre@K for the specified values of k"""
+    maxk = max(topk)
+
+    pred = pred[:, :maxk]
+    pred = pred.t()
+    correct = pred.eq(target.view(1, -1).expand_as(pred))
+
+    res = []
+    for k in topk:
+        correct_k = correct[:, :k].float().sum(0).mul_(1.0 / k).mean()
+        res.append(correct_k)
     return res
 
 
@@ -85,6 +101,8 @@ class MetricHelper:
 
         if self.eval_type is EvaluateType.ACCURACY:
             return accuracy(rank_tensor, label_tensor, topk=self.top_k_list)
+        elif self.eval_type is EvaluateType.PRECISION:
+            return precision(rank_tensor, label_tensor, topk=self.top_k_list)
         elif self.eval_type is EvaluateType.MAP:
             pass
         else:

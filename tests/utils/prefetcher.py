@@ -8,7 +8,7 @@
 """
 
 from simpleir.utils.prefetcher import data_prefetcher
-from simpleir.utils.extract.extractor import create_loader
+from simpleir.utils.extract.impl.extractor import create_loader
 
 if __name__ == '__main__':
     from simpleir.configs import get_cfg_defaults

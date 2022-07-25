@@ -20,9 +20,9 @@ import torch
 from torch.nn import Module
 from torch.utils.data import DataLoader
 
-from .extractor import Extractor
-from .aggregator import Aggregator
-from .enhancer import Enhancer
+from simpleir.utils.extract.impl.extractor import Extractor
+from simpleir.utils.extract.impl.aggregator import Aggregator
+from simpleir.utils.extract.impl.enhancer import Enhancer
 
 from zcls2.util import logging
 

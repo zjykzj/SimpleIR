@@ -16,9 +16,9 @@ from collections import OrderedDict
 
 import torch
 
-from .distancer import Distancer
-from .ranker import Ranker
-from .reranker import ReRanker
+from simpleir.utils.retrieval.impl.distancer import Distancer
+from simpleir.utils.retrieval.impl.ranker import Ranker
+from simpleir.utils.retrieval.impl.reranker import ReRanker
 
 from zcls2.config.key_word import KEY_SEP
 from zcls2.util import logging

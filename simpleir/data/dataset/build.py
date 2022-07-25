@@ -13,7 +13,7 @@ from yacs.config import CfgNode
 from torch.utils.data import Dataset
 from torchvision.transforms import transforms
 
-from . import cccf, image_folder, general_dataset
+from . import cccf, image_folder, general_dataset, oxford
 
 __all__ = ['build_dataset']
 
@@ -47,6 +47,10 @@ def build_dataset(cfg: CfgNode,
     elif dataset_name in general_dataset.__all__:
         dataset = general_dataset.__dict__[dataset_name](
             data_root, transform=transform, target_transform=target_transform, w_path=w_path
+        )
+    elif dataset_name in oxford.__all__:
+        dataset = oxford.__dict__[dataset_name](
+            data_root, is_gallery=is_gallery, transform=transform, target_transform=target_transform, w_path=w_path
         )
     else:
         raise ValueError(f"{dataset_name} do not support")

@@ -10,5 +10,6 @@
 from .general_dataset import *
 from .cccf import *
 from .image_folder import *
+from .oxford import *
 
 from .build import *

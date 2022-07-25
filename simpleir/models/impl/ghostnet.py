@@ -10,7 +10,7 @@ from zcls2.model.model.ghostnet import default_cfgs, build_model_with_cfg
 from zcls2.model.model.ghostnet import GhostNet as ZGhostNet
 
 from simpleir.configs.key_words import KEY_FEAT
-from .model_base import ModelBase
+from simpleir.models.model_base import ModelBase
 
 __all__ = ["GhostNet", "ghostnet_050", "ghostnet_100", "ghostnet_130"]
 

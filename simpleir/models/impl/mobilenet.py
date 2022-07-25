@@ -16,7 +16,7 @@ from torchvision.models.mobilenetv3 import _mobilenet_v3_conf, model_urls, load_
 
 from zcls2.config.key_word import KEY_OUTPUT
 from simpleir.configs.key_words import KEY_FEAT
-from .model_base import ModelBase
+from simpleir.models.model_base import ModelBase
 
 __all__ = ["MobileNetV3", "mobilenet_v3_large", "mobilenet_v3_small"]
 

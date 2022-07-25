@@ -7,7 +7,7 @@
 @description: 
 """
 
-from simpleir.models.mobilenet import mobilenet_v3_large
+from simpleir.models.impl.mobilenet import mobilenet_v3_large
 
 if __name__ == '__main__':
     m = mobilenet_v3_large()

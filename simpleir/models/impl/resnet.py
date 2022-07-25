@@ -24,7 +24,7 @@ except ImportError:
 
 from zcls2.config.key_word import KEY_OUTPUT
 from simpleir.configs.key_words import KEY_FEAT
-from .model_base import ModelBase
+from simpleir.models.model_base import ModelBase
 
 __all__ = [
     'ResNet',

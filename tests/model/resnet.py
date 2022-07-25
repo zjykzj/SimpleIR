@@ -7,7 +7,7 @@
 @description: 
 """
 
-from simpleir.models.resnet import resnet50
+from simpleir.models.impl.resnet import resnet50
 
 if __name__ == '__main__':
     m = resnet50()

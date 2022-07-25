@@ -7,10 +7,7 @@
 @description: 
 """
 
-from simpleir.models.ghostnet import ghostnet_100
-
-from zcls2.config.key_word import KEY_OUTPUT
-from simpleir.configs.key_words import KEY_FEAT
+from simpleir.models.impl.ghostnet import ghostnet_100
 
 if __name__ == '__main__':
     # m = timm.models.__dict__['ghostnet_100']()

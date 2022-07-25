@@ -12,7 +12,7 @@ import torch
 from zcls2.config.key_word import KEY_OUTPUT
 
 from simpleir.configs.key_words import KEY_FEAT
-from simpleir.models.tiny_autocoder import TinyAutoCoder
+from simpleir.models.impl.tiny_autocoder import TinyAutoCoder
 
 if __name__ == '__main__':
     img = torch.randn((10, 1, 28, 28))

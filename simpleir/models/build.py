@@ -16,7 +16,7 @@ from zcls2.util import logging
 
 logger = logging.get_logger(__name__)
 
-from . import tiny_autocoder, resnet, ghostnet, mobilenet
+from .impl import mobilenet, tiny_autocoder, ghostnet, resnet
 
 __all__ = ["build_model"]
 

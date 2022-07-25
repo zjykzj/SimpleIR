@@ -7,10 +7,7 @@
 @description: 
 """
 
-from .model_base import *
-from .ghostnet import *
-from .mobilenet import *
-from .resnet import *
-from .tiny_autocoder import *
+from .impl import *
 
+from .model_base import *
 from .build import *

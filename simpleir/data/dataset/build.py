@@ -13,7 +13,7 @@ from yacs.config import CfgNode
 from torch.utils.data import Dataset
 from torchvision.transforms import transforms
 
-from . import cccf, image_folder, general_dataset, oxford
+from .impl import cccf, image_folder, general_dataset, oxford
 
 __all__ = ['build_dataset']
 

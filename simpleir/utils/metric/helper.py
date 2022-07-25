@@ -16,6 +16,7 @@ from tqdm import tqdm
 import torch
 from torch import Tensor
 
+from zcls2.config.key_word import KEY_SEP
 from zcls2.util import logging
 
 logger = logging.get_logger(__name__)
@@ -40,7 +41,7 @@ def load_retrieval(retrieval_dir):
     label_list = list()
     for idx, (img_name, label) in tqdm(enumerate(info_dict['content'].items())):
         rank_path = os.path.join(retrieval_dir, f'{img_name}.csv')
-        rank_list = np.loadtxt(rank_path, dtype=int, delimiter=' ')
+        rank_list = np.loadtxt(rank_path, dtype=np.str, delimiter=KEY_SEP)
 
         batch_rank_list.append(rank_list)
         label_list.append(label)
@@ -96,13 +97,13 @@ class MetricHelper:
     def run(self):
         rank_list, label_list = load_retrieval(self.retrieval_dir)
 
-        rank_tensor = torch.from_numpy(np.array(rank_list))
+        rank_label_tensor = torch.from_numpy(np.array(rank_list[:, 1], dtype=int))
         label_tensor = torch.from_numpy(np.array(label_list))
 
         if self.eval_type is EvaluateType.ACCURACY:
-            return accuracy(rank_tensor, label_tensor, topk=self.top_k_list)
+            return accuracy(rank_label_tensor, label_tensor, topk=self.top_k_list)
         elif self.eval_type is EvaluateType.PRECISION:
-            return precision(rank_tensor, label_tensor, topk=self.top_k_list)
+            return precision(rank_label_tensor, label_tensor, topk=self.top_k_list)
         elif self.eval_type is EvaluateType.MAP:
             pass
         else:

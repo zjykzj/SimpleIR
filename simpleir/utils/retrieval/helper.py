@@ -20,6 +20,7 @@ from .distancer import Distancer
 from .ranker import Ranker
 from .reranker import ReRanker
 
+from zcls2.config.key_word import KEY_SEP
 from zcls2.util import logging
 
 logger = logging.get_logger(__name__)
@@ -70,7 +71,7 @@ class RetrievalHelper:
         logger.info(f"Loading query features from {self.query_dir}")
         query_feat_list, query_label_list, query_cls_list, query_name_list = load_features(self.query_dir)
         logger.info(f"Loading query features from {self.gallery_dir}")
-        gallery_feat_list, gallery_label_list, gallery_cls_list, _ = load_features(self.gallery_dir)
+        gallery_feat_list, gallery_label_list, gallery_cls_list, gallery_name_list = load_features(self.gallery_dir)
         assert query_cls_list == gallery_cls_list
 
         gallery_feat_tensor = torch.from_numpy(np.array(gallery_feat_list))
@@ -87,9 +88,12 @@ class RetrievalHelper:
             batch_dists_tensor = self.distancer.run(query_feat_tensor, gallery_feat_tensor)
 
             batch_sorts, rank_label_list = self.ranker.run(batch_dists_tensor, gallery_target_tensor)
+            rank_name_list = list(np.array(gallery_name_list)[rank_label_list])
+
+            rank_list = [[name, label] for name, label in zip(rank_name_list[:self.topk], rank_label_list[:self.topk])]
 
             save_path = os.path.join(self.save_dir, f'{query_name}.csv')
-            np.savetxt(save_path, np.array(rank_label_list)[:self.topk], fmt='%d', delimiter=' ')
+            np.savetxt(save_path, np.array(rank_list), fmt='%s', delimiter=KEY_SEP)
             content_dict[query_name] = query_label
 
         info_dict = {

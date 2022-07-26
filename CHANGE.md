@@ -1,6 +1,15 @@
 
 # CHANGE
 
+## v0.9.1
+
+* New features
+  1. build(python): update install requires. [110bcbd7d16](https://github.com/zjykzj/SimpleIR/tree/110bcbd7d16b698390f83523098237701ec09bee) 
+  2. perf(train): use torch.cuda.apex and only use cuda:0 to do validate(). [10a87ddbf0390e907](https://github.com/zjykzj/SimpleIR/tree/10a87ddbf0390e907966914f23e899deebc9c6c8)
+* Bug fixes
+  1. fix(sampler): use DistributedSampler only in train mode. [bee2f3c06d2f1](https://github.com/zjykzj/SimpleIR/tree/bee2f3c06d2f102cf768b9cec7b15a22a0d6dfd2) 
+* Breaking changes
+
 ## v0.9.0
 
 * New features

@@ -88,7 +88,7 @@ class RetrievalHelper:
             batch_dists_tensor = self.distancer.run(query_feat_tensor, gallery_feat_tensor)
 
             batch_sorts, rank_label_list = self.ranker.run(batch_dists_tensor, gallery_target_tensor)
-            rank_name_list = list(np.array(gallery_name_list)[rank_label_list])
+            rank_name_list = list(np.array(gallery_name_list)[tuple(rank_label_list)])
 
             rank_list = [[name, label] for name, label in zip(rank_name_list[:self.topk], rank_label_list[:self.topk])]
 

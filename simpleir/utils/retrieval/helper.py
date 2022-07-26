@@ -93,7 +93,7 @@ class RetrievalHelper:
             rank_list = [[name, label] for name, label in zip(rank_name_list[:self.topk], rank_label_list[:self.topk])]
 
             save_path = os.path.join(self.save_dir, f'{query_name}.csv')
-            np.savetxt(save_path, np.array(rank_list), fmt='%s', delimiter=KEY_SEP)
+            np.savetxt(save_path, np.array(rank_list, dtype=object), fmt='%s', delimiter=KEY_SEP)
             content_dict[query_name] = query_label
 
         info_dict = {

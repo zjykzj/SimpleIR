@@ -1,6 +1,29 @@
 
 # CHANGE
 
+## v0.9.0
+
+* New features
+  1. feat(simpleir): add cfg.DATASET.RETRIEVAL_NAME for gallery_dir / query_dir. [41699d8397](https://github.com/zjykzj/SimpleIR/tree/41699d83974737abccf9c58803ecb784229f5089)
+  2. feat(dataset): add Oxford datset. [0f5a17b8303](https://github.com/zjykzj/SimpleIR/tree/0f5a17b8303034e4da7a93d137eda983a374ecba)
+  3. feat(metric): add Precision metric. [2e824d05842](https://github.com/zjykzj/SimpleIR/tree/2e824d05842f941aee2597ebed428b7ce9a5556f)
+  4. feat(configs): add cfg.RETRIEVAL.EXTRACT.PCA_PATH. [b55f3899377](https://github.com/zjykzj/SimpleIR/tree/b55f3899377df836101556a4e65ccfe5006ba2bd)
+  5. feat(models): add ModelBase. [acba4684b6e](https://github.com/zjykzj/SimpleIR/tree/acba4684b6e20a46d4bfff85e115b73369efdac3)
+  6. feat(retrieval): add pca. [7df8201bc8ee](https://github.com/zjykzj/SimpleIR/tree/7df8201bc8eefe9009e54ac250b6239090d1055d)
+  7. feat(retrieval): init. [a7e977cf0f](https://github.com/zjykzj/SimpleIR/tree/a7e977cf0f1a95036215161da4d9bc2aa1fc9aaa)
+  8. feat(distance.py): distance calculation in different ways. [8bd2ba527e](https://github.com/zjykzj/SimpleIR/tree/8bd2ba527e4778460ced11c7c8ee09561abb0270)
+* Bug fixes
+  1. fix(metric): fix precision(). [cb16a5318a](https://github.com/zjykzj/SimpleIR/tree/cb16a5318aa2b00961201ede0e8ece804cd909bc) 
+  2. fix(metric): fix load_retrieval(). [38d1ddbe7a](https://github.com/zjykzj/SimpleIR/tree/38d1ddbe7ac64634a29d7a5166250e10e895a79e) 
+  3. fix(retrieval): fix rank_name / rank_label saving. [a0548f3ccb9](https://github.com/zjykzj/SimpleIR/tree/a0548f3ccb9e74f5b2bff978e4e7da515070a249) 
+  4. fix(simpleir): update. [8552159f0c3](https://github.com/zjykzj/SimpleIR/tree/8552159f0c347027a667c3f1233a07a32ebe5611) 
+  5. fix(extract): import dataset classes. [1f58b693b4d](https://github.com/zjykzj/SimpleIR/tree/1f58b693b4df511980160b5e260b6baacc55bbe4) 
+  6. fix(retrieval): update args usage. [b544ed48bff](https://github.com/zjykzj/SimpleIR/tree/b544ed48bff1cfa31878c598d920c3659a392c1a) 
+  7. fix(extract): update helper.py. [d763e927010d3c](https://github.com/zjykzj/SimpleIR/tree/d763e927010d3cc03d80f6e3b2282d1f6f3dc8e4) 
+* Breaking changes
+  1. refactor(simpleir): update schema and remove unused code. [d799b84f40](https://github.com/zjykzj/SimpleIR/tree/d799b84f4068aba3ae7a47803fb1404cd28f0295) 
+  2. refactor(utils): update. [4dec24196a12](https://github.com/zjykzj/SimpleIR/tree/4dec24196a122f3673db5ab361a58f11ac0972c1) 
+
 ## v0.8.4
 
 * New features

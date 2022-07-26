@@ -42,7 +42,7 @@ def build_args(args: Namespace) -> ExtractHelper:
     else:
         cfg.RETRIEVAL.EXTRACT.QUERY_DIR = args.save_dir
         cfg.DATASET.QUERY_DIR = args.image_dir
-    cfg.DATASET.NAME = args.dataset
+    cfg.DATASET.RETRIEVAL_NAME = args.dataset
 
     cfg.TRANSFORM.TEST_METHODS = ('Resize', 'CenterCrop', 'ToTensor', 'Normalize')
     cfg.TRANSFORM.TEST_RESIZE = (256,)

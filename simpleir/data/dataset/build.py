@@ -25,14 +25,16 @@ def build_dataset(cfg: CfgNode,
                   is_gallery: Optional[bool] = False,
                   w_path: Optional[bool] = False,
                   ) -> Dataset:
-    dataset_name = cfg.DATASET.NAME
     if is_train:
         data_root = cfg.DATASET.TRAIN_ROOT
+        dataset_name = cfg.DATASET.NAME
     elif is_gallery:
         data_root = cfg.DATASET.GALLERY_DIR
+        dataset_name = cfg.DATASET.RETRIEVAL_NAME
     else:
         data_root = cfg.DATASET.QUERY_DIR
-
+        dataset_name = cfg.DATASET.RETRIEVAL_NAME
+        
     w_path = w_path or not is_train
 
     # Data loading code

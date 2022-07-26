@@ -11,6 +11,8 @@ from yacs.config import CfgNode
 
 
 def add_custom_config(_C: CfgNode) -> None:
+    # Dataset type for gallery / query data
+    _C.DATASET.RETRIEVAL_NAME = 'General'
     # Directory of query set images
     _C.DATASET.QUERY_DIR = ''
     # Directory of gallery set images

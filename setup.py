@@ -12,13 +12,16 @@ DESCRIPTION = "A Simple Framework for Image Retrieval "
 URL = "https://github.com/zjykzj/SimpleIR"
 PYTHON_REQUIRES = ">=3.8"
 INSTALL_REQUIRES = [
-    "numpy >= 1.20.1",
-    "torch >= 1.10.0",
-    "torchvision >= 0.11.1",
-    "yacs >= 0.1.8",
+    "Pillow >= 9.0.0",
+    "apex >= 0.1",
+    "joblib >= 1.1.0",
+    "numpy >= 1.22.3",
+    "sklearn >= 0.0",
+    "torch >= 1.12.0",
+    "torchvision >= 0.13.0",
     "tqdm >= 4.63.0",
-    "scikit_learn >= 0.24.2",
-    "zcls2 ~= 0.4.5"
+    "yacs >= 0.1.8",
+    "zcls2 >= 0.5.1",
 ]
 CLASSIFIERS = [
     "Programming Language :: Python :: 3",

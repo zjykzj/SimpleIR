@@ -23,5 +23,4 @@ fi
 export PYTHONPATH=.
 
 python -m torch.distributed.launch --nproc_per_node=4 --master_port="${master_port}" \
-  tools/train.py -cfg "${cfg_file}" \
-  --opt-level O1
+  tools/train.py -cfg "${cfg_file}"

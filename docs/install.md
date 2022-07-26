@@ -9,16 +9,17 @@
     PyTorch 1.8.2 or higher
     torchvison 0.9.2 or higher
 
-About `apex`，see [NVIDIA/apex](https://github.com/NVIDIA/apex). I recommend people to use docker training environment, see
+About `apex`，there has a bug in nvidia/apex, see [How can I solve it？ #1215](https://github.com/NVIDIA/apex/issues/1215). Now i use pytorch naive apex util in ZCls2.
+
+I recommend people to use docker training environment, see
 
 * [NGC Pytorch](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch)
 * [PyTorch Release Notes](https://docs.nvidia.com/deeplearning/frameworks/pytorch-release-notes/index.html)
+* [NVIDIA/apex](https://github.com/NVIDIA/apex)
 
 ## Install SimpleIR
 
 ### Source install
-
-* Install `pytorch/torchvision/apex` following the official instructions.
 
 * Clone the `SimpleIR` repository.
 

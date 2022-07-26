@@ -51,7 +51,7 @@ def validate(cfg: CfgNode, model: nn.Module, query_loader: DataLoader, gallery_l
         if retrieval_type == EvaluateType.ACCURACY.value:
             logger_str += f'Acc@{k} {top:.3f} '
         elif retrieval_type == EvaluateType.PRECISION.value:
-            logger_str += f'Pre@{k} {top:.3f} '
+            logger_str += f'Prec@{k} {top:.3f} '
         else:
             logger_str += f'MAP@{k} {top:.3f} '
     logger.info(logger_str)

@@ -73,7 +73,7 @@ def accuracy(pred: Tensor, target: Tensor, topk=(1,)) -> list:
 
 
 def precision(pred: Tensor, target: Tensor, topk=(1,)) -> list:
-    """Computes the Pre@K for the specified values of k"""
+    """Computes the Prec@K for the specified values of k"""
     maxk = max(topk)
 
     pred = pred[:, :maxk]

@@ -78,13 +78,13 @@ def init_cfg(args: Namespace) -> CfgNode:
 
 
 def main():
-    global best_prec_list, best_epoch, args
+    global best_score_list, best_epoch, args
 
     args = parse()
     cfg = init_cfg(args)
 
     top_k = cfg.TRAIN.TOP_K
-    best_prec_list = [0 for _ in top_k]
+    best_score_list = [0 for _ in top_k]
     best_epoch = 0
 
     device = torch.device(f'cuda:{cfg.RANK_ID}') if cfg.DISTRIBUTED else torch.device('cpu')
@@ -160,19 +160,19 @@ def main():
             # evaluate on validation set
             start = time.time()
             # prec1, prec5 = validate(cfg, val_loader, model, criterion)
-            prec_list = validate(cfg, model, query_loader, gallery_loader, device=device)
+            score_list = validate(cfg, model, query_loader, gallery_loader, device=device)
             torch.cuda.empty_cache()
 
-            is_best = prec_list[0] > best_prec_list[0]
+            is_best = score_list[0] > best_score_list[0]
             if is_best:
-                best_prec_list = prec_list
+                best_score_list = score_list
                 best_epoch = epoch
 
             logger_str = f' BestEpoch: [{best_epoch}]'
             logger.info(logger_str)
             logger_str = ' * '
-            for k, prec in zip(top_k, best_prec_list):
-                logger_str += f'Prec@{k} {prec:.3f} '
+            for k, prec in zip(top_k, best_score_list):
+                logger_str += f'Score@{k} {prec:.3f} '
             logger.info(logger_str)
 
             # remember best prec@1 and save checkpoint
@@ -181,8 +181,8 @@ def main():
                     'epoch': epoch,
                     'arch': cfg.MODEL.ARCH,
                     'state_dict': model.state_dict(),
-                    'prec_list': prec_list,
-                    'best_prec_list': best_prec_list,
+                    'score_list': score_list,
+                    'best_score_list': best_score_list,
                     'best_epoch': epoch,
                     'optimizer': optimizer.state_dict(),
                     'lr_scheduler': lr_scheduler.state_dict(),

@@ -37,16 +37,18 @@ def load_retrieval(retrieval_dir):
     with open(info_path, 'rb') as f:
         info_dict = pickle.load(f)
 
-    batch_rank_list = list()
-    label_list = list()
-    for idx, (img_name, label) in tqdm(enumerate(info_dict['content'].items())):
+    batch_rank_label_list = list()
+    batch_rank_name_list = list()
+    query_label_list = list()
+    for idx, (img_name, label) in enumerate(tqdm(info_dict['content'].items())):
         rank_path = os.path.join(retrieval_dir, f'{img_name}.csv')
-        rank_list = np.loadtxt(rank_path, dtype=np.str, delimiter=KEY_SEP)
+        rank_array = np.loadtxt(rank_path, dtype=np.str, delimiter=KEY_SEP)
 
-        batch_rank_list.append(rank_list)
-        label_list.append(label)
+        batch_rank_name_list.append(list(rank_array[:, 0].astype(str)))
+        batch_rank_label_list.append(list(rank_array[:, 1].astype(int)))
+        query_label_list.append(label)
 
-    return batch_rank_list, label_list
+    return batch_rank_name_list, batch_rank_label_list, query_label_list
 
 
 def accuracy(pred: Tensor, target: Tensor, topk=(1,)) -> list:
@@ -95,15 +97,16 @@ class MetricHelper:
         self.top_k_list = top_k_list
 
     def run(self):
-        rank_list, label_list = load_retrieval(self.retrieval_dir)
+        rank_name_list, batch_rank_label_list, query_label_list = load_retrieval(self.retrieval_dir)
 
-        rank_label_tensor = torch.from_numpy(np.array(rank_list[:, 1], dtype=int))
-        label_tensor = torch.from_numpy(np.array(label_list))
+        batch_rank_label_tensor = torch.from_numpy(np.array(batch_rank_label_list))
+        query_label_tensor = torch.from_numpy(np.array(query_label_list))
+        assert len(query_label_tensor) == len(batch_rank_label_tensor)
 
         if self.eval_type is EvaluateType.ACCURACY:
-            return accuracy(rank_label_tensor, label_tensor, topk=self.top_k_list)
+            return accuracy(batch_rank_label_tensor, query_label_tensor, topk=self.top_k_list)
         elif self.eval_type is EvaluateType.PRECISION:
-            return precision(rank_label_tensor, label_tensor, topk=self.top_k_list)
+            return precision(batch_rank_label_tensor, query_label_tensor, topk=self.top_k_list)
         elif self.eval_type is EvaluateType.MAP:
             pass
         else:

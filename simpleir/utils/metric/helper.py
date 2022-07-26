@@ -82,7 +82,7 @@ def precision(pred: Tensor, target: Tensor, topk=(1,)) -> list:
 
     res = []
     for k in topk:
-        correct_k = correct[:, :k].float().sum(0).mul_(1.0 / k).mean()
+        correct_k = correct[:, :k].t().float().sum(0).mul_(1.0 / k).mean()
         res.append(correct_k * 100.0)
     return res
 

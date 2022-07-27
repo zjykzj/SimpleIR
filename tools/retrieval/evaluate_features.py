@@ -25,6 +25,10 @@ def parse_args():
                         choices=list(EvaluateType.__members__.keys()),
                         help='Which evaluation method. Default: ACCURACY')
 
+    parser.add_argument('--query-dir', metavar='QUERY', default='./data/oxford5k', type=str,
+                        help='Original image data set path, used for Oxford5k/Paris6k evaluation.'
+                             ' Default: ./data/oxford5k')
+
     return parser.parse_args()
 
 
@@ -38,13 +42,16 @@ def main():
     metric_helper = build_args(args, top_k_list=top_k_list)
     top_list = metric_helper.run()
 
-    for top, k in zip(top_list, top_k_list):
-        if args.retrieval_type == EvaluateType.ACCURACY.value:
-            logger.info(f"ACC@{k}: {top}%")
-        elif args.retrieval_type == EvaluateType.PRECISION.value:
-            logger.info(f"Pre@{k}: {top}%")
-        else:
-            logger.info(f"MAP@{k}: {top}%")
+    if args.retrieval_type == 'MAP_OXFORD':
+        logger.info(f"MAP: {top_list[0]}%")
+    else:
+        for top, k in zip(top_list, top_k_list):
+            if args.retrieval_type == EvaluateType.ACCURACY.value:
+                logger.info(f"ACC@{k}: {top}%")
+            elif args.retrieval_type == EvaluateType.PRECISION.value:
+                logger.info(f"Pre@{k}: {top}%")
+            else:
+                logger.info(f"MAP@{k}: {top}%")
 
 
 if __name__ == '__main__':

@@ -31,6 +31,7 @@ from simpleir.engine.infer import validate
 from simpleir.data.build import build_data
 from simpleir.models.build import build_model
 from simpleir.criterion.build import build_criterion
+from simpleir.utils.metric.helper import EvaluateType
 
 
 def init_cfg(args: Namespace) -> CfgNode:
@@ -139,11 +140,16 @@ def main():
                 best_score_list = score_list
                 best_epoch = epoch
 
+            retrieval_type = cfg.RETRIEVAL.METRIC.EVAL_TYPE
+
             logger_str = f' BestEpoch: [{best_epoch}]'
             logger.info(logger_str)
             logger_str = ' * '
-            for k, prec in zip(top_k, best_score_list):
-                logger_str += f'Score@{k} {prec:.3f} '
+            if retrieval_type == EvaluateType.MAP_OXFORD.value:
+                logger_str += f'Score {best_score_list[0]:.3f} '
+            else:
+                for k, prec in zip(top_k, best_score_list):
+                    logger_str += f'Score@{k} {prec:.3f} '
             logger.info(logger_str)
 
             save_checkpoint({

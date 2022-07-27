@@ -1,6 +1,19 @@
 
 # CHANGE
 
+## v0.9.2
+
+* New features
+  1. build(python): update install requirements. [6d2dea09cc](https://github.com/zjykzj/SimpleIR/tree/6d2dea09cc667eba8a28b06067e54ed7d3f8742f)
+  2. perf(evaluate_features.py): add args.query_dir as data_root param in Metric. [d29da6336](https://github.com/zjykzj/SimpleIR/tree/d29da633688e043bdd1e76f58e3babecffa1ccf6) 
+  3. perf(metric): add query_dir as data_root for Metric and return [map] for Oxford. [d7f0aa16c5e](https://github.com/zjykzj/SimpleIR/tree/d7f0aa16c5e30436ffa47ea3731fdf5a3fa2d224) 
+  4. feat(metric): add MapForOxford. [d00283d41cc](https://github.com/zjykzj/SimpleIR/tree/d00283d41cce565fd8d7788b90a1000cca4ce23e) 
+  5. feat(metric): add map. [7ac7fb82b0](https://github.com/zjykzj/SimpleIR/tree/7ac7fb82b0fb8e1c899e3c93d28906895beee0b9)
+* Bug fixes
+  1. fix(mobilenet.py): update load_state_dict_from_url use. [4136efeb0ffe](https://github.com/zjykzj/SimpleIR/tree/4136efeb0ffece2896929f1539e3d00bb00710a2) 
+  2. fix(dataset): add fake classes and modify gt_root. [b2bf8432185a](https://github.com/zjykzj/SimpleIR/tree/b2bf8432185a2b1948d7ad4c4f5baf7f02b792fb) 
+* Breaking changes
+
 ## v0.9.1
 
 * New features

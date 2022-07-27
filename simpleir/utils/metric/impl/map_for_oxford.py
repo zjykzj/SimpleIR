@@ -47,8 +47,13 @@ class MapForOxford(MetricBase):
     def load_list(self, file_path: str) -> List:
         assert os.path.isfile(file_path), file_path
 
-        name_list = np.loadtxt(file_path, dtype=str, delimiter=' ')
-        return list(name_list)
+        name_list = list()
+        with open(file_path, 'r') as f:
+            for line in f:
+                if line.strip() != '':
+                    name_list.append(line.strip())
+
+        return name_list
 
     def compute_ap(self, pos_set: Set[str], junk_set: Set[str], rank_name_list: List[str]) -> float:
         old_recall = 0.
@@ -75,7 +80,7 @@ class MapForOxford(MetricBase):
 
         return ap
 
-    def compute_map(self, query_prefix_list: List[str], batch_rank_name_list: List[List[str]]) -> float:
+    def compute_map(self, query_prefix_list: List[str], batch_rank_name_list: List[List[str]]) -> List[float]:
         map = 0.
         for query_prefix, rank_name_list in zip(query_prefix_list, batch_rank_name_list):
             good_set = set(self.load_list(f"{query_prefix}_good.txt"))
@@ -87,7 +92,7 @@ class MapForOxford(MetricBase):
 
             map += ap
 
-        return map * 1.0 / len(query_prefix_list)
+        return [map * 1.0 / len(query_prefix_list)]
 
     def run(self):
         query_prefix_dict = self.get_query_prefix(os.path.join(self.data_root, 'groundtruth'))

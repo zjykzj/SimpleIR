@@ -30,19 +30,19 @@ class Extractor:
         self.data_loader = data_loader
         self.device = device
 
-    def run(self) -> Tuple[List, list, Tensor]:
+    def run(self) -> Tuple[List[str], List[int], Tensor]:
         image_name_list = list()
         target_list = list()
         feat_list = list()
         for images, targets, paths in tqdm(self.data_loader):
             res_dict = self.model.forward(images.to(self.device))
-            feats_tensor = res_dict[KEY_FEAT].detach().cpu()
+            batch_feat_array = res_dict[KEY_FEAT].detach().cpu().numpy()
 
-            for path, target, feat in zip(paths, targets, feats_tensor):
+            for path, target, feat_array in zip(paths, targets.numpy(), batch_feat_array):
                 image_name = os.path.splitext(os.path.split(path)[1])[0]
 
                 image_name_list.append(image_name)
                 target_list.append(target)
-                feat_list.append(feat)
+                feat_list.append(feat_array)
 
         return image_name_list, target_list, torch.stack(feat_list)

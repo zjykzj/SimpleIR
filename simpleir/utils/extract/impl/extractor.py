@@ -33,16 +33,16 @@ class Extractor:
     def run(self) -> Tuple[List[str], List[int], Tensor]:
         image_name_list = list()
         target_list = list()
-        feat_list = list()
+        feat_tensor_list = list()
         for images, targets, paths in tqdm(self.data_loader):
             res_dict = self.model.forward(images.to(self.device))
-            batch_feat_array = res_dict[KEY_FEAT].detach().cpu().numpy()
+            batch_feat_tensor = res_dict[KEY_FEAT].detach().cpu()
 
-            for path, target, feat_array in zip(paths, targets.numpy(), batch_feat_array):
+            for path, target, feat_tensor in zip(paths, targets.numpy(), batch_feat_tensor):
                 image_name = os.path.splitext(os.path.split(path)[1])[0]
 
                 image_name_list.append(image_name)
                 target_list.append(target)
-                feat_list.append(feat_array)
+                feat_tensor_list.append(feat_tensor)
 
-        return image_name_list, target_list, torch.stack(feat_list)
+        return image_name_list, target_list, torch.stack(feat_tensor_list)

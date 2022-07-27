@@ -9,5 +9,6 @@
 
 from .accuracy import *
 from .precision import *
+from .map import *
 
 from .functional import *

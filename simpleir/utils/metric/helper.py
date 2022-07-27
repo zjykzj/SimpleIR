@@ -16,7 +16,7 @@ logger = logging.get_logger(__name__)
 
 __all__ = ['MetricHelper', 'EvaluateType']
 
-from .impl import Accuracy, Precision
+from .impl import Accuracy, Precision, Map
 
 
 class EvaluateType(Enum):
@@ -38,7 +38,7 @@ class MetricHelper:
         if self.eval_type == EvaluateType.PRECISION:
             self.model = Precision(retrieval_dir, top_k_list=top_k_list)
         if self.eval_type == EvaluateType.MAP:
-            pass
+            self.model = Map(retrieval_dir, top_k_list=top_k_list)
 
     def run(self):
         return self.model.run()

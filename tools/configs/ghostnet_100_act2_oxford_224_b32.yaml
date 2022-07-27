@@ -14,15 +14,15 @@ RETRIEVAL:
     RETRIEVAL_DIR: 'data/retrieval_act2_pcaw_1280'
     TOP_K: 20
   METRIC:
-    EVAL_TYPE: 'PRECISION'
-    TOP_K: (1, 3, 5, 10)
+    EVAL_TYPE: 'MAP_OXFORD'
+    TOP_K: None
 DATALOADER:
   TEST_BATCH_SIZE: 32
   NUM_WORKERS: 0
 DATASET:
-  RETRIEVAL_NAME: 'General'
-  GALLERY_DIR: './data/train'
-  QUERY_DIR: './data/test'
+  RETRIEVAL_NAME: 'Oxford'
+  GALLERY_DIR: './data/oxford5k'
+  QUERY_DIR: './data/oxford5k'
 TRANSFORM:
   TEST_METHODS: ('Resize', 'CenterCrop', 'ToTensor')
   TEST_RESIZE: (256,)

@@ -60,8 +60,8 @@ In the `save-dir`, you can find the sorting results of each query feature retrie
 
 ## Retrieval Evaluation
 
-Given the retrieval result path, read `info.pkl` file, read the retrieval results in turn. Evaluate retrieval performance, such as ACCURACY/mAP:
+Given the retrieval result path, read `info.pkl` file, read the retrieval results in turn. Evaluate retrieval performance, such as `ACCURACY/PRECISION/MAP`:
 
 ```shell
-python evaluate_features.py --retrieval-dir data/retrieval_fc --retrieval-type ACC
+python evaluate_features.py --retrieval-dir data/retrieval_fc --retrieval-type ACCURACY
 ```

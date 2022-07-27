@@ -9,7 +9,7 @@
     PyTorch 1.8.2 or higher
     torchvison 0.9.2 or higher
 
-About `apex`，there has a bug in nvidia/apex, see [How can I solve it？ #1215](https://github.com/NVIDIA/apex/issues/1215). Now i use pytorch naive apex util in ZCls2.
+About `apex`，there has a bug in `NVIDIA/apex`, see [How can I solve it？ #1215](https://github.com/NVIDIA/apex/issues/1215). Now i use pytorch naive apex util in SimpleIR.
 
 I recommend people to use docker training environment, see
 

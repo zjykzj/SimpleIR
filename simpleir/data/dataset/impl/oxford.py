@@ -25,7 +25,7 @@ class Oxford(Dataset):
                  target_transform: Optional[Callable] = None, w_path: bool = False) -> None:
         assert os.path.isdir(root), root
 
-        self.gt_root = os.path.join(root, 'gt')
+        self.gt_root = os.path.join(root, 'groundtruth')
         assert os.path.isdir(self.gt_root), self.gt_root
         self.images_root = os.path.join(root, 'images')
         assert os.path.isdir(self.images_root), self.images_root
@@ -36,6 +36,8 @@ class Oxford(Dataset):
         self.transform = transform
         self.target_transform = target_transform
         self.w_path = w_path
+
+        self.classes = list(range(11))
 
     def create_gallery(self):
         image_list = glob(os.path.join(self.images_root, '*.jpg'))

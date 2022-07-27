@@ -10,5 +10,6 @@
 from .accuracy import *
 from .precision import *
 from .map import *
+from .map_for_oxford import *
 
 from .functional import *

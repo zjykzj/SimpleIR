@@ -29,6 +29,7 @@ def load_retrieval(retrieval_dir):
 
     batch_rank_label_list = list()
     batch_rank_name_list = list()
+    query_name_list = list()
     query_label_list = list()
     for idx, (img_name, label) in enumerate(tqdm(info_dict['content'].items())):
         rank_path = os.path.join(retrieval_dir, f'{img_name}.csv')
@@ -36,9 +37,10 @@ def load_retrieval(retrieval_dir):
 
         batch_rank_name_list.append(list(rank_array[:, 0].astype(str)))
         batch_rank_label_list.append(list(rank_array[:, 1].astype(int)))
+        query_name_list.append(img_name)
         query_label_list.append(label)
 
-    return batch_rank_name_list, batch_rank_label_list, query_label_list
+    return batch_rank_name_list, batch_rank_label_list, query_name_list, query_label_list
 
 
 def accuracy(pred: Tensor, target: Tensor, topk=(1,)) -> list:

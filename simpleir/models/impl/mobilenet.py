@@ -11,9 +11,10 @@ from functools import partial
 
 from torch import Tensor, nn
 from torchvision.models.mobilenetv3 import MobileNetV3 as TMobileNetV3
-from torchvision.models.mobilenetv3 import _mobilenet_v3_conf, model_urls, load_state_dict_from_url, \
+from torchvision.models.mobilenetv3 import _mobilenet_v3_conf, model_urls, \
     InvertedResidualConfig
 
+from zcls2.model.model.mobilenet import load_state_dict_from_url
 from zcls2.config.key_word import KEY_OUTPUT
 from simpleir.configs.key_words import KEY_FEAT
 from simpleir.models.model_base import ModelBase

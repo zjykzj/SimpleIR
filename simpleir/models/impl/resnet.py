@@ -86,9 +86,11 @@ def _resnet(
             state_dict.pop('fc.weight')
             state_dict.pop('fc.bias')
 
-        ret = model.load_state_dict(state_dict, strict=False)
-        assert set(ret.missing_keys) == {'fc.weight', 'fc.bias'}, \
-            f'Missing keys when loading pretrained weights: {ret.missing_keys}'
+            ret = model.load_state_dict(state_dict, strict=False)
+            assert set(ret.missing_keys) == {'fc.weight', 'fc.bias'}, \
+                f'Missing keys when loading pretrained weights: {ret.missing_keys}'
+        else:
+            ret = model.load_state_dict(state_dict, strict=True)
 
     return model
 

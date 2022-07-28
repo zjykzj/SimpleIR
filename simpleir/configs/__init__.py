@@ -30,6 +30,9 @@ def add_custom_config(_C: CfgNode) -> None:
     _C.RETRIEVAL.EXTRACT.AGGREGATE_TYPE = 'IDENTITY'
     # Enhance type
     _C.RETRIEVAL.EXTRACT.ENHANCE_TYPE = 'IDENTITY'
+    # Whether to learn PCA / PCA_W in gallery. Default: True
+    # Note: If False, PCA path needs to be specified
+    _C.RETRIEVAL.EXTRACT.LEARN_PCA = True
     # PCA model path
     _C.RETRIEVAL.EXTRACT.PCA_PATH = None
     # Reduce dimension

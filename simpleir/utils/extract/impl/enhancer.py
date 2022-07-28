@@ -6,7 +6,6 @@
 @author: zj
 @description: 
 """
-import logging
 import os
 import joblib
 import torch
@@ -15,6 +14,7 @@ from enum import Enum
 from numpy import ndarray
 from sklearn.decomposition import PCA
 
+from torch import Tensor
 from simpleir.utils.norm import l2_norm
 
 from zcls2.util import logging
@@ -29,7 +29,7 @@ class EnhanceType(Enum):
     PCA_W = 'PCA_W'  # L2_Norm -> PCA_Whiten -> L2_Norm
 
 
-def pca_fit(feat_array: ndarray, rd=512, is_whiten=False) -> PCA:
+def pca_fit(feat_array: ndarray, rd=512, is_whiten: bool = False) -> PCA:
     """
     Calculate pca/whitening parameters
     """
@@ -43,8 +43,9 @@ def pca_fit(feat_array: ndarray, rd=512, is_whiten=False) -> PCA:
     return pca_model
 
 
-def do_enhance(feat_tensor: torch.Tensor, enhance_type: EnhanceType = EnhanceType.IDENTITY,
-               reduce_dimension=512, is_gallery=False, save_dir=None, pca_path=None) -> torch.Tensor:
+def do_enhance(feat_tensor: Tensor, enhance_type: EnhanceType = EnhanceType.IDENTITY,
+               is_gallery: bool = False, save_dir: str = None,
+               learn_pca: bool = True, pca_path: str = None, reduce_dimension: int = 512) -> torch.Tensor:
     """
     Feature enhancement
     """
@@ -55,9 +56,10 @@ def do_enhance(feat_tensor: torch.Tensor, enhance_type: EnhanceType = EnhanceTyp
     elif enhance_type is EnhanceType.PCA or enhance_type is EnhanceType.PCA_W:
         assert os.path.isdir(save_dir), save_dir
         assert pca_path is not None
-        is_whiten = enhance_type is EnhanceType.PCA_W
 
-        if is_gallery:
+        if is_gallery and learn_pca:
+            is_whiten = enhance_type is EnhanceType.PCA_W
+
             pca_model = pca_fit(feat_tensor.numpy(), rd=reduce_dimension, is_whiten=is_whiten)
             logger.info('Saving PCA model: %s' % pca_path)
             joblib.dump(pca_model, pca_path)
@@ -80,16 +82,21 @@ def do_enhance(feat_tensor: torch.Tensor, enhance_type: EnhanceType = EnhanceTyp
 
 class Enhancer:
 
-    def __init__(self, enhance_type='IDENTITY', reduce_dimension=512, is_gallery=False, save_dir=None, pca_path=None):
+    def __init__(self, enhance_type: str = 'IDENTITY', is_gallery: bool = False, save_dir: str = None,
+                 learn_pca: bool = True, pca_path: str = None, reduce_dimension: int = 512):
         self.enhance_type = EnhanceType[enhance_type]
-        self.reduce_dimension = reduce_dimension
         self.is_gallery = is_gallery
         self.save_dir = save_dir
+
+        self.learn_pca = learn_pca
         self.pca_path = pca_path
+        self.reduce_dimension = reduce_dimension
 
     def run(self, feat_tensor: torch.Tensor):
         return do_enhance(feat_tensor, self.enhance_type,
                           reduce_dimension=self.reduce_dimension,
                           is_gallery=self.is_gallery,
                           save_dir=self.save_dir,
-                          pca_path=self.pca_path)
+                          pca_path=self.pca_path,
+                          learn_pca=self.learn_pca
+                          )

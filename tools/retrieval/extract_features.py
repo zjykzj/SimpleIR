@@ -43,6 +43,9 @@ def parse_args():
     parser.add_argument('--enhance', dest='enhance',
                         metavar='PROCESS', default='IDENTITY', type=str, choices=list(EnhanceType.__members__.keys()),
                         help='The way to post process. Default: IDENTITY')
+    parser.add_argument('--learn-pca', dest='learn',
+                        metavar='LEARN', default=True, type=bool,
+                        help='Whether to learn PCA / PCA_W in gallery. Default: True')
     parser.add_argument('--pca-path', dest='pca',
                         metavar='PCA', default=None, type=str,
                         help='Path of PCA model. Default: None')

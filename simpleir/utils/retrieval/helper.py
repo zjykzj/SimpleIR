@@ -71,7 +71,7 @@ class RetrievalHelper:
     def run(self):
         logger.info(f"Loading query features from {self.query_dir}")
         query_feat_list, query_label_list, query_img_name_list, query_cls_list = load_features(self.query_dir)
-        logger.info(f"Loading query features from {self.gallery_dir}")
+        logger.info(f"Loading gallery features from {self.gallery_dir}")
         gallery_feat_list, gallery_label_list, gallery_img_name_list, gallery_cls_list = load_features(self.gallery_dir)
         assert query_cls_list == gallery_cls_list
 

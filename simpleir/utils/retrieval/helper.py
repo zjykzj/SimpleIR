@@ -52,7 +52,7 @@ def load_features(feat_dir: str) -> Tuple[List[List], List[int], List[str], List
 
 class RetrievalHelper:
 
-    def __init__(self, query_dir: str, gallery_dir: str, save_dir: str, topk=None,
+    def __init__(self, query_dir: str, gallery_dir: str, save_dir: str, top_k=None,
                  distance_type: str = 'EUCLIDEAN', rank_type: str = 'NORMAL', re_rank_type='IDENTITY',
                  ):
         self.query_dir = query_dir
@@ -62,10 +62,10 @@ class RetrievalHelper:
 
         self.save_dir = save_dir
         assert os.path.isdir(self.save_dir), self.save_dir
-        self.topk = topk
+        self.top_k = top_k
 
         self.distancer = Distancer(distance_type)
-        self.ranker = Ranker(rank_type)
+        self.ranker = Ranker(rank_type, top_k=self.top_k)
         self.reranker = ReRanker(re_rank_type)
 
     def run(self):
@@ -80,7 +80,7 @@ class RetrievalHelper:
 
         logger.info('Retrieval ...')
         content_dict = OrderedDict()
-        assert self.topk is None or (0 < self.topk <= len(query_feat_list))
+        assert self.top_k is None or (0 < self.top_k <= len(query_feat_list))
 
         for query_feat, query_label, query_img_name in tqdm(
                 zip(query_feat_list, query_label_list, query_img_name_list), total=len(query_feat_list)):
@@ -97,7 +97,7 @@ class RetrievalHelper:
             assert len(rank_label_list) == len(rank_img_name_list)
 
             rank_list = [[rank_img_name, rank_label] for rank_img_name, rank_label in
-                         zip(rank_img_name_list[:self.topk], rank_label_list[:self.topk])]
+                         zip(rank_img_name_list[:self.top_k], rank_label_list[:self.top_k])]
 
             save_path = os.path.join(self.save_dir, f'{query_img_name}.csv')
             np.savetxt(save_path, np.array(rank_list, dtype=object), fmt='%s', delimiter=KEY_SEP)

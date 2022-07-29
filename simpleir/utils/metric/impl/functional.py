@@ -6,7 +6,7 @@
 @author: zj
 @description: 
 """
-
+from typing import Tuple, List
 import os
 import pickle
 
@@ -20,7 +20,7 @@ from zcls2.config.key_word import KEY_SEP
 __all__ = ['load_retrieval', 'accuracy', 'precision', 'compute_ap', 'compute_map']
 
 
-def load_retrieval(retrieval_dir):
+def load_retrieval(retrieval_dir: str) -> Tuple[List[List[str]], List[List[int]], List[str], List[int]]:
     assert os.path.isdir(retrieval_dir), retrieval_dir
 
     info_path = os.path.join(retrieval_dir, 'info.pkl')
@@ -43,7 +43,7 @@ def load_retrieval(retrieval_dir):
     return batch_rank_name_list, batch_rank_label_list, query_name_list, query_label_list
 
 
-def accuracy(pred: Tensor, target: Tensor, topk=(1,)) -> list:
+def accuracy(pred: Tensor, target: Tensor, topk=(1,)) -> List[float]:
     """Computes the ACC@K for the specified values of k"""
     maxk = max(topk)
     batch_size = target.size(0)
@@ -64,7 +64,7 @@ def accuracy(pred: Tensor, target: Tensor, topk=(1,)) -> list:
     return res
 
 
-def precision(pred: Tensor, target: Tensor, topk=(1,)) -> list:
+def precision(pred: Tensor, target: Tensor, topk=(1,)) -> List[float]:
     """Computes the Prec@K for the specified values of k"""
     maxk = max(topk)
 
@@ -79,7 +79,7 @@ def precision(pred: Tensor, target: Tensor, topk=(1,)) -> list:
     return res
 
 
-def compute_ap(rank_label_tensor: Tensor, query_label: Tensor, topk=(1,)) -> list:
+def compute_ap(rank_label_tensor: Tensor, query_label: Tensor, topk=(1,)) -> List[float]:
     """
     See:
 
@@ -109,7 +109,7 @@ def compute_ap(rank_label_tensor: Tensor, query_label: Tensor, topk=(1,)) -> lis
     return ap_list
 
 
-def compute_map(batch_rank_label_tensor: Tensor, query_label_tensor: Tensor, topk=(1,)) -> list:
+def compute_map(batch_rank_label_tensor: Tensor, query_label_tensor: Tensor, topk=(1,)) -> List[float]:
     assert len(batch_rank_label_tensor) == len(query_label_tensor)
 
     map_list = list()

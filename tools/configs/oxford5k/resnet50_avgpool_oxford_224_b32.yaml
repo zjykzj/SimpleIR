@@ -1,18 +1,16 @@
 RETRIEVAL:
   EXTRACT:
-    FEAT_TYPE: 'act2'
+    FEAT_TYPE: 'avgpool'
     AGGREGATE_TYPE: 'IDENTITY'
     ENHANCE_TYPE: 'PCA_W'
-    PCA_PATH: "data/gallery_act2_pcaw_1280/pca.gz"
-    REDUCE_DIMENSION: 1280
-    QUERY_DIR: 'data/query_act2_pcaw_1280'
-    GALLERY_DIR: 'data/gallery_act2_pcaw_1280'
+    QUERY_DIR: 'data/query_r50_avgpool'
+    GALLERY_DIR: 'data/gallery_r50_avgpool'
   INDEX:
     DISTANCE_TYPE: 'EUCLIDEAN'
     RANK_TYPE: 'NORMAL'
     RERANK_TYPE: 'IDENTITY'
-    RETRIEVAL_DIR: 'data/retrieval_act2_pcaw_1280'
-    TOP_K: 20
+    RETRIEVAL_DIR: 'data/retrieval_r50_avgpool'
+    TOP_K: None
   METRIC:
     EVAL_TYPE: 'MAP_OXFORD'
     TOP_K: None
@@ -29,7 +27,6 @@ TRANSFORM:
   TEST_CROP: (224,)
   NORMALIZE: ((0.485, 0.456, 0.406), (0.229, 0.224, 0.225), False, 1.0)
 MODEL:
-  ARCH: 'ghostnet_100'
+  ARCH: 'resnet50'
   PRETRAINED: True
   NUM_CLASSES: 1000
-  SYNC_BN: False

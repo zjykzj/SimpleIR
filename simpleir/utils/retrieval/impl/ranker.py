@@ -20,43 +20,46 @@ class RankType(Enum):
     KNN = 'KNN'
 
 
-def normal_rank(batch_sorts: Tensor, gallery_targets: Tensor) -> List[List]:
-    rank_list = list()
-    for sort_arr in batch_sorts:
-        sorted_list = gallery_targets[sort_arr].int().tolist()
+def normal_rank(batch_dists_tensor: Tensor, gallery_targets: Tensor) -> Tuple[List[List], List[List]]:
+    # The more smaller distance, the more similar object
+    batch_sort_idx_tensor = argsort(batch_dists_tensor)
 
-        rank_list.append(sorted_list)
+    batch_rank_label_list = list()
+    for sort_idx_tensor in batch_sort_idx_tensor:
+        sorted_label_list = gallery_targets[sort_idx_tensor].int().tolist()
 
-    return rank_list
+        batch_rank_label_list.append(sorted_label_list)
+
+    return batch_sort_idx_tensor.tolist(), batch_rank_label_list
 
 
-def knn_rank(batch_sorts: Tensor, gallery_targets: Tensor) -> List[List]:
+def knn_rank(batch_dists_tensor: Tensor, gallery_targets: Tensor) -> Tuple[List[List], List[List]]:
+    # The more smaller distance, the more similar object
+    batch_sort_idx_tensor = argsort(batch_dists_tensor)
+
     # sqrt_len = int(np.sqrt(len(candidate_target_list)))
-    rank_list = list()
-    for sort_arr in batch_sorts:
-        sorted_list = count_frequency_v3(gallery_targets[sort_arr].int().tolist())
+    batch_rank_label_list = list()
+    for sort_idx_tensor in batch_sort_idx_tensor:
+        rank_label_list = count_frequency_v3(gallery_targets[sort_idx_tensor].int().tolist())
 
-        rank_list.append(sorted_list)
+        batch_rank_label_list.append(rank_label_list)
 
-    return rank_list
+    return batch_sort_idx_tensor.tolist(), batch_rank_label_list
 
 
 def do_rank(batch_dists_tensor: Tensor, gallery_targets_tensor: Tensor,
-            rank_type: RankType = RankType.NORMAL) -> Tuple[Tensor, List[List]]:
+            rank_type: RankType = RankType.NORMAL) -> Tuple[List[List], List[List]]:
     if len(batch_dists_tensor.shape) == 1:
         batch_dists_tensor = batch_dists_tensor.reshape(1, -1)
 
-    # The more smaller distance, the more similar object
-    batch_sorts = argsort(batch_dists_tensor)
-
     if rank_type is RankType.NORMAL:
-        batch_rank_label_list = normal_rank(batch_sorts, gallery_targets_tensor)
+        batch_sort_idx_list, batch_rank_label_list = normal_rank(batch_dists_tensor, gallery_targets_tensor)
     elif rank_type is RankType.KNN:
-        batch_rank_label_list = knn_rank(batch_sorts, gallery_targets_tensor)
+        batch_sort_idx_list, batch_rank_label_list = knn_rank(batch_dists_tensor, gallery_targets_tensor)
     else:
         raise ValueError(f'{rank_type} does not support')
 
-    return batch_sorts, batch_rank_label_list
+    return batch_sort_idx_list, batch_rank_label_list
 
 
 class Ranker:
@@ -64,5 +67,6 @@ class Ranker:
     def __init__(self, rank_type: str = 'NORMAL'):
         self.rank_type = RankType[rank_type]
 
-    def run(self, batch_dists_tensor: Tensor, gallery_targets_tensor: Tensor) -> Tuple[Tensor, List[List]]:
+    def run(self, batch_dists_tensor: Tensor, gallery_targets_tensor: Tensor) \
+            -> Tuple[List[List], List[List]]:
         return do_rank(batch_dists_tensor, gallery_targets_tensor, self.rank_type)

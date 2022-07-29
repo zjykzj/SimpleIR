@@ -6,6 +6,7 @@
 @author: zj
 @description: 
 """
+from typing import Tuple, List
 
 import os
 import pickle
@@ -16,9 +17,9 @@ from collections import OrderedDict
 
 import torch
 
-from simpleir.utils.retrieval.impl.distancer import Distancer
-from simpleir.utils.retrieval.impl.ranker import Ranker
-from simpleir.utils.retrieval.impl.reranker import ReRanker
+from .impl.distancer import Distancer
+from .impl.ranker import Ranker
+from .impl.reranker import ReRanker
 
 from zcls2.config.key_word import KEY_SEP
 from zcls2.util import logging
@@ -28,7 +29,7 @@ logger = logging.get_logger(__name__)
 __all__ = ['RetrievalHelper']
 
 
-def load_features(feat_dir: str):
+def load_features(feat_dir: str) -> Tuple[List[List], List[int], List[str], List[str]]:
     assert os.path.isdir(feat_dir), feat_dir
 
     info_path = os.path.join(feat_dir, 'info.pkl')
@@ -42,11 +43,11 @@ def load_features(feat_dir: str):
         feat_path = os.path.join(feat_dir, f'{img_name}.npy')
         feat = np.load(feat_path)
 
-        feat_list.append(feat)
+        feat_list.append(list(feat))
         label_list.append(label)
         img_name_list.append(img_name)
 
-    return feat_list, label_list, info_dict['classes'], img_name_list
+    return feat_list, label_list, img_name_list, list(info_dict['classes'])
 
 
 class RetrievalHelper:
@@ -69,9 +70,9 @@ class RetrievalHelper:
 
     def run(self):
         logger.info(f"Loading query features from {self.query_dir}")
-        query_feat_list, query_label_list, query_cls_list, query_name_list = load_features(self.query_dir)
+        query_feat_list, query_label_list, query_img_name_list, query_cls_list = load_features(self.query_dir)
         logger.info(f"Loading query features from {self.gallery_dir}")
-        gallery_feat_list, gallery_label_list, gallery_cls_list, gallery_name_list = load_features(self.gallery_dir)
+        gallery_feat_list, gallery_label_list, gallery_img_name_list, gallery_cls_list = load_features(self.gallery_dir)
         assert query_cls_list == gallery_cls_list
 
         gallery_feat_tensor = torch.from_numpy(np.array(gallery_feat_list))
@@ -81,25 +82,26 @@ class RetrievalHelper:
         content_dict = OrderedDict()
         assert self.topk is None or (0 < self.topk <= len(query_feat_list))
 
-        for query_feat, query_label, query_name in tqdm(zip(query_feat_list, query_label_list, query_name_list),
-                                                        total=len(query_feat_list)):
-            tmp_query_feat_list = [query_feat]
-            query_feat_tensor = torch.from_numpy(np.array(tmp_query_feat_list))
+        for query_feat, query_label, query_img_name in tqdm(
+                zip(query_feat_list, query_label_list, query_img_name_list), total=len(query_feat_list)):
+            query_feat_tensor = torch.from_numpy(np.array(query_feat)).unsqueeze(0)
 
             batch_dists_tensor = self.distancer.run(query_feat_tensor, gallery_feat_tensor)
 
-            batch_sorts, batch_rank_label_list = self.ranker.run(batch_dists_tensor, gallery_target_tensor)
+            batch_sort_idx_list, batch_rank_label_list = \
+                self.ranker.run(batch_dists_tensor, gallery_target_tensor)
 
             rank_label_list = batch_rank_label_list[0]
-            assert len(rank_label_list) == len(gallery_name_list)
-            rank_name_list = list(np.array(gallery_name_list)[rank_label_list])
+            sort_idx_list = batch_sort_idx_list[0]
+            rank_img_name_list = list(np.array(gallery_img_name_list)[sort_idx_list])
+            assert len(rank_label_list) == len(rank_img_name_list)
 
-            rank_list = [[rank_name, rank_label] for rank_name, rank_label in
-                         zip(rank_name_list[:self.topk], rank_label_list[:self.topk])]
+            rank_list = [[rank_img_name, rank_label] for rank_img_name, rank_label in
+                         zip(rank_img_name_list[:self.topk], rank_label_list[:self.topk])]
 
-            save_path = os.path.join(self.save_dir, f'{query_name}.csv')
+            save_path = os.path.join(self.save_dir, f'{query_img_name}.csv')
             np.savetxt(save_path, np.array(rank_list, dtype=object), fmt='%s', delimiter=KEY_SEP)
-            content_dict[query_name] = query_label
+            content_dict[query_img_name] = query_label
 
         info_dict = {
             'classes': query_cls_list,

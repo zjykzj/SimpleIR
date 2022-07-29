@@ -92,7 +92,7 @@ class MapForOxford(MetricBase):
 
             map += ap
 
-        return [map * 1.0 / len(query_prefix_list)]
+        return [map * 100.0 / len(query_prefix_list)]
 
     def run(self):
         query_prefix_dict = self.get_query_prefix(os.path.join(self.data_root, 'groundtruth'))
@@ -101,4 +101,4 @@ class MapForOxford(MetricBase):
         for query_name in self.query_name_list:
             query_prefix_list.append(query_prefix_dict[query_name])
 
-        return self.compute_map(query_prefix_list, self.query_name_list)
+        return self.compute_map(query_prefix_list, self.batch_rank_name_list)

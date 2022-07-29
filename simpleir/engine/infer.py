@@ -24,7 +24,7 @@ from simpleir.utils.metric import EvaluateType
 
 
 def validate(cfg: CfgNode, model: nn.Module, query_loader: DataLoader, gallery_loader: DataLoader,
-             device=torch.device('cpu')) -> List:
+             device=torch.device('cpu')) -> List[float]:
     # switch to evaluate mode
     model.eval()
 
@@ -48,15 +48,15 @@ def validate(cfg: CfgNode, model: nn.Module, query_loader: DataLoader, gallery_l
     top_k_list = cfg.RETRIEVAL.METRIC.TOP_K
     logger_str = ' * '
     if retrieval_type == EvaluateType.MAP_OXFORD.value:
-        logger_str += f'MAP: {top_list[0]:.3f} '
+        logger_str += f'MAP: {top_list[0]:.3f}%'
     else:
         for k, top in zip(top_k_list, top_list):
             if retrieval_type == EvaluateType.ACCURACY.value:
-                logger_str += f'Acc@{k} {top:.3f} '
+                logger_str += f'Acc@{k} {top:.3f}%'
             elif retrieval_type == EvaluateType.PRECISION.value:
-                logger_str += f'Prec@{k} {top:.3f} '
+                logger_str += f'Prec@{k} {top:.3f}%'
             else:
-                logger_str += f'MAP@{k} {top:.3f} '
+                logger_str += f'MAP@{k} {top:.3f}%'
     logger.info(logger_str)
 
     return top_list

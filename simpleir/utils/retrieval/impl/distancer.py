@@ -10,9 +10,8 @@ Calculate the similarity between the query image and each image in the retrieval
 Returns a list. The first dimension represents target and the second dimension is similarity
 """
 
-import torch
-
 from enum import Enum
+from torch import Tensor
 from simpleir.utils.distance import euclidean_distance, cosine_distance
 
 
@@ -21,8 +20,8 @@ class DistanceType(Enum):
     COSINE = 'COSINE'
 
 
-def do_distance(query_feat_tensor: torch.Tensor, gallery_feat_tensor: torch.Tensor,
-                distance_type: DistanceType = DistanceType.EUCLIDEAN) -> torch.Tensor:
+def do_distance(query_feat_tensor: Tensor, gallery_feat_tensor: Tensor,
+                distance_type: DistanceType = DistanceType.EUCLIDEAN) -> Tensor:
     """
     Calculate distance (Euclidean distance / Cosine distance)
     """
@@ -44,5 +43,5 @@ class Distancer:
     def __init__(self, distance_type: str = 'EUCLIDEAN'):
         self.distance_type = DistanceType[distance_type]
 
-    def run(self, query_feat_tensor: torch.Tensor, gallery_feat_tensor: torch.Tensor):
+    def run(self, query_feat_tensor: Tensor, gallery_feat_tensor: Tensor) -> Tensor:
         return do_distance(query_feat_tensor, gallery_feat_tensor, self.distance_type)

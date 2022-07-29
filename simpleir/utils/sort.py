@@ -8,18 +8,19 @@
 """
 
 import torch
+from torch import Tensor
 
 import numpy as np
 
 
-def argsort(data: torch.Tensor) -> torch.Tensor:
+def argsort(data: Tensor) -> Tensor:
     if len(data.shape) == 1:
         data = data.reshape(1, -1)
 
     return torch.argsort(data, dim=1)
 
 
-def argsort_v2(data: torch.Tensor) -> torch.Tensor:
+def argsort_v2(data: Tensor) -> Tensor:
     if len(data.shape) == 1:
         data = data.reshape(1, -1)
 

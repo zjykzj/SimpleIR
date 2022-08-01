@@ -1,6 +1,17 @@
 
 # CHANGE
 
+## v0.9.3
+
+* New features
+  1. perf(retrieval): update knn_rank implementation. [4bf26fb544](https://github.com/zjykzj/SimpleIR/tree/4bf26fb5441f9ce8ccefbeae6783d128b24296fb)
+  2. perf(retrieval): to avoid invalid labels, using sort_idx_list to sort gallery_img_name_list. [484970e6efc](https://github.com/zjykzj/SimpleIR/tree/484970e6efcd4189bf695bd157b4830373a18b57)
+  3. feat(enhancer.py): judge whether to learn PCA parameters on the gallery dataset. [f72addbde796](https://github.com/zjykzj/SimpleIR/tree/f72addbde796d0dd7cc047033610f5f35e9f1659)
+* Bug fixes
+  1. fix(map_for_oxford.py): repair map calculation use self.batch_rank_name_list replace self.query_name_list to participate in the operation. [d2b5a59afe8](https://github.com/zjykzj/SimpleIR/tree/d2b5a59afe8d5ff5a20776a8cf61f8a47ad3c77c) 
+  2. fix(resnet.py): pretrained: AssertionError: Missing keys when loading pretrained weights: []. [0f6b15eda0e](https://github.com/zjykzj/SimpleIR/tree/0f6b15eda0ed20ecb08d0bff6c6191885c9846cb) 
+* Breaking changes
+
 ## v0.9.2
 
 * New features

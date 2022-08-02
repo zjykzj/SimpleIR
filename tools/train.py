@@ -105,7 +105,8 @@ def main():
     warmup = cfg.LR_SCHEDULER.IS_WARMUP
     warmup_epoch = cfg.LR_SCHEDULER.WARMUP_EPOCH
 
-    torch.distributed.barrier()
+    if cfg.DISTRIBUTED:
+        torch.distributed.barrier()
     assert cfg.TRAIN.START_EPOCH > 0
     logger.info("=> Train now")
     for epoch in range(cfg.TRAIN.START_EPOCH, cfg.TRAIN.MAX_EPOCH + 1):
@@ -165,7 +166,8 @@ def main():
 
             end = time.time()
             logger.info("One epoch validate need: {:.3f}".format((end - start)))
-        torch.distributed.barrier()
+        if cfg.DISTRIBUTED:
+            torch.distributed.barrier()
 
 
 if __name__ == '__main__':

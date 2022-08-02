@@ -17,6 +17,7 @@ from zcls2.data.transform.build import build_transform
 
 from .dataloader.build import build_dataloader
 from .dataset.build import build_dataset
+from .sampler.build import build_sampler
 
 __all__ = ['build_data']
 
@@ -28,7 +29,7 @@ def build_data(cfg: CfgNode, is_train: bool = True, is_gallery: bool = False, w_
 
     # By default, for train, shuffle the indexes; For test, output in sequence
     # If sampler is set, shuffle is not called
-    sampler = None
+    sampler = build_sampler(cfg, dataset) if is_train else None
     if not isinstance(dataset, IterableDataset) and cfg.DISTRIBUTED and is_train:
         sampler = DistributedSampler(dataset)
     shuffle = is_train and sampler is None

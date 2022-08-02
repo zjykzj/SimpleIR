@@ -11,12 +11,38 @@ from yacs.config import CfgNode
 
 
 def add_custom_config(_C: CfgNode) -> None:
+    # ---------------------------------------------------------------------------- #
+    # Dataset
+    # ---------------------------------------------------------------------------- #
     # Dataset type for gallery / query data
     _C.DATASET.RETRIEVAL_NAME = 'General'
     # Directory of query set images
     _C.DATASET.QUERY_DIR = ''
     # Directory of gallery set images
     _C.DATASET.GALLERY_DIR = ''
+
+    # ---------------------------------------------------------------------------- #
+    # Sampler
+    # ---------------------------------------------------------------------------- #
+    # Sampler type
+    _C.SAMPLER = CfgNode()
+    _C.SAMPLER.NAME = ''
+    # Number of unique labels/classes per batch
+    _C.SAMPLER.LABELS_PER_BATCH = 8
+    # Number of samples per label in a batch
+    _C.SAMPLER.SAMPLES_PER_LABEL = 8
+
+    # ---------------------------------------------------------------------------- #
+    # Criterion
+    # ---------------------------------------------------------------------------- #
+    # Triplet loss margin
+    _C.MODEL.CRITERION.MARGIN = 1.0
+    # p value for the p-norm distance to calculate between each vector pair
+    _C.MODEL.CRITERION.P = 2.0
+    # triplet loss mining way, now supports
+    # 1. "batch_all"
+    # 2. "batch_hard"
+    _C.MODEL.CRITERION.MINING = "batch_all"
 
     # ---------------------------------------------------------------------------- #
     # Retrieval

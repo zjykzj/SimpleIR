@@ -9,6 +9,7 @@
 
 import torch
 import torch.nn as nn
+from torch.nn.parallel import DistributedDataParallel as DDP
 
 from yacs.config import CfgNode
 
@@ -47,15 +48,19 @@ def build_model(cfg: CfgNode, device: torch.device = torch.device('cpu')) -> nn.
         raise ValueError(f"{model_arch} does not support")
 
     if sync_bn:
-        import apex
-        logger.info("using apex synced BN")
-        model = apex.parallel.convert_syncbn_model(model)
+        logger.info("using synced BN")
+        # See https://pytorch.org/docs/stable/generated/torch.nn.SyncBatchNorm.html
+        torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
 
+    # See https://pytorch.org/tutorials/intermediate/memory_format_tutorial.html#converting-existing-models
     if cfg.CHANNELS_LAST:
         memory_format = torch.channels_last
     else:
         memory_format = torch.contiguous_format
     # Same as Apex setting
     model = model.to(device, memory_format=memory_format)
+
+    if cfg.DISTRIBUTED:
+        model = DDP(model, device_ids=[device], output_device=device, find_unused_parameters=False)
 
     return model

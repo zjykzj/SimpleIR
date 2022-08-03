@@ -6,6 +6,7 @@
 @author: zj
 @description: See https://github.com/pytorch/vision/blob/main/references/similarity/sampler.py
 """
+from typing import List, Dict, Iterator
 
 import random
 from collections import defaultdict
@@ -16,7 +17,7 @@ from torch.utils.data.sampler import Sampler
 __all__ = ['PKSampler']
 
 
-def create_groups(groups, k):
+def create_groups(groups: List[int], k: int) -> Dict:
     """Bins sample indices with respect to groups, remove bins with less than k samples
 
     Args:
@@ -52,19 +53,19 @@ class PKSampler(Sampler):
         k (int): Number of samples for each label/group in a batch
     """
 
-    def __init__(self, groups, p, k):
+    def __init__(self, groups: List[int], p: int = 8, k: int = 8):
         self.p = p
         self.k = k
         self.groups = create_groups(groups, self.k)
 
         # Ensures there are enough classes to sample from
         if len(self.groups) < p:
-            raise ValueError("There are not enought classes to sample from")
+            raise ValueError("There are not enough classes to sample from")
 
         # Doing __iter__ first，get num_samples
         self.__iter__()
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[int]:
         # Randomly disrupt the arrangement of images in the number of each category
         # Shuffle samples within groups
         for key in self.groups:

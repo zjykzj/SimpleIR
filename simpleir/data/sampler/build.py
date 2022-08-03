@@ -8,9 +8,13 @@
 """
 
 from yacs.config import CfgNode
+
+from numpy import ndarray
+
+from torch import Tensor
 from torch.utils.data import Sampler, Dataset
 
-from . import pk_sampler
+from . import pk_sampler, distributed_pk_sampler
 
 
 def build_sampler(cfg: CfgNode, dataset: Dataset) -> Sampler:
@@ -25,10 +29,15 @@ def build_sampler(cfg: CfgNode, dataset: Dataset) -> Sampler:
         # construct targets while building your dataset. Some datasets (such as ImageFolder) have a
         # targets attribute with the same format.
         targets = dataset.targets
+        if isinstance(targets, (Tensor, ndarray)):
+            targets = targets.tolist()
         p = cfg.SAMPLER.LABELS_PER_BATCH
         k = cfg.SAMPLER.SAMPLES_PER_LABEL
 
-        sampler = pk_sampler.__dict__[name](targets, p, k)
+        if cfg.DISTRIBUTED:
+            sampler = distributed_pk_sampler.DistributedPKSampler(dataset, shuffle=True, targets=targets, p=p, k=k)
+        else:
+            sampler = pk_sampler.__dict__[name](targets, p, k)
     else:
         raise ValueError(f"{name} does not support")
 

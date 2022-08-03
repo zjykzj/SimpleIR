@@ -48,7 +48,7 @@ def validate(cfg: CfgNode, model: nn.Module, query_loader: DataLoader, gallery_l
     top_k_list = cfg.RETRIEVAL.METRIC.TOP_K
     logger_str = ' * '
     if retrieval_type == EvaluateType.MAP_OXFORD.value:
-        logger_str += f'MAP: {top_list[0]:.3f}% '
+        logger_str += f'MAP {top_list[0]:.3f}% '
     else:
         for k, top in zip(top_k_list, top_list):
             if retrieval_type == EvaluateType.ACCURACY.value:

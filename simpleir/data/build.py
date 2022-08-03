@@ -31,7 +31,7 @@ def build_data(cfg: CfgNode, is_train: bool = True, is_gallery: bool = False, w_
     # If sampler is set, shuffle is not called
     sampler = build_sampler(cfg, dataset) if is_train else None
     if not isinstance(dataset, IterableDataset) and cfg.DISTRIBUTED and is_train:
-        sampler = DistributedSampler(dataset)
+        sampler = DistributedSampler(dataset, shuffle=True)
     shuffle = is_train and sampler is None
 
     # Ensure the consistency of output sequence. Set shuffle=False and num_workers=0 in test

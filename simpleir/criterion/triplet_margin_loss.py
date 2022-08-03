@@ -15,7 +15,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from simpleir.configs.key_words import KEY_INPUT, KEY_FEAT
+from zcls2.config.key_word import KEY_OUTPUT
 
 __all__ = ['triplet_margin_loss', 'TripletMarginLoss']
 
@@ -36,10 +36,11 @@ class TripletMarginLoss(nn.Module):
         return self.loss_fn(labels, embeddings, self.margin, self.p)
 
     def forward(self, input_dict: Dict, target: Tensor) -> Tensor:
-        embeddings = input_dict[KEY_FEAT]
-        labels = input_dict[KEY_INPUT]
+        embeddings = input_dict[KEY_OUTPUT]
+        if len(embeddings.shape) != 2:
+            embeddings = embeddings.reshape(embeddings.shape[0], -1)
 
-        triplet_loss, fraction_positive_triplets = self._forward(embeddings, labels)
+        triplet_loss, fraction_positive_triplets = self._forward(embeddings, target)
         return triplet_loss
 
 

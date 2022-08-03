@@ -1,6 +1,21 @@
 
 # CHANGE
 
+## v0.10.0
+
+* New features
+  1. perf(dataset): update CCCF for retrieval task. [2498c99f23](https://github.com/zjykzj/SimpleIR/tree/2498c99f2327e180867b72da5db50bedc0a9d945)
+  2. perf(dataloader): update custom_fn. [e179099b11b9](https://github.com/zjykzj/SimpleIR/tree/e179099b11b9800beeb739059826557e25a7002b)
+  3. perf(tools): update bash_train.sh/bash_eval.sh use. [2566d78dd03](https://github.com/zjykzj/SimpleIR/tree/2566d78dd0336d1d11b1bea200e554201063784f)
+  4. perf(sampler): make train_sampler be shuffle in distributed. [8c1f9f045b2](https://github.com/zjykzj/SimpleIR/tree/8c1f9f045b260bd7a4433bc088e9d75c01628f18)
+  5. feat(sampler): new DistributedPKSampler. [b789421f1a](https://github.com/zjykzj/SimpleIR/tree/b789421f1a51a2609ff109805b2b694e4d99f41c)
+  6. perf(train.py): add device setting for single GPU training. [1aeb869c9](https://github.com/zjykzj/SimpleIR/tree/1aeb869c9b1b6a86aca0501497a4dd6f1ff7226f)
+  7. perf(pk_sampler.py): update. [84d2161ea48c1](https://github.com/zjykzj/SimpleIR/tree/84d2161ea48c1f298903e47576adb76ee3797594)
+  8. perf(triplet_margin_loss): update. [21be529bcffa](https://github.com/zjykzj/SimpleIR/tree/21be529bcffa36018e4699d34aa30c9a2f2f35aa)
+  9. feat(simpleir): add configs/criterion/sampler for triplet training. [426c64c2854](https://github.com/zjykzj/SimpleIR/tree/426c64c28546153a6ef2e61524b514c7b9c607a0)
+* Bug fixes
+* Breaking changes
+
 ## v0.9.3
 
 * New features

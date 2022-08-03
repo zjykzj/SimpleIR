@@ -1,35 +1,35 @@
-<div align="right">
+<div style="text-align: right;">
   Language:
     🇺🇸
   <a title="Chinese" href="./README.zh-CN.md">🇨🇳</a>
 </div>
 
- <div align="center"><a title="" href="https://github.com/zjykzj/SimpleIR"><img align="center" src="./imgs/SimpleIR.png"></a></div>
+<div style="text-align: center;"><a title="" href="https://github.com/zjykzj/SimpleIR"><img align="center" src="./imgs/SimpleIR.png" alt=""></a></div>
 
-<p align="center">
-  «SimpleIR» provides a simple framework for Image Retrieval  </a>
+<p style="text-align: center;">
+  «SimpleIR» provides a simple framework for Image Retrieval
 <br>
 <br>
-  <a href="https://github.com/RichardLitt/standard-readme"><img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square"></a>
-  <a href="https://conventionalcommits.org"><img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg"></a>
-  <a href="http://commitizen.github.io/cz-cli/"><img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg"></a>
-  <a href="https://libraries.io/pypi/simpleir"><img src="https://img.shields.io/librariesio/github/zjykzj/SimpleIR"></a>
+  <a href="https://github.com/RichardLitt/standard-readme"><img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square" alt=""></a>
+  <a href="https://conventionalcommits.org"><img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg" alt=""></a>
+  <a href="http://commitizen.github.io/cz-cli/"><img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg" alt=""></a>
+  <a href="https://libraries.io/pypi/simpleir"><img src="https://img.shields.io/librariesio/github/zjykzj/SimpleIR" alt=""></a>
 <br>
-  <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/badge/PYPI-simpleir-brightgreen"></a>
-  <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/pyversions/simpleir"></a>
-  <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/v/simpleir"></a>
-  <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/l/simpleir"></a>
-  <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/dd/simpleir?style=plastic"></a>
+  <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/badge/PYPI-simpleir-brightgreen" alt=""></a>
+  <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/pyversions/simpleir" alt=""></a>
+  <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/v/simpleir" alt=""></a>
+  <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/l/simpleir" alt=""></a>
+  <a href="https://pypi.org/project/simpleir/"><img src="https://img.shields.io/pypi/dd/simpleir?style=plastic" alt=""></a>
 <br>
   <a href='https://zcls2.readthedocs.io/en/latest/?badge=latest'>
       <img src='https://readthedocs.org/projects/simpleir/badge/?version=latest' alt='Documentation Status' />
   </a>
-  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/v/tag/zjykzj/simpleir"></a>
-  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/repo-size/zjykzj/simpleir"></a>
-  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/forks/zjykzj/simpleir?style=social"></a>
-  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/stars/zjykzj/simpleir?style=social"></a>
-  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/downloads/zjykzj/simpleir/total"></a>
-  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/commit-activity/y/zjykzj/simpleir"></a>
+  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/v/tag/zjykzj/simpleir" alt=""></a>
+  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/repo-size/zjykzj/simpleir" alt=""></a>
+  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/forks/zjykzj/simpleir?style=social" alt=""></a>
+  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/stars/zjykzj/simpleir?style=social" alt=""></a>
+  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/downloads/zjykzj/simpleir/total" alt=""></a>
+  <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/commit-activity/y/zjykzj/simpleir" alt=""></a>
 </p>
 
 ## Table of Contents
@@ -45,7 +45,10 @@
 
 ## Background
 
-Since the traditional image processing, the field of image retrieval has been a research hotspot. Up to now, image retrieval algorithms based on deep learning have been continuously proposed. Although this field has developed for many years, there are still great barriers to research and practice. In order to better practice image retrieval algorithms, I developed this warehouse, hoping to better promote the landing and optimization of image retrieval algorithms.
+Since the traditional image processing, the field of image retrieval has been a research hotspot. Up to now, image
+retrieval algorithms based on deep learning have been continuously proposed. Although this field has developed for many
+years, there are still great barriers to research and practice. In order to better practice image retrieval algorithms,
+I developed this warehouse, hoping to better promote the landing and optimization of image retrieval algorithms.
 
 ## Installation
 

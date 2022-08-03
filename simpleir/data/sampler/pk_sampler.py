@@ -61,10 +61,11 @@ class PKSampler(Sampler):
         if len(self.groups) < p:
             raise ValueError("There are not enought classes to sample from")
 
-        # 先执行一次__iter__，获取num_samples
+        # Doing __iter__ first，get num_samples
         self.__iter__()
 
     def __iter__(self):
+        # Randomly disrupt the arrangement of images in the number of each category
         # Shuffle samples within groups
         for key in self.groups:
             random.shuffle(self.groups[key])
@@ -74,9 +75,11 @@ class PKSampler(Sampler):
         for key in self.groups:
             group_samples_remaining[key] = len(self.groups[key])
 
+        indices = list()
         while len(group_samples_remaining) > self.p:
             # Select p groups at random from valid/remaining groups
             group_ids = list(group_samples_remaining.keys())
+            # Randomly sample P categories from the number of all categories
             selected_group_idxs = torch.multinomial(torch.ones(len(group_ids)), self.p).tolist()
             for i in selected_group_idxs:
                 group_id = group_ids[i]
@@ -84,7 +87,8 @@ class PKSampler(Sampler):
                 for _ in range(self.k):
                     # No need to pick samples at random since group samples are shuffled
                     sample_idx = len(group) - group_samples_remaining[group_id]
-                    yield group[sample_idx]
+                    # yield group[sample_idx]
+                    indices.append(group[sample_idx])
                     group_samples_remaining[group_id] -= 1
 
                 # Don't sample from group if it has less than k samples remaining

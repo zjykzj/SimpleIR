@@ -34,7 +34,7 @@ def build_dataset(cfg: CfgNode,
     else:
         data_root = cfg.DATASET.QUERY_DIR
         dataset_name = cfg.DATASET.RETRIEVAL_NAME
-        
+
     w_path = w_path or not is_train
 
     # Data loading code
@@ -44,7 +44,8 @@ def build_dataset(cfg: CfgNode,
         )
     elif dataset_name in cccf.__all__:
         dataset = cccf.__dict__[dataset_name](
-            data_root, transform=transform, target_transform=target_transform, train=is_train, w_path=w_path
+            data_root, transform=transform, target_transform=target_transform, train=is_train, w_path=w_path,
+            is_gallery=is_gallery
         )
     elif dataset_name in general_dataset.__all__:
         dataset = general_dataset.__dict__[dataset_name](

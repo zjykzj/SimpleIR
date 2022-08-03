@@ -8,8 +8,11 @@
 """
 from typing import Optional, Callable, Any
 
+import os
+
 from PIL import Image
 
+from zcls2.config.key_word import KEY_SEP
 from zcls2.data.dataset import cccf
 
 __all__ = ['CCCF']
@@ -18,8 +21,30 @@ __all__ = ['CCCF']
 class CCCF(cccf.CCCF):
 
     def __init__(self, root: str, train: Optional[bool] = True, transform: Optional[Callable] = None,
-                 target_transform: Optional[Callable] = None, w_path: bool = False) -> None:
-        super().__init__(root, train, transform, target_transform)
+                 target_transform: Optional[Callable] = None, w_path: bool = False, is_gallery=True) -> None:
+        if train:
+            super().__init__(root, train, transform, target_transform)
+        else:
+            assert os.path.isdir(root), root
+
+            class_path = os.path.join(root, 'classes.txt')
+            assert os.path.isfile(class_path), class_path
+            gallery_path = os.path.join(root, 'gallery.txt')
+            assert os.path.isfile(gallery_path), gallery_path
+            query_path = os.path.join(root, 'query.txt')
+            assert os.path.isfile(query_path), query_path
+
+            classes = cccf.load_classes(class_path, delimiter=' ')
+            data_list = cccf.load_txt(gallery_path, delimiter=KEY_SEP) if is_gallery else \
+                cccf.load_txt(query_path, delimiter=KEY_SEP)
+
+            self.classes = classes
+            self.data = [os.path.join(root, str(img_path)) for img_path, target in data_list]
+            self.targets = [int(target) for img_path, target in data_list]
+
+            self.root = root
+            self.transform = transform
+            self.target_transform = target_transform
 
         self.w_path = w_path
 
@@ -46,6 +71,16 @@ class CCCF(cccf.CCCF):
             target = self.target_transform(target)
 
         if self.w_path:
-            return img, target, img_path
+            # In order to better distinguish image names, add dataset and class as prefix to image name
+            img_dir = os.path.dirname(img_path)
+            img_name = os.path.basename(img_path)
+
+            tmp = img_path.replace(self.root, "")
+            tmp = tmp.lstrip('/')
+            dataset_name = tmp.split('/')[0]
+
+            cls_name = os.path.basename(img_dir)
+            new_img_path = os.path.join(img_dir, f"{dataset_name}_{cls_name}_{img_name}")
+            return img, target, new_img_path
         else:
             return img, target

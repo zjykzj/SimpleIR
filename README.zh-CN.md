@@ -1,12 +1,12 @@
-<div style="text-align: right;">
+<div align="right">
   语言:
     🇨🇳
   <a title="英语" href="./README.md">🇺🇸</a>
 </div>
 
-<div style="text-align: center;"><a title="" href="https://github.com/zjykzj/SimpleIR"><img align="center" src="./imgs/SimpleIR.png" alt=""></a></div>
+<div align="center"><a title="" href="https://github.com/zjykzj/SimpleIR"><img align="center" src="./imgs/SimpleIR.png" alt=""></a></div>
 
-<p style="text-align: center;">
+<p align="center">
   «SimpleIR»提供了一个简单的图像检索框架
 <br>
 <br>

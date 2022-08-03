@@ -1,12 +1,12 @@
-<div style="text-align: right;">
+<div align="right">
   Language:
     🇺🇸
   <a title="Chinese" href="./README.zh-CN.md">🇨🇳</a>
 </div>
 
-<div style="text-align: center;"><a title="" href="https://github.com/zjykzj/SimpleIR"><img align="center" src="./imgs/SimpleIR.png" alt=""></a></div>
+<div align="center"><a title="" href="https://github.com/zjykzj/SimpleIR"><img align="center" src="./imgs/SimpleIR.png" alt=""></a></div>
 
-<p style="text-align: center;">
+<p align="center">
   «SimpleIR» provides a simple framework for Image Retrieval
 <br>
 <br>

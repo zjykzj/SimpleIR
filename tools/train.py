@@ -77,7 +77,12 @@ def main():
     best_score_list = [0 for _ in top_k]
     best_epoch = 0
 
-    device = torch.device(f'cuda:{cfg.RANK_ID}') if cfg.DISTRIBUTED else torch.device('cpu')
+    if cfg.DISTRIBUTED:
+        device = torch.device(f'cuda:{cfg.RANK_ID}')
+    elif torch.cuda.is_available():
+        device = torch.device('cuda:0')
+    else:
+        device = torch.device('cpu')
     model = build_model(cfg, device)
     optimizer = build_optimizer(cfg, model)
 
@@ -108,8 +113,8 @@ def main():
     if cfg.DISTRIBUTED:
         torch.distributed.barrier()
     assert cfg.TRAIN.START_EPOCH > 0
-    logger.info("=> Train now")
     for epoch in range(cfg.TRAIN.START_EPOCH, cfg.TRAIN.MAX_EPOCH + 1):
+        logger.info("=> Train now")
         # train for one epoch
         start = time.time()
 
@@ -132,6 +137,7 @@ def main():
         if epoch % cfg.TRAIN.EVAL_EPOCH == 0 and cfg.RANK_ID == 0:
             # evaluate on validation set
             start = time.time()
+            logger.info("=> Evaluate now")
             # prec1, prec5 = validate(cfg, val_loader, model, criterion)
             score_list = validate(cfg, model, query_loader, gallery_loader, device=device)
             torch.cuda.empty_cache()

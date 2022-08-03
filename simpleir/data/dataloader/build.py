@@ -6,23 +6,30 @@
 @author: zj
 @description: 
 """
-from typing import Tuple, Any
+
+from typing import List, Tuple
 
 import torch
+from torch import Tensor
 from torch.utils.data import Dataset, Sampler, DataLoader
 from torch.utils.data._utils.collate import default_collate
 
+import numpy as np
 from yacs.config import CfgNode
 
 from zcls2.data.dataloader.collate import fast_collate
 
 
-def custom_fn(batches):
+def custom_fn(batches: List) -> Tuple[Tensor, Tensor, List]:
     images = [batch[0] for batch in batches]
     targets = [batch[1] for batch in batches]
     paths = [batch[2] for batch in batches]
 
-    return torch.stack(images), torch.stack(targets), paths
+    if isinstance(targets[0], int):
+        targets = torch.from_numpy(np.array(targets))
+        return torch.stack(images), targets, paths
+    else:
+        return torch.stack(images), torch.stack(targets), paths
 
 
 def build_dataloader(cfg: CfgNode, dataset: Dataset,

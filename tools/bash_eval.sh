@@ -17,5 +17,4 @@ fi
 
 export PYTHONPATH=.
 
-python tools/eval.py -cfg "${cfg_file}" \
-  --evaluate
+python tools/eval.py -cfg "${cfg_file}" --evaluate

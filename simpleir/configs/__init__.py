@@ -36,7 +36,7 @@ def add_custom_config(_C: CfgNode) -> None:
     # Criterion
     # ---------------------------------------------------------------------------- #
     # Triplet loss margin
-    _C.MODEL.CRITERION.MARGIN = 1.0
+    _C.MODEL.CRITERION.MARGIN = 0.2
     # p value for the p-norm distance to calculate between each vector pair
     _C.MODEL.CRITERION.P = 2.0
     # triplet loss mining way, now supports

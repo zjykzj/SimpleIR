@@ -14,7 +14,7 @@ fi
 
 cfg_file=""
 gpus=4
-master_port="15231"
+master_port="16233"
 if [ $# == 1 ]; then
   cfg_file=$1
 elif [ $# == 2 ]; then

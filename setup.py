@@ -13,7 +13,6 @@ URL = "https://github.com/zjykzj/SimpleIR"
 PYTHON_REQUIRES = ">=3.8"
 INSTALL_REQUIRES = [
     "Pillow >= 9.0.0",
-    "apex >= 0.1",
     "joblib >= 1.1.0",
     "numpy >= 1.22.3",
     "sklearn >= 0.0",

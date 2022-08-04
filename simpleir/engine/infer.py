@@ -23,6 +23,7 @@ import simpleir.utils.metric as metric
 from simpleir.utils.metric import EvaluateType
 
 
+@torch.inference_mode()
 def validate(cfg: CfgNode, model: nn.Module, query_loader: DataLoader, gallery_loader: DataLoader,
              device=torch.device('cpu')) -> List[float]:
     # switch to evaluate mode

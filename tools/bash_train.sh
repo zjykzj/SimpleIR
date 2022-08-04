@@ -28,5 +28,5 @@ fi
 
 export PYTHONPATH=.
 
-python -m torch.distributed.launch --nproc_per_node="$gpus" --master_port="${master_port}" \
+python -m torch.distributed.launch --nproc_per_node=$gpus --master_port="${master_port}" \
   tools/train.py -cfg "${cfg_file}"

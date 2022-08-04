@@ -12,7 +12,7 @@ from yacs.config import CfgNode
 
 from zcls2.model.criterion import cross_entropy_loss, large_margin_softmax_loss, soft_target_cross_entropy_loss
 
-from . import mse_loss, triplet_margin_loss
+from . import mse_loss, triplet_margin_loss, triplet_margin_loss_plus
 
 __all__ = ['build_criterion']
 
@@ -36,6 +36,8 @@ def build_criterion(cfg: CfgNode) -> nn.Module:
         criterion = mse_loss.__dict__[loss_name]()
     elif loss_name in triplet_margin_loss.__all__:
         criterion = triplet_margin_loss.__dict__[loss_name](margin, p, mining)
+    elif loss_name in triplet_margin_loss_plus.__all__:
+        criterion = triplet_margin_loss_plus.__dict__[loss_name](margin, p, mining)
     else:
         raise ValueError(f"{loss_name} does not support")
 

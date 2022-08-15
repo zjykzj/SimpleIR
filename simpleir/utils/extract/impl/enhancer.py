@@ -34,7 +34,7 @@ def pca_fit(feat_array: ndarray, rd=512, is_whiten: bool = False) -> PCA:
     Calculate pca/whitening parameters
     """
     # Normalize
-    feat_array = l2_norm(torch.from_numpy(feat_array))
+    feat_array = l2_norm(torch.from_numpy(feat_array)).numpy()
 
     # Whiten and reduce dimension
     pca_model = PCA(n_components=rd, whiten=is_whiten)

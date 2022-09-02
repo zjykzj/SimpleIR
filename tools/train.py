@@ -134,6 +134,8 @@ def main():
         end = time.time()
         logger.info("One epoch train need: {:.3f}".format((end - start)))
 
+        if cfg.DISTRIBUTED:
+            torch.distributed.barrier()
         if epoch % cfg.TRAIN.EVAL_EPOCH == 0 and cfg.RANK_ID == 0:
             # evaluate on validation set
             start = time.time()
@@ -172,8 +174,6 @@ def main():
 
             end = time.time()
             logger.info("One epoch validate need: {:.3f}".format((end - start)))
-        if cfg.DISTRIBUTED:
-            torch.distributed.barrier()
 
 
 if __name__ == '__main__':

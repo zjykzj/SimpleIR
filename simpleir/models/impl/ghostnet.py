@@ -23,7 +23,7 @@ class GhostNet(ZGhostNet, ModelBase):
     def __init__(self, cfgs, num_classes=1000, width=1.0, dropout=0.2, in_chans=3, output_stride=32,
                  feat_type='act2'):
         super().__init__(cfgs, num_classes, width, dropout, in_chans, output_stride)
-        assert feat_type in self._feat_list
+        assert feat_type in self._feat_list, f'feat_type: {feat_type}, supported feat_list: {self._feat_list}'
 
         self.feature_modules = {
             "blocks": self.blocks[9][0].act1,

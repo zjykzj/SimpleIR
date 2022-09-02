@@ -47,7 +47,7 @@ class ResNet(TResNet, ModelBase):
                  feat_type='avgpool') -> None:
         super().__init__(block, layers, num_classes, zero_init_residual, groups, width_per_group,
                          replace_stride_with_dilation, norm_layer)
-        assert feat_type in self._feat_list
+        assert feat_type in self._feat_list, f'feat_type: {feat_type}, supported feat_list: {self._feat_list}'
 
         self.feature_modules = {
             "layer4": self.layer4[2].relu,

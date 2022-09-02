@@ -24,7 +24,7 @@ __all__ = ["MobileNetV3", "mobilenet_v3_large", "mobilenet_v3_small"]
 
 class MobileNetV3(TMobileNetV3, ModelBase):
     _feat_list = [
-        'blocks', 'avgpool', 'linear', 'hardswish', 'classifier'
+        'blocks', 'avgpool', 'linear', 'hardswish', 'dropout', 'classifier'
     ]
 
     def __init__(self, inverted_residual_setting: List[InvertedResidualConfig], last_channel: int,
@@ -32,13 +32,14 @@ class MobileNetV3(TMobileNetV3, ModelBase):
                  norm_layer: Optional[Callable[..., nn.Module]] = None,
                  feat_type='hardswish', **kwargs: Any) -> None:
         super().__init__(inverted_residual_setting, last_channel, num_classes, block, norm_layer, **kwargs)
-        assert feat_type in self._feat_list
+        assert feat_type in self._feat_list, f'feat_type: {feat_type}, supported feat_list: {self._feat_list}'
 
         self.feature_modules = {
             "blocks": self.features[16][2],
             "avgpool": self.avgpool,
             "linear": self.classifier[0],
             "hardswish": self.classifier[1],
+            "dropout": self.classifier[2],
             "classifier": self.classifier[3],
         }
         self.feature_buffer = dict()

@@ -163,7 +163,7 @@ def main():
             save_checkpoint({
                 'epoch': epoch,
                 'arch': cfg.MODEL.ARCH,
-                'state_dict': val_model.state_dict(),
+                'state_dict': model.module.state_dict() if cfg.DISTRIBUTED else model.state_dict(),
                 'score_list': score_list,
                 'best_score_list': best_score_list,
                 'best_epoch': epoch,

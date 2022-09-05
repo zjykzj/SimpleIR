@@ -134,14 +134,13 @@ def main():
         end = time.time()
         logger.info("One epoch train need: {:.3f}".format((end - start)))
 
-        if cfg.DISTRIBUTED:
-            torch.distributed.barrier()
         if epoch % cfg.TRAIN.EVAL_EPOCH == 0 and cfg.RANK_ID == 0:
             # evaluate on validation set
             start = time.time()
             logger.info("=> Evaluate now")
-            # prec1, prec5 = validate(cfg, val_loader, model, criterion)
-            score_list = validate(cfg, model, query_loader, gallery_loader, device=device)
+            # See [Torch.distributed.barrier() hangs in DDP](https://discuss.pytorch.org/t/torch-distributed-barrier-hangs-in-ddp/114522)
+            val_model = model if not cfg.DISTRIBUTED else model.module
+            score_list = validate(cfg, val_model, query_loader, gallery_loader, device=device)
             torch.cuda.empty_cache()
 
             is_best = score_list[0] > best_score_list[0]
@@ -164,7 +163,7 @@ def main():
             save_checkpoint({
                 'epoch': epoch,
                 'arch': cfg.MODEL.ARCH,
-                'state_dict': model.state_dict(),
+                'state_dict': val_model.state_dict(),
                 'score_list': score_list,
                 'best_score_list': best_score_list,
                 'best_epoch': epoch,
@@ -174,6 +173,8 @@ def main():
 
             end = time.time()
             logger.info("One epoch validate need: {:.3f}".format((end - start)))
+        if cfg.DISTRIBUTED:
+            torch.distributed.barrier()
 
 
 if __name__ == '__main__':

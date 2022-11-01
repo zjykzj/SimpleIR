@@ -57,7 +57,10 @@ class ExtractHelper(object):
         self.pretrained = pretrained
         self.layer = layer
 
-        self.classes = data_loader.dataset.classes
+        if hasattr(data_loader.dataset, "classes"):
+            self.classes = data_loader.dataset.classes
+        else:
+            self.classes = None
 
         self.save_dir = save_dir
         self.aggregate_type = aggregate_type
@@ -89,11 +92,12 @@ class ExtractHelper(object):
         info_dict = {
             'model': self.model_arch,
             'pretrained': self.pretrained,
-            'classes': self.classes,
             'feat': self.layer,
             'aggregate': self.aggregate_type,
             'enhance': self.enhance_type,
             'content': content_dict
         }
+        if self.classes is not None:
+            info_dict['classes'] = self.classes
         with open(info_path, 'wb') as f:
             pickle.dump(info_dict, f)

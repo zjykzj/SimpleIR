@@ -47,7 +47,8 @@ def load_features(feat_dir: str) -> Tuple[List[List], List[int], List[str], List
         label_list.append(label)
         img_name_list.append(img_name)
 
-    return feat_list, label_list, img_name_list, list(info_dict['classes'])
+    classes = info_dict['classes'] if 'classes' in info_dict.keys() else None
+    return feat_list, label_list, img_name_list, classes
 
 
 class RetrievalHelper:
@@ -73,7 +74,7 @@ class RetrievalHelper:
         query_feat_list, query_label_list, query_img_name_list, query_cls_list = load_features(self.query_dir)
         logger.info(f"Loading gallery features from {self.gallery_dir}")
         gallery_feat_list, gallery_label_list, gallery_img_name_list, gallery_cls_list = load_features(self.gallery_dir)
-        assert query_cls_list == gallery_cls_list
+        assert query_cls_list == gallery_cls_list or (query_cls_list is None and gallery_cls_list is None)
 
         gallery_feat_tensor = torch.from_numpy(np.array(gallery_feat_list))
         gallery_target_tensor = torch.from_numpy(np.array(gallery_label_list))
@@ -104,11 +105,12 @@ class RetrievalHelper:
             content_dict[query_img_name] = query_label
 
         info_dict = {
-            'classes': query_cls_list,
             'content': content_dict,
             'query_dir': self.query_dir,
             'gallery_dir': self.gallery_dir
         }
+        if query_cls_list is not None:
+            info_dict['classes'] = query_cls_list
         info_path = os.path.join(self.save_dir, 'info.pkl')
         logger.info(f'save to {info_path}')
         with open(info_path, 'wb') as f:

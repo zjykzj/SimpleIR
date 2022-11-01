@@ -8,7 +8,8 @@ There are three steps for image retrieval, that is
 
 ## Feature Extraction
 
-First, you should appoint `model_arch` and feature `layer`, then you should input image paths. we provide `General` dataset class, it needs two files: 
+First, you should appoint `model_arch` and feature `layer`, then you should input image paths. we provide `General`
+dataset class, it needs two files:
 
 1. data.csv: each line represents an image path and its corresponding label in the following format:
     ```text
@@ -30,7 +31,8 @@ python extract_features.py --model-arch resnet50 --layer fc --dataset General --
 python extract_features.py --model-arch resnet50 --layer fc --dataset General --image-dir data/test/ --save-dir data/query_fc
 ```
 
-Finally, you can find features in `save-dir`. The features of each image are saved according to the image name, and you can find `info.pkl`, it includes the following contents:
+Finally, you can find features in `save-dir`. The features of each image are saved according to the image name, and you
+can find `info.pkl`, it includes the following contents:
 
 ```text
 'feat': layer,
@@ -49,7 +51,8 @@ python retrieval_features.py --query-dir data/query_fc --gallery-dir data/galler
 python retrieval_features.py --query-dir data/query_fc --gallery-dir data/gallery_fc --save-dir data/retrieval_fc --topk 20
 ```
 
-In the `save-dir`, you can find the sorting results of each query feature retrieval. There is also a file `info.pkl`, it includes the following contents:
+In the `save-dir`, you can find the sorting results of each query feature retrieval. There is also a file `info.pkl`, it
+includes the following contents:
 
 ```text
 'classes': query_cls_list,
@@ -60,7 +63,8 @@ In the `save-dir`, you can find the sorting results of each query feature retrie
 
 ## Retrieval Evaluation
 
-Given the retrieval result path, read `info.pkl` file, read the retrieval results in turn. Evaluate retrieval performance, such as `ACCURACY/PRECISION/MAP`:
+Given the retrieval result path, read `info.pkl` file, read the retrieval results in turn. Evaluate retrieval
+performance, such as `ACCURACY/PRECISION/MAP`:
 
 ```shell
 python evaluate_features.py --retrieval-dir data/retrieval_fc --retrieval-type ACCURACY

@@ -124,3 +124,39 @@ bash tools/bash_eval.sh tools/configs/resnet50_avgpool_oxford_224_b32.yaml
 [11/01 21:37:25][INFO] infer.py:  61:  * => MAP 43.296% 
 ```
 
+### ROxford5k
+
+```shell
+# Set env
+export PYTHONPATH=/path/to/SimpleIR/
+python tools/data/make_roxford5k_rparis6k.py
+# Extract gallery feature
+python tools/retrieval/extract_features.py \
+ --model-arch resnet50 \
+ --layer avgpool \
+ --gallery \
+ --dataset Oxford5k \
+ --image-dir data/oxford5k \
+ --save-dir feature/oxford5k/gallery \
+ --aggregate IDENTITY \
+ --enhance IDENTITY
+# Extract query feature
+python tools/retrieval/extract_features.py \
+ --model-arch resnet50 \
+ --layer avgpool \
+ --dataset Oxford5k \
+ --image-dir data/oxford5k \
+ --save-dir feature/oxford5k/query \
+ --aggregate IDENTITY \
+ --enhance IDENTITY
+# Retrieval feature
+python tools/retrieval/retrieval_features.py \
+ --query-dir feature/oxford5k/query \
+ --gallery-dir feature/oxford5k/gallery \
+ --distance EUCLIDEAN \
+ --rank NORMAL \
+ --rerank IDENTITY \
+ --save-dir retrieval/oxford5k
+# Evaluate mAP_for_ROxford
+
+```

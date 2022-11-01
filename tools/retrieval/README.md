@@ -110,5 +110,17 @@ python tools/retrieval/evaluate_features.py \
  --retrieval-dir retrieval/oxford \
  --retrieval-type MAP_OXFORD \
  --query-dir data/oxford
+...
+...
+[11/01 21:15:19][INFO] evaluate_features.py:  46: => MAP: 43.298%
+```
+
+You can also use config file
+
+```shell
+bash tools/bash_eval.sh tools/configs/resnet50_avgpool_oxford_224_b32.yaml
+...
+...
+[11/01 21:37:25][INFO] infer.py:  61:  * => MAP 43.296% 
 ```
 

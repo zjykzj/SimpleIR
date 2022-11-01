@@ -2,14 +2,14 @@ RETRIEVAL:
   EXTRACT:
     FEAT_TYPE: 'avgpool'
     AGGREGATE_TYPE: 'IDENTITY'
-    ENHANCE_TYPE: 'PCA_W'
-    QUERY_DIR: 'data/query_r50_avgpool'
-    GALLERY_DIR: 'data/gallery_r50_avgpool'
+    ENHANCE_TYPE: 'IDENTITY'
+    QUERY_DIR: 'feature/oxford/query'
+    GALLERY_DIR: 'feature/oxford/gallery'
   INDEX:
     DISTANCE_TYPE: 'EUCLIDEAN'
     RANK_TYPE: 'NORMAL'
     RERANK_TYPE: 'IDENTITY'
-    RETRIEVAL_DIR: 'data/retrieval_r50_avgpool'
+    RETRIEVAL_DIR: 'retrieval/oxford'
     TOP_K: None
   METRIC:
     EVAL_TYPE: 'MAP_OXFORD'
@@ -19,8 +19,8 @@ DATALOADER:
   NUM_WORKERS: 0
 DATASET:
   RETRIEVAL_NAME: 'Oxford'
-  GALLERY_DIR: './data/oxford5k'
-  QUERY_DIR: './data/oxford5k'
+  GALLERY_DIR: './data/oxford'
+  QUERY_DIR: './data/oxford'
 TRANSFORM:
   TEST_METHODS: ('Resize', 'CenterCrop', 'ToTensor')
   TEST_RESIZE: (256,)

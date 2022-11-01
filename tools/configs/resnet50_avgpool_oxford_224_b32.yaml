@@ -22,9 +22,9 @@ DATASET:
   GALLERY_DIR: './data/oxford'
   QUERY_DIR: './data/oxford'
 TRANSFORM:
-  TEST_METHODS: ('Resize', 'CenterCrop', 'ToTensor')
+  TEST_METHODS: ('Resize', 'CenterCrop', 'ToTensor', 'Normalize')
   TEST_RESIZE: (256,)
-  TEST_CROP: (224,)
+  TEST_CROP: (224, 224)
   NORMALIZE: ((0.485, 0.456, 0.406), (0.229, 0.224, 0.225), False, 1.0)
 MODEL:
   ARCH: 'resnet50'

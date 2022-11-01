@@ -16,7 +16,7 @@ logger = logging.get_logger(__name__)
 
 __all__ = ['MetricHelper', 'EvaluateType']
 
-from .impl import Accuracy, Precision, Map, MapForOxford
+from .impl import Accuracy, Precision, Map, MapForOxford, MapForROxford
 
 
 class EvaluateType(Enum):
@@ -43,6 +43,8 @@ class MetricHelper:
             self.model = Map(retrieval_dir, top_k_list=top_k_list)
         if self.eval_type == EvaluateType.MAP_OXFORD:
             self.model = MapForOxford(data_root, retrieval_dir)
+        if self.eval_type == EvaluateType.MAP_ROXFORD:
+            self.model = MapForROxford(data_root, retrieval_dir)
 
     def run(self):
         return self.model.run()

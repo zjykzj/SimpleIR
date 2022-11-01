@@ -51,11 +51,11 @@ def build_dataset(cfg: CfgNode,
         dataset = general_dataset.__dict__[dataset_name](
             data_root, transform=transform, target_transform=target_transform, w_path=w_path
         )
-    # elif dataset_name in oxford.__all__:
-    #     dataset = oxford.__dict__[dataset_name](
-    #         data_root, is_gallery=is_gallery, transform=transform,
-    #         target_transform=target_transform, w_path=w_path
-    #     )
+    elif dataset_name in oxford.__all__:
+        dataset = oxford.__dict__[dataset_name](
+            data_root, is_gallery=is_gallery, transform=transform,
+            target_transform=target_transform, w_path=w_path
+        )
     elif dataset_name in roxford.__all__:
         dataset = roxford.__dict__[dataset_name](
             data_root, dataset=dataset_name.lower(), is_gallery=is_gallery, transform=transform,

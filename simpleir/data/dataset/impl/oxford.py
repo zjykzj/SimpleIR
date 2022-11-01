@@ -37,8 +37,6 @@ class Oxford(Dataset):
         self.target_transform = target_transform
         self.w_path = w_path
 
-        self.classes = list(range(11))
-
     def create_gallery(self):
         image_list = glob(os.path.join(self.images_root, '*.jpg'))
 

@@ -24,6 +24,7 @@ class EvaluateType(Enum):
     PRECISION = 'PRECISION'
     MAP = 'MAP'
     MAP_OXFORD = 'MAP_OXFORD'
+    MAP_ROXFORD = 'MAP_ROXFORD'
 
 
 class MetricHelper:

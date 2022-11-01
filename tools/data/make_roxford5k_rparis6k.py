@@ -6,10 +6,6 @@
 @author: zj
 @description: Downloading Oxford5k/Paris6k/ROxford5k/RParis6k
 @See:
-1. https://www.robots.ox.ac.uk/~vgg/data/oxbuildings/
-2. https://www.robots.ox.ac.uk/~vgg/data/parisbuildings/
-
-Refer to
 1. https://github.com/filipradenovic/revisitop/blob/master/python/download.py
 2. https://github.com/filipradenovic/cnnimageretrieval-pytorch/blob/master/cirtorch/utils/download.py
 """
@@ -17,11 +13,11 @@ Refer to
 import os
 import argparse
 
-DATA_LIST = ['oxford5k', 'paris6k']
+DATA_LIST = ['oxford5k', 'paris6k', 'roxford5k', 'rparis6k']
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Downloading Oxford5k/Paris6k")
+    parser = argparse.ArgumentParser(description="Downloading Oxford5k/Paris6k/ROxford5k/RParis6k")
     parser.add_argument('--dataset', metavar='DATASET', default="oxford5k", type=str,
                         choices=DATA_LIST,
                         help='Dataset to be downloaded. Default: oxford5k')
@@ -38,15 +34,17 @@ def download(data_dir, dataset):
     if dataset == 'oxford5k':
         remote_dir = 'https://www.robots.ox.ac.uk/~vgg/data/oxbuildings'
         dl_files = ['oxbuild_images-v1.tgz']
-        gnd_dl_files = ['gt_files_170407.tgz']
     elif dataset == 'paris6k':
         remote_dir = 'https://www.robots.ox.ac.uk/~vgg/data/parisbuildings'
         dl_files = ['paris_1-v1.tgz', 'paris_2-v1.tgz']
-        gnd_dl_files = ['paris_120310.tgz']
+    elif dataset == 'roxford5k':
+        remote_dir = 'https://www.robots.ox.ac.uk/~vgg/data/oxbuildings'
+        dl_files = ['oxbuild_images-v1.tgz']
     else:
-        raise ValueError('ERROR')
+        remote_dir = 'https://www.robots.ox.ac.uk/~vgg/data/parisbuildings'
+        dl_files = ['paris_1-v1.tgz', 'paris_2-v1.tgz']
 
-    dst_dir = os.path.join(data_dir, 'images')
+    dst_dir = os.path.join(data_dir, 'jpg')
     if not os.path.exists(dst_dir):
         os.makedirs(dst_dir)
 
@@ -71,21 +69,15 @@ def download(data_dir, dataset):
         print('>> Extracted, deleting dataset {} archive {}...'.format(dataset, dst_path))
         os.system('rm {}'.format(dst_path))
 
-    for gnd_dl_name in gnd_dl_files:
-        gnd_remote_url = os.path.join(remote_dir, gnd_dl_name)
+    # gnd_src_dir = os.path.join('http://cmp.felk.cvut.cz/revisitop/data', 'datasets', dataset)
+    gnd_src_dir = os.path.join('http://cmp.felk.cvut.cz/cnnimageretrieval/data', 'test', dataset)
+    gnd_dl_file = 'gnd_{}.pkl'.format(dataset)
+    gnd_src_file = os.path.join(gnd_src_dir, gnd_dl_file)
 
-        gnd_dst_file = os.path.join(data_dir, gnd_dl_name)
-        if not os.path.exists(gnd_dst_file):
-            print('>> Downloading dataset {} ground truth file...'.format(dataset))
-            os.system('wget {} -O {}'.format(gnd_remote_url, gnd_dst_file))
-            print('>> Extracting dataset {} archive {}...'.format(dataset, gnd_dl_name))
-            # create folder
-            dst_dir = os.path.join(data_dir, 'groundtruth')
-            os.system('mkdir {}'.format(dst_dir))
-            # extract in folder
-            os.system('tar -zxf {} -C {}'.format(gnd_dst_file, dst_dir))
-            # remove gnd_file
-            os.system('rm -rf {}'.format(gnd_dst_file))
+    gnd_dst_file = os.path.join(data_dir, gnd_dl_file)
+    if not os.path.exists(gnd_dst_file):
+        print('>> Downloading dataset {} ground truth file...'.format(dataset))
+        os.system('wget {} -O {}'.format(gnd_src_file, gnd_dst_file))
 
 
 def main(args):

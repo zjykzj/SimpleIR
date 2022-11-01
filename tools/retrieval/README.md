@@ -69,3 +69,46 @@ performance, such as `ACCURACY/PRECISION/MAP`:
 ```shell
 python evaluate_features.py --retrieval-dir data/retrieval_fc --retrieval-type ACCURACY
 ```
+
+## Examples
+
+### Oxford5k
+
+```shell
+# Set env
+export PYTHONPATH=/path/to/SimpleIR/
+python tools/data/make_oxford5k_paris6k.py
+# Extract gallery feature
+python tools/retrieval/extract_features.py \
+ --model-arch resnet50 \
+ --layer avgpool \
+ --gallery \
+ --dataset Oxford \
+ --image-dir data/oxford \
+ --save-dir feature/oxford/gallery \
+ --aggregate IDENTITY \
+ --enhance IDENTITY
+# Extract query feature
+python tools/retrieval/extract_features.py \
+ --model-arch resnet50 \
+ --layer avgpool \
+ --dataset Oxford \
+ --image-dir data/oxford \
+ --save-dir feature/oxford/query \
+ --aggregate IDENTITY \
+ --enhance IDENTITY
+# Retrieval feature
+python tools/retrieval/retrieval_features.py \
+ --query-dir feature/oxford/query \
+ --gallery-dir feature/oxford/gallery \
+ --distance EUCLIDEAN \
+ --rank NORMAL \
+ --rerank IDENTITY \
+ --save-dir retrieval/oxford
+# Evaluate mAP_for_Oxford
+python tools/retrieval/evaluate_features.py \
+ --retrieval-dir retrieval/oxford \
+ --retrieval-type MAP_OXFORD \
+ --query-dir data/oxford
+```
+

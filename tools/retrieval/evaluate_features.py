@@ -43,15 +43,15 @@ def main():
     top_list = metric_helper.run()
 
     if args.retrieval_type == 'MAP_OXFORD':
-        logger.info(f"MAP: {top_list[0]}%")
+        logger.info(f"=> MAP: {top_list[0]:.3f}%")
     else:
         for top, k in zip(top_list, top_k_list):
             if args.retrieval_type == EvaluateType.ACCURACY.value:
-                logger.info(f"ACC@{k}: {top}%")
+                logger.info(f"=> ACC@{k}: {top}:.3f%")
             elif args.retrieval_type == EvaluateType.PRECISION.value:
-                logger.info(f"Pre@{k}: {top}%")
+                logger.info(f"=> Pre@{k}: {top}:.3f%")
             else:
-                logger.info(f"MAP@{k}: {top}%")
+                logger.info(f"=> MAP@{k}: {top}:.3f%")
 
 
 if __name__ == '__main__':

@@ -54,9 +54,13 @@ def build_args(args: Namespace) -> ExtractHelper:
     cfg.RETRIEVAL.EXTRACT.LEARN_PCA = args.learn
     cfg.RETRIEVAL.EXTRACT.PCA_PATH = args.pca
     cfg.RETRIEVAL.EXTRACT.REDUCE_DIMENSION = args.rd
+
+    cfg.DATALOADER.TEST_BATCH_SIZE = 32
     cfg.freeze()
 
     device = torch.device(f'cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+    logger.info(f"=> Device: {str(device)}")
+    logger.info(f"=> Device:")
     model = build_model(cfg, device)
 
     # Optionally resume from a checkpoint

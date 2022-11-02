@@ -85,6 +85,8 @@ def add_custom_config(_C: CfgNode) -> None:
     _C.RETRIEVAL.METRIC.EVAL_TYPE = 'ACCURACY'
     # Get the Top-k result
     _C.RETRIEVAL.METRIC.TOP_K = (1, 3, 5, 10)
+    # Dataset name
+    _C.RETRIEVAL.METRIC.DATASET = "oxford5k"
 
 
 def get_cfg_defaults() -> CfgNode:

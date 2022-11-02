@@ -22,6 +22,7 @@ def build_args(args: Namespace, top_k_list=(1, 3, 5, 10)):
     cfg.RETRIEVAL.INDEX.RETRIEVAL_DIR = args.retrieval_dir
     cfg.RETRIEVAL.METRIC.EVAL_TYPE = args.retrieval_type
     cfg.RETRIEVAL.METRIC.TOP_K = top_k_list
+    cfg.RETRIEVAL.METRIC.DATASET = args.dataset
     cfg.freeze()
 
     return build_cfg(cfg)
@@ -32,6 +33,7 @@ def build_cfg(cfg: CfgNode):
     retrieval_dir = cfg.RETRIEVAL.INDEX.RETRIEVAL_DIR
     retrieval_type = cfg.RETRIEVAL.METRIC.EVAL_TYPE
     top_k_list = cfg.RETRIEVAL.METRIC.TOP_K
+    dataset = cfg.RETRIEVAL.METRIC.DATASET
 
-    metric_helper = MetricHelper(retrieval_dir, eval_type=retrieval_type, top_k_list=top_k_list, data_root=data_root)
+    metric_helper = MetricHelper(retrieval_dir, eval_type=retrieval_type, top_k_list=top_k_list, data_root=data_root, dataset=dataset)
     return metric_helper

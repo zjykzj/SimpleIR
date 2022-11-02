@@ -29,7 +29,8 @@ class EvaluateType(Enum):
 
 class MetricHelper:
 
-    def __init__(self, retrieval_dir, eval_type='ACCURACY', top_k_list=(1, 3, 5, 10), data_root=None):
+    def __init__(self, retrieval_dir, eval_type='ACCURACY', top_k_list=(1, 3, 5, 10), data_root=None,
+                 dataset='oxford5k'):
         self.retrieval_dir = retrieval_dir
         assert os.path.isdir(self.retrieval_dir), self.retrieval_dir
 
@@ -44,7 +45,7 @@ class MetricHelper:
         if self.eval_type == EvaluateType.MAP_OXFORD:
             self.model = MapForOxford(data_root, retrieval_dir)
         if self.eval_type == EvaluateType.MAP_ROXFORD:
-            self.model = MapForROxford(data_root, retrieval_dir)
+            self.model = MapForROxford(data_root, retrieval_dir, top_k_list=top_k_list, dataset=dataset)
 
     def run(self):
         return self.model.run()

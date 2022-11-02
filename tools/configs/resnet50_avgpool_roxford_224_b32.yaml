@@ -13,7 +13,7 @@ RETRIEVAL:
     TOP_K: None
   METRIC:
     EVAL_TYPE: 'MAP_ROXFORD'
-    TOP_K: None
+    TOP_K: [1, 5, 10]
     DATASET: 'roxford5k'
 DATALOADER:
   TEST_BATCH_SIZE: 32

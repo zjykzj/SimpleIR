@@ -72,7 +72,7 @@ python evaluate_features.py --retrieval-dir data/retrieval_fc --retrieval-type A
 
 ## Examples
 
-### Oxford5k
+### Oxford5k(Old)
 
 ```shell
 # Set env
@@ -124,7 +124,7 @@ bash tools/bash_eval.sh tools/configs/resnet50_avgpool_oxford_224_b32.yaml
 [11/01 21:37:25][INFO] infer.py:  61:  * => MAP 43.296% 
 ```
 
-### ROxford5k
+### Oxford5k(new)
 
 ```shell
 # Set env
@@ -158,5 +158,35 @@ python tools/retrieval/retrieval_features.py \
  --rerank IDENTITY \
  --save-dir retrieval/oxford5k
 # Evaluate mAP_for_ROxford
+python tools/retrieval/evaluate_features.py \
+  --retrieval-dir retrieval/oxford5k \
+  --retrieval-type  MAP_ROXFORD \
+  --query-dir data/oxford5k \
+  --dataset oxford5k
+...
+...
+[11/02 13:58:14][INFO] evaluate_features.py:  56: >> oxford5k: mAP 46.27
+```
 
+You can also use config file
+
+```shell
+bash tools/bash_eval.sh tools/configs/resnet50_avgpool_oxford_224_b32_new.yaml
+...
+...
+[11/02 13:55:49][INFO] infer.py:  59: >> oxford5k: mAP 46.27
+```
+
+### ROxford5k(new)
+
+```shell
+# Set env
+export PYTHONPATH=/path/to/SimpleIR/
+python tools/data/make_roxford5k_rparis6k.py --dataset  roxford5k --root ./data/roxford5k
+# Use config file
+bash tools/bash_eval.sh tools/configs/resnet50_avgpool_roxford_224_b32.yaml
+...
+...
+[11/02 14:04:13][INFO] infer.py:  67: >> roxford5k: mAP E: 38.67, M: 26.86, H: 5.94
+[11/02 14:04:13][INFO] infer.py:  70: >> roxford5k: mP@k(1, 5, 10) E: [64.71 51.37 46.16], M: [64.29 50.86 45.29], H: [20.   15.71 12.92]
 ```

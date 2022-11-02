@@ -155,7 +155,7 @@ class MapForROxford(MetricBase):
             query_info_path = os.path.join(self.retrieval_dir, f'{query_name}.csv')
             rank_list.append(np.loadtxt(query_info_path, delimiter=",,", dtype=str)[:, 1].astype(int))
 
-        return np.array(rank_list)
+        return np.array(rank_list).T
 
     def load_gnd(self, gnd: List, mode='easy') -> List:
         gnd_t = []
@@ -201,17 +201,17 @@ class MapForROxford(MetricBase):
         else:
             # Easy
             gnd_list = self.load_gnd(gnd, mode='easy')
-            assert len(ranks) == len(gnd_list)
+            assert ranks.shape[1] == len(gnd_list)
             mapE, apsE, mprE, prsE = compute_map(ranks, gnd_list, kappas=self.top_k_list)
 
             # Medium
             gnd_list = self.load_gnd(gnd, mode='medium')
-            assert len(ranks) == len(gnd_list)
+            assert ranks.shape[1] == len(gnd_list)
             mapM, apsM, mprM, prsM = compute_map(ranks, gnd_list, kappas=self.top_k_list)
 
             # Hard
             gnd_list = self.load_gnd(gnd, mode='hard')
-            assert len(ranks) == len(gnd_list)
+            assert ranks.shape[1] == len(gnd_list)
             mapH, apsH, mprH, prsH = compute_map(ranks, gnd_list, kappas=self.top_k_list)
 
             # print('>> {}: mAP E: {}, M: {}, H: {}'.format(dataset, np.around(mapE * 100, decimals=2),

@@ -45,7 +45,7 @@ class ROxford(Dataset):
 
     def __getitem__(self, index) -> T_co:
         img_path = self.img_list[index]
-        target = 0
+        target = index
 
         image = default_loader(img_path)
         if self.transform is not None:

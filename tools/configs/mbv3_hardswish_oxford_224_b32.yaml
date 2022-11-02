@@ -1,0 +1,35 @@
+RETRIEVAL:
+  EXTRACT:
+    FEAT_TYPE: 'hardswish'
+    AGGREGATE_TYPE: 'IDENTITY'
+    ENHANCE_TYPE: 'IDENTITY'
+    PCA_PATH: ""
+    REDUCE_DIMENSION: 1280
+    QUERY_DIR: 'feature/oxford/query'
+    GALLERY_DIR: 'feature/oxford/gallery'
+  INDEX:
+    DISTANCE_TYPE: 'EUCLIDEAN'
+    RANK_TYPE: 'NORMAL'
+    RERANK_TYPE: 'IDENTITY'
+    RETRIEVAL_DIR: 'retrieval/oxford'
+    TOP_K: None
+  METRIC:
+    EVAL_TYPE: 'MAP_OXFORD'
+    TOP_K: None
+    DATASET: 'oxford5k'
+DATALOADER:
+  TEST_BATCH_SIZE: 32
+  NUM_WORKERS: 4
+DATASET:
+  RETRIEVAL_NAME: 'Oxford'
+  GALLERY_DIR: './data/oxford'
+  QUERY_DIR: './data/oxford'
+TRANSFORM:
+  TEST_METHODS: ('Resize', 'CenterCrop', 'ToTensor', 'Normalize')
+  TEST_RESIZE: (256,)
+  TEST_CROP: (224, 224)
+  NORMALIZE: ((0.485, 0.456, 0.406), (0.229, 0.224, 0.225), False, 1.0)
+MODEL:
+  ARCH: 'mobilenet_v3_large'
+  PRETRAINED: True
+  NUM_CLASSES: 1000

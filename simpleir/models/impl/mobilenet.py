@@ -77,9 +77,11 @@ def _mobilenet_v3_model(
             state_dict.pop('classifier.3.weight')
             state_dict.pop('classifier.3.bias')
 
-        ret = model.load_state_dict(state_dict, strict=False)
-        assert set(ret.missing_keys) == {'classifier.3.weight', 'classifier.3.bias'}, \
-            f'Missing keys when loading pretrained weights: {ret.missing_keys}'
+            ret = model.load_state_dict(state_dict, strict=False)
+            assert set(ret.missing_keys) == {'classifier.3.weight', 'classifier.3.bias'}, \
+                f'Missing keys when loading pretrained weights: {ret.missing_keys}'
+        else:
+            model.load_state_dict(state_dict, strict=True)
     return model
 
 

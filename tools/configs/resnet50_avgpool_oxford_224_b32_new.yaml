@@ -1,0 +1,33 @@
+RETRIEVAL:
+  EXTRACT:
+    FEAT_TYPE: 'avgpool'
+    AGGREGATE_TYPE: 'IDENTITY'
+    ENHANCE_TYPE: 'IDENTITY'
+    QUERY_DIR: 'feature/oxford5k/query'
+    GALLERY_DIR: 'feature/oxford5k/gallery'
+  INDEX:
+    DISTANCE_TYPE: 'EUCLIDEAN'
+    RANK_TYPE: 'NORMAL'
+    RERANK_TYPE: 'IDENTITY'
+    RETRIEVAL_DIR: 'retrieval/oxford5k'
+    TOP_K: None
+  METRIC:
+    EVAL_TYPE: 'MAP_ROXFORD'
+    TOP_K: None
+    DATASET: 'oxford5k'
+DATALOADER:
+  TEST_BATCH_SIZE: 32
+  NUM_WORKERS: 0
+DATASET:
+  RETRIEVAL_NAME: 'Oxford5k'
+  GALLERY_DIR: './data/oxford5k'
+  QUERY_DIR: './data/oxford5k'
+TRANSFORM:
+  TEST_METHODS: ('Resize', 'CenterCrop', 'ToTensor', 'Normalize')
+  TEST_RESIZE: (256,)
+  TEST_CROP: (224, 224)
+  NORMALIZE: ((0.485, 0.456, 0.406), (0.229, 0.224, 0.225), False, 1.0)
+MODEL:
+  ARCH: 'resnet50'
+  PRETRAINED: True
+  NUM_CLASSES: 1000

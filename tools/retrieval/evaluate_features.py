@@ -9,6 +9,8 @@
 
 import argparse
 
+import numpy as np
+
 from simpleir.utils.metric.build import build_args
 from simpleir.utils.metric.helper import EvaluateType
 
@@ -28,6 +30,9 @@ def parse_args():
     parser.add_argument('--query-dir', metavar='QUERY', default='./data/oxford5k', type=str,
                         help='Original image data set path, used for Oxford5k/Paris6k evaluation.'
                              ' Default: ./data/oxford5k')
+    parser.add_argument('--dataset', metavar='DATASET', default='oxford5k', type=str,
+                        help='Dataset name, used for Oxford5k/Paris6k/ROxford5k/RParis6k evaluation.'
+                             ' Default: oxford5k')
 
     return parser.parse_args()
 
@@ -44,6 +49,25 @@ def main():
 
     if args.retrieval_type == 'MAP_OXFORD':
         logger.info(f"=> MAP: {top_list[0]:.3f}%")
+    elif args.retrieval_type == 'MAP_ROXFORD':
+        if args.dataset.startswith('oxford5k') or args.dataset.startswith('paris6k'):
+            assert len(top_list) == 2
+            map, aps = top_list[:2]
+            logger.info('>> {}: mAP {:.2f}'.format(args.dataset, np.around(map * 100, decimals=2)))
+        else:
+            assert len(top_list) == 3 and len(top_list[0]) == 4
+            mapE, apsE, mprE, prsE = top_list[0]
+            mapM, apsM, mprM, prsM = top_list[1]
+            mapH, apsH, mprH, prsH = top_list[2]
+            kappas = top_k_list
+
+            logger.info('>> {}: mAP E: {}, M: {}, H: {}'.format(args.dataset, np.around(mapE * 100, decimals=2),
+                                                                np.around(mapM * 100, decimals=2),
+                                                                np.around(mapH * 100, decimals=2)))
+            logger.info(
+                '>> {}: mP@k{} E: {}, M: {}, H: {}'.format(args.dataset, kappas, np.around(mprE * 100, decimals=2),
+                                                           np.around(mprM * 100, decimals=2),
+                                                           np.around(mprH * 100, decimals=2)))
     else:
         for top, k in zip(top_list, top_k_list):
             if args.retrieval_type == EvaluateType.ACCURACY.value:

@@ -60,7 +60,6 @@ def build_args(args: Namespace) -> ExtractHelper:
 
     device = torch.device(f'cuda:0') if torch.cuda.is_available() else torch.device('cpu')
     logger.info(f"=> Device: {str(device)}")
-    logger.info(f"=> Device:")
     model = build_model(cfg, device)
 
     # Optionally resume from a checkpoint

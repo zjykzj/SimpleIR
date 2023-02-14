@@ -20,7 +20,7 @@ logger = logging.get_logger(__name__)
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Retrieval features")
+    parser = argparse.ArgumentParser(description="Retrieval features.")
     parser.add_argument('--query-dir', metavar='QUERY', default=None, type=str,
                         help='Dir for loading query features. Default: None')
     parser.add_argument('--gallery-dir', metavar='GALLERY', default=None, type=str,

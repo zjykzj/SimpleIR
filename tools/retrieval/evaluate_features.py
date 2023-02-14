@@ -20,7 +20,7 @@ logger = logging.get_logger(__name__)
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Retrieval features")
+    parser = argparse.ArgumentParser(description="Retrieval features.")
     parser.add_argument('--retrieval-dir', metavar='RETRIEVAL', default=None, type=str,
                         help='Dir for loading retrieval results. Default: None')
     parser.add_argument('--retrieval-type', metavar='EVAL', default='ACCURACY', type=str,

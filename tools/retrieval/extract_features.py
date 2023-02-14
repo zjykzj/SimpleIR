@@ -19,7 +19,7 @@ logger = logging.get_logger(__name__)
 
 
 def parse_args():
-    parser = ArgumentParser(description="Extract features", formatter_class=RawTextHelpFormatter)
+    parser = ArgumentParser(description="Extract features.", formatter_class=RawTextHelpFormatter)
     parser.add_argument('--model-arch', metavar="ARCH", default='resnet50', type=str,
                         help='Model arch for extracting features. Default: resnet50')
     parser.add_argument('--pretrained', metavar='PRETRAINED', default=None, type=str,

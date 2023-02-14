@@ -32,6 +32,8 @@
   <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/commit-activity/y/zjykzj/simpleir" alt=""></a>
 </p>
 
+So far, many image retrieval algorithms have been implemented in this warehouse. You are welcome to download and use them. In addition, if anyone can join in the development, it is very welcome.
+
 ## Table of Contents
 
 - [Table of Contents](#table-of-contents)

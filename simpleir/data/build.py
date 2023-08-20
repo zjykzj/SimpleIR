@@ -6,11 +6,11 @@
 @author: zj
 @description: 
 """
-
 from typing import Tuple, Optional, Any, List
 
-from yacs.config import CfgNode
+import os
 import numpy as np
+from yacs.config import CfgNode
 
 import torch
 from torch import Tensor
@@ -45,9 +45,11 @@ def build_data(cfg: CfgNode,
         ])
 
     if is_gallery:
-        dataset = ImageFolder(cfg['gallery'], transform=transform)
+        data_dir = os.path.join(cfg['path'], cfg['gallery'])
+        dataset = ImageFolder(data_dir, transform=transform)
     else:
-        dataset = ImageFolder(cfg['query'], transform=transform)
+        data_dir = os.path.join(cfg['path'], cfg['query'])
+        dataset = ImageFolder(data_dir, transform=transform)
 
     dataloader = DataLoader(dataset, batch_size=8, shuffle=False, num_workers=4, pin_memory=True)
     return dataloader

@@ -78,25 +78,3 @@ def do_enhance(feat_tensor: Tensor, enhance_type: EnhanceType = EnhanceType.IDEN
         return feat_tensor
     else:
         raise ValueError(f'{enhance_type} does not support')
-
-
-class Enhancer:
-
-    def __init__(self, enhance_type: str = 'IDENTITY', is_gallery: bool = False, save_dir: str = None,
-                 learn_pca: bool = True, pca_path: str = None, reduce_dimension: int = 512):
-        self.enhance_type = EnhanceType[enhance_type]
-        self.is_gallery = is_gallery
-        self.save_dir = save_dir
-
-        self.learn_pca = learn_pca
-        self.pca_path = pca_path
-        self.reduce_dimension = reduce_dimension
-
-    def run(self, feat_tensor: torch.Tensor):
-        return do_enhance(feat_tensor, self.enhance_type,
-                          reduce_dimension=self.reduce_dimension,
-                          is_gallery=self.is_gallery,
-                          save_dir=self.save_dir,
-                          pca_path=self.pca_path,
-                          learn_pca=self.learn_pca
-                          )

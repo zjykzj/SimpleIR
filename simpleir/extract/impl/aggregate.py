@@ -2,7 +2,7 @@
 
 """
 @date: 2022/5/9 下午2:47
-@file: aggregator.py
+@file: aggregate.py
 @author: zj
 @description: 
 """
@@ -11,8 +11,8 @@ import torch
 from torch import Tensor
 from enum import Enum
 
-from .aggregate.r_mac import get_regions
-from .aggregate.spoc import get_spatial_weight
+from simpleir.extract.impl.r_mac import get_regions
+from simpleir.extract.impl.spoc import get_spatial_weight
 
 
 class AggregateType(Enum):
@@ -150,12 +150,3 @@ def do_aggregate(feat_tensor: Tensor, aggregate_type: AggregateType = AggregateT
         return crow(feat_tensor)
     else:
         raise ValueError(f'{aggregate_type} does not support')
-
-
-class Aggregator:
-
-    def __init__(self, aggregate_type='IDENTITY'):
-        self.aggregate_type = AggregateType[aggregate_type]
-
-    def run(self, feat_tensor: torch.Tensor) -> Tensor:
-        return do_aggregate(feat_tensor, self.aggregate_type)

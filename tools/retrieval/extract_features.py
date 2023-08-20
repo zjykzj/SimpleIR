@@ -10,7 +10,7 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
 
 from simpleir.extract import build_args
-from simpleir.extract.impl.aggregator import AggregateType
+from simpleir.extract.impl.aggregate import AggregateType
 from simpleir.extract import EnhanceType
 
 from zcls2.util import logging

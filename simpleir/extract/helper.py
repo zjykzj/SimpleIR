@@ -6,20 +6,20 @@
 @author: zj
 @description: 
 """
-from typing import List
+from typing import List, Tuple, Dict
 
 import os
+
+import numpy as np
+from tqdm import tqdm
+
 import torch
+from torch import Tensor
 from torch.nn import Module
 from torch.utils.data import DataLoader
 
-from simpleir.extract.impl.extractor import Extractor
-from simpleir.extract.impl.aggregator import Aggregator
-from simpleir.extract.impl.enhancer import Enhancer
-
-from zcls2.util import logging
-
-logger = logging.get_logger(__name__)
+from .impl.aggregate import AggregateType, do_aggregate
+from .impl.enhance import EnhanceType, do_enhance
 
 __all__ = ['ExtractHelper']
 
@@ -30,41 +30,85 @@ class ExtractHelper(object):
 
     特征提取，输入模型，注册hook。在前向运行完成后提取特征
     特征集成，提取了多层卷积激活，然后进行集成操作
+
+    对于特征强化，
+
+    第一种情况：针对gallery特征进行学习，然后进行维度缩减
+    第二种情况：针对query特征进行使用，然后进行维度缩减
+    第三种情况：外部指定一个pca，这种情况下就不需要学习了，直接进行操作即可
     """
 
-    def __init__(self, model: Module = None, device=torch.device('cpu'),
-                 model_arch: str = 'resnet50', pretrained: str = None, layer: str = 'fc',
-                 data_loader: DataLoader = None, save_dir: str = None, is_gallery=False,
-                 aggregate_type: str = 'IDENTITY', enhance_type: str = 'IDENTITY',
-                 learn_pca: bool = True, pca_path: str = None, reduce_dimension: int = 512):
-        assert model is not None
-        assert data_loader is not None
-        assert os.path.exists(save_dir), save_dir
-
-        self.model_arch = model_arch
-        self.pretrained = pretrained
-        self.layer = layer
-
-        if hasattr(data_loader.dataset, "classes"):
-            self.classes = data_loader.dataset.classes
-        else:
-            self.classes = None
-
+    def __init__(self,
+                 save_dir: str,
+                 # 特征提取
+                 model: Module,
+                 target_layer: Module,
+                 device: torch.device,
+                 # 特征集成
+                 aggregate_type: str = 'IDENTITY',
+                 # 特征增强
+                 enhance_type: str = 'IDENTITY',
+                 learn_pca: bool = True,
+                 reduce_dimension: int = 512,
+                 pca_path: str = None,
+                 ):
         self.save_dir = save_dir
-        self.aggregate_type = aggregate_type
-        self.enhance_type = enhance_type
+        # Extract
+        self.model = model
+        self.target_layer = target_layer
+        self.device = device
+
+        self.activations = None
+        target_layer.register_forward_hook(self.save_activation)
+        # Aggregate
+        self.aggregate_type = AggregateType[aggregate_type]
+        # Enhance
+        self.enhance_type = EnhanceType[enhance_type]
+        self.learn_pca = learn_pca
+        self.pca_path = pca_path
         self.reduce_dimension = reduce_dimension
 
-        self.extractor = Extractor(model, data_loader, device)
-        self.aggregator = Aggregator(aggregate_type=self.aggregate_type)
-        self.enhancer = Enhancer(
-            enhance_type=self.enhance_type, is_gallery=is_gallery, save_dir=self.save_dir,
-            learn_pca=learn_pca, pca_path=pca_path, reduce_dimension=self.reduce_dimension,
-        )
+    def save_activation(self, module, input, output):
+        activation = output
+        self.activations = activation.cpu().detach()
 
-    def run(self):
-        image_name_list, target_list, feat_tensor = self.extractor.run()
+    def run(self, dataloader: DataLoader, is_gallery: bool = True):
+        image_name_list = list()
+        target_list = list()
+        feat_tensor_list = list()
+        for images, targets, paths in tqdm(dataloader):
+            _ = self.model.forward(images.to(self.device))
 
-        aggregated_tensor = self.aggregator.run(feat_tensor).reshape(feat_tensor.shape[0], -1)
+            activations = do_aggregate(self.activations, self.aggregate_type).reshape(len(images), -1)
 
-        enhanced_tensor = self.enhancer.run(aggregated_tensor)
+            for path, target, feat_tensor in zip(paths, targets.numpy(), activations):
+                image_name = os.path.splitext(os.path.split(path)[1])[0]
+
+                image_name_list.append(image_name)
+                target_list.append(target)
+                feat_tensor_list.append(feat_tensor)
+
+        feat_tensor_list = do_enhance(torch.stack(feat_tensor_list),
+                                      self.enhance_type,
+                                      learn_pca=self.learn_pca,
+                                      reduce_dimension=self.reduce_dimension,
+                                      pca_path=self.pca_path,
+                                      is_gallery=is_gallery,
+                                      save_dir=self.save_dir,
+                                      ).tolist()
+
+        # Save
+        if is_gallery:
+            feat_dir = os.path.join(self.save_dir, 'gallery')
+        else:
+            feat_dir = os.path.join(self.save_dir, 'query')
+
+        classes = dataloader.dataset.classes
+        for image_name, target, feat_tensor in zip(image_name_list, target_list, feat_tensor_list):
+            cls_name = classes[target]
+            cls_dir = os.path.join(feat_dir, cls_name)
+            if not os.path.exists(cls_dir):
+                os.makedirs(cls_dir)
+
+            feat_path = os.path.join(cls_dir, image_name + ".npy")
+            np.save(feat_path, feat_tensor.numpy())

@@ -12,7 +12,6 @@ import os
 from yacs.config import CfgNode
 from argparse import Namespace
 
-from simpleir.configs import get_cfg_defaults
 from .helper import RetrievalHelper
 
 __all__ = ['build_args', 'build_cfg']

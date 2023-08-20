@@ -9,10 +9,10 @@
 
 import argparse
 
-from simpleir.utils.retrieval.build import build_args
-from simpleir.utils.retrieval.impl.distancer import DistanceType
-from simpleir.utils.retrieval.impl.ranker import RankType
-from simpleir.utils.retrieval.impl.reranker import ReRankType
+from simpleir.retrieval import build_args
+from simpleir.retrieval.impl.distancer import DistanceType
+from simpleir.retrieval.impl.ranker import RankType
+from simpleir.retrieval.impl.reranker import ReRankType
 
 from zcls2.util import logging
 

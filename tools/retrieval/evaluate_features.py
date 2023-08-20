@@ -11,8 +11,8 @@ import argparse
 
 import numpy as np
 
-from simpleir.utils.metric.build import build_args
-from simpleir.utils.metric.helper import EvaluateType
+from simpleir.metric.build import build_args
+from simpleir.metric.helper import EvaluateType
 
 from zcls2.util import logging
 

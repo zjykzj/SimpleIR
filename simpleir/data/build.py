@@ -7,34 +7,47 @@
 @description: 
 """
 
-from typing import Tuple, Optional, Any
+from typing import Tuple, Optional, Any, List
 
 from yacs.config import CfgNode
-from torch.utils.data import IterableDataset, DataLoader
-from torch.utils.data.distributed import DistributedSampler
+import numpy as np
 
-from zcls2.data.transform.build import build_transform
-
-from .dataloader.build import build_dataloader
-from .dataset.build import build_dataset
-from .sampler.build import build_sampler
+import torch
+from torch import Tensor
+from torch.utils.data import DataLoader
+from torchvision.datasets import ImageFolder
+import torchvision.transforms as transforms
+from torchvision.transforms import Compose
 
 __all__ = ['build_data']
 
 
-def build_data(cfg: CfgNode, is_train: bool = True, is_gallery: bool = False, w_path: bool = False) -> Tuple[
-    Optional[DistributedSampler[Any]], DataLoader]:
-    transform, target_transform = build_transform(cfg, is_train=is_train)
-    dataset = build_dataset(cfg, transform, target_transform, is_train=is_train, is_gallery=is_gallery, w_path=w_path)
+def custom_fn(batches: List) -> Tuple[Tensor, Tensor, List]:
+    images = [batch[0] for batch in batches]
+    targets = [batch[1] for batch in batches]
+    paths = [batch[2] for batch in batches]
 
-    # By default, for train, shuffle the indexes; For test, output in sequence
-    # If sampler is set, shuffle is not called
-    sampler = build_sampler(cfg, dataset) if is_train else None
-    if not isinstance(dataset, IterableDataset) and cfg.DISTRIBUTED and is_train:
-        sampler = DistributedSampler(dataset, shuffle=True)
-    shuffle = is_train and sampler is None
+    if isinstance(targets[0], int):
+        targets = torch.from_numpy(np.array(targets))
+        return torch.stack(images), targets, paths
+    else:
+        return torch.stack(images), torch.stack(targets), paths
 
-    # Ensure the consistency of output sequence. Set shuffle=False and num_workers=0 in test
-    data_loader = build_dataloader(cfg, dataset, sampler, shuffle, is_train=is_train, w_path=w_path)
 
-    return sampler, data_loader
+def build_data(cfg: CfgNode,
+               is_gallery: bool = False,
+               transform: Compose = None):
+    if transform is None:
+        transform = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+        ])
+
+    if is_gallery:
+        dataset = ImageFolder(cfg['gallery'], transform=transform)
+    else:
+        dataset = ImageFolder(cfg['query'], transform=transform)
+
+    dataloader = DataLoader(dataset, batch_size=8, shuffle=False, num_workers=4, pin_memory=True)
+    return dataloader

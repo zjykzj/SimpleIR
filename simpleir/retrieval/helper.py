@@ -21,11 +21,6 @@ from .impl.distancer import Distancer
 from .impl.ranker import Ranker
 from .impl.reranker import ReRanker
 
-from zcls2.config.key_word import KEY_SEP
-from zcls2.util import logging
-
-logger = logging.get_logger(__name__)
-
 __all__ = ['RetrievalHelper']
 
 

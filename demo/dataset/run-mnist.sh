@@ -4,7 +4,7 @@ set -eux
 
 cd ../../
 
-folder="./data"
+folder="./datasets"
 if [ ! -d ${folder} ]; then
   mkdir ${folder}
 fi

@@ -9,20 +9,13 @@
 from typing import List
 
 import os
-import pickle
-
-import numpy as np
-from numpy import ndarray
-
-from collections import OrderedDict
-
 import torch
 from torch.nn import Module
 from torch.utils.data import DataLoader
 
-from simpleir.utils.extract.impl.extractor import Extractor
-from simpleir.utils.extract.impl.aggregator import Aggregator
-from simpleir.utils.extract.impl.enhancer import Enhancer
+from simpleir.extract.impl.extractor import Extractor
+from simpleir.extract.impl.aggregator import Aggregator
+from simpleir.extract.impl.enhancer import Enhancer
 
 from zcls2.util import logging
 
@@ -31,18 +24,13 @@ logger = logging.get_logger(__name__)
 __all__ = ['ExtractHelper']
 
 
-def save_features(feat_array: ndarray, feat_name_list: List, feature_dir: str) -> None:
-    assert os.path.isdir(feature_dir), feature_dir
-
-    for feat, feat_name in zip(feat_array, feat_name_list):
-        feat_path = os.path.join(feature_dir, f'{feat_name}.npy')
-
-        if os.path.isfile(feat_path):
-            os.remove(feat_path)
-        np.save(feat_path, feat)
-
-
 class ExtractHelper(object):
+    """
+    分三步进行，特征提取、特征集成、特征强化
+
+    特征提取，输入模型，注册hook。在前向运行完成后提取特征
+    特征集成，提取了多层卷积激活，然后进行集成操作
+    """
 
     def __init__(self, model: Module = None, device=torch.device('cpu'),
                  model_arch: str = 'resnet50', pretrained: str = None, layer: str = 'fc',
@@ -80,24 +68,3 @@ class ExtractHelper(object):
         aggregated_tensor = self.aggregator.run(feat_tensor).reshape(feat_tensor.shape[0], -1)
 
         enhanced_tensor = self.enhancer.run(aggregated_tensor)
-
-        save_features(enhanced_tensor.numpy(), image_name_list, self.save_dir)
-
-        content_dict = OrderedDict()
-        for image_name, target in zip(image_name_list, target_list):
-            content_dict[image_name] = target
-
-        info_path = os.path.join(self.save_dir, 'info.pkl')
-        logger.info(f'Save to {info_path}')
-        info_dict = {
-            'model': self.model_arch,
-            'pretrained': self.pretrained,
-            'feat': self.layer,
-            'aggregate': self.aggregate_type,
-            'enhance': self.enhance_type,
-            'content': content_dict
-        }
-        if self.classes is not None:
-            info_dict['classes'] = self.classes
-        with open(info_path, 'wb') as f:
-            pickle.dump(info_dict, f)

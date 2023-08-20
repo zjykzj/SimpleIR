@@ -32,7 +32,7 @@
   <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/commit-activity/y/zjykzj/simpleir" alt=""></a>
 </p>
 
-So far, many image retrieval algorithms have been implemented in this warehouse. You are welcome to download and use them. In addition, if anyone can join in the development, it is very welcome.
+Previously, SimpleIR focused on both model training and image retrieval tasks. In the next stage, I will focus more on the implementation and optimization of image retrieval tasks, including how to better test new models and retrieval methods, and how to achieve image retrieval more quickly.
 
 ## Table of Contents
 

@@ -32,6 +32,8 @@
   <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/commit-activity/y/zjykzj/simpleir" alt=""></a>
 </p>
 
+之前的SimpleIR同时专注在模型训练以及图像检索任务上，下一个阶段我会更加专注在图像检索任务的实现和优化，包括如何更好的测试新的模型和检索方法，如何更快速的实现图像检索。
+
 ## 内容列表
 
 - [内容列表](#内容列表)

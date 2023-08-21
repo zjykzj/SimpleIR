@@ -2,7 +2,7 @@
 
 set -eux
 
-cd ../../
+cd ../../../
 
 folder="./data"
 if [ ! -d ${folder} ]; then

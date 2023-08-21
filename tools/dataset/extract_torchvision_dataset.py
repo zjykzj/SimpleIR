@@ -13,6 +13,7 @@ from argparse import Namespace
 
 from tqdm import tqdm
 from PIL import Image
+
 from torch.utils.data import Dataset
 import torchvision.datasets as datasets
 
@@ -25,15 +26,16 @@ __supported__ = [
 
 
 def parse() -> Namespace:
-    parser = argparse.ArgumentParser(description='Extract mnist/cifar10/cifar100/fashion_mnist dataset')
+    parser = argparse.ArgumentParser(description='Extract MNIST/CIFAR10/CIFAR100/FASHIONMNIST dataset')
+    parser.add_argument('root', metavar='DIR', help='Path to dataset')
     parser.add_argument('--dataset', '-data', metavar='DATASET', default='MNIST',
                         choices=__supported__,
-                        help='dataset type: ' +
+                        help='Dataset type: ' +
                              ' | '.join(__supported__) +
                              ' (default: CIFAR10)')
-    parser.add_argument('data', metavar='DIR', help='path to dataset')
 
     args = parser.parse_args()
+    print(f"args: {args}")
     return args
 
 

@@ -17,7 +17,7 @@ from collections import OrderedDict
 
 import torch
 
-from .impl.distancer import Distancer
+from .impl.distancer import DistanceType
 from .impl.ranker import Ranker
 from .impl.reranker import ReRanker
 from ..utils.logger import LOGGER
@@ -50,9 +50,15 @@ def load_features(feat_dir: str) -> Tuple[List[List], List[int], List[str], List
 
 class RetrievalHelper:
 
-    def __init__(self, query_dir: str, gallery_dir: str, save_dir: str, top_k=None,
-                 distance_type: str = 'EUCLIDEAN', rank_type: str = 'NORMAL', re_rank_type='IDENTITY',
+    def __init__(self,
+                 gallery_dir: str,
+                 save_dir: str,
+                 top_k=None,
+                 distance_type: str = 'EUCLIDEAN',
+                 rank_type: str = 'NORMAL',
+                 re_rank_type='IDENTITY',
                  ):
+
         self.query_dir = query_dir
         assert os.path.isdir(self.query_dir), self.query_dir
         self.gallery_dir = gallery_dir
@@ -62,7 +68,8 @@ class RetrievalHelper:
         assert os.path.isdir(self.save_dir), self.save_dir
         self.top_k = top_k
 
-        self.distancer = Distancer(distance_type)
+        self.distance_type = DistanceType[distance_type]
+
         self.ranker = Ranker(rank_type, top_k=self.top_k)
         self.reranker = ReRanker(re_rank_type)
 

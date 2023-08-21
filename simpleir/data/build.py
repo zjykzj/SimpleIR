@@ -6,33 +6,19 @@
 @author: zj
 @description: 
 """
-from typing import Tuple, Optional, Any, List
 
 import os
-import numpy as np
+
 from yacs.config import CfgNode
 
-import torch
-from torch import Tensor
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 from torchvision.transforms import Compose
 
 from .imagefolder import ImageFolder
+from .featurefolder import FeatureFolder
 
 __all__ = ['build_data']
-
-
-def custom_fn(batches: List) -> Tuple[Tensor, Tensor, List]:
-    images = [batch[0] for batch in batches]
-    targets = [batch[1] for batch in batches]
-    paths = [batch[2] for batch in batches]
-
-    if isinstance(targets[0], int):
-        targets = torch.from_numpy(np.array(targets))
-        return torch.stack(images), targets, paths
-    else:
-        return torch.stack(images), torch.stack(targets), paths
 
 
 def build_data(cfg: CfgNode,
@@ -54,3 +40,9 @@ def build_data(cfg: CfgNode,
 
     dataloader = DataLoader(dataset, batch_size=8, shuffle=False, num_workers=4, pin_memory=True)
     return dataloader
+
+
+def build_feature(feature_root):
+    feature_set = FeatureFolder(feature_root)
+    feature_loader = DataLoader(feature_set, batch_size=8, shuffle=False, num_workers=4, pin_memory=True)
+    return feature_loader

@@ -15,9 +15,10 @@ from yacs.config import CfgNode
 import torch
 from torch import Tensor
 from torch.utils.data import DataLoader
-from torchvision.datasets import ImageFolder
 import torchvision.transforms as transforms
 from torchvision.transforms import Compose
+
+from .imagefolder import ImageFolder
 
 __all__ = ['build_data']
 
@@ -39,17 +40,17 @@ def build_data(cfg: CfgNode,
                transform: Compose = None):
     if transform is None:
         transform = transforms.Compose([
-            transforms.Resize((224, 224)),
+            transforms.Resize(224),
+            transforms.CenterCrop((224, 224)),
             transforms.ToTensor(),
             transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
         ])
 
     if is_gallery:
         data_dir = os.path.join(cfg['path'], cfg['gallery'])
-        dataset = ImageFolder(data_dir, transform=transform)
     else:
         data_dir = os.path.join(cfg['path'], cfg['query'])
-        dataset = ImageFolder(data_dir, transform=transform)
+    dataset = ImageFolder(data_dir, transform=transform)
 
     dataloader = DataLoader(dataset, batch_size=8, shuffle=False, num_workers=4, pin_memory=True)
     return dataloader

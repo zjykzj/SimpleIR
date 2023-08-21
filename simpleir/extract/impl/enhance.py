@@ -8,18 +8,16 @@
 """
 import os
 import joblib
-import torch
 
 from enum import Enum
 from numpy import ndarray
 from sklearn.decomposition import PCA
 
+import torch
 from torch import Tensor
+
 from simpleir.utils.norm import l2_norm
-
-from zcls2.util import logging
-
-logger = logging.get_logger(__name__)
+from simpleir.utils.logger import LOGGER
 
 
 class EnhanceType(Enum):
@@ -61,11 +59,11 @@ def do_enhance(feat_tensor: Tensor, enhance_type: EnhanceType = EnhanceType.IDEN
             is_whiten = enhance_type is EnhanceType.PCA_W
 
             pca_model = pca_fit(feat_tensor.numpy(), rd=reduce_dimension, is_whiten=is_whiten)
-            logger.info('Saving PCA model: %s' % pca_path)
+            LOGGER.info('Saving PCA model: %s' % pca_path)
             joblib.dump(pca_model, pca_path)
         else:
             assert os.path.isfile(pca_path), pca_path
-            logger.info('Loading PCA model: %s' % pca_path)
+            LOGGER.info('Loading PCA model: %s' % pca_path)
             pca_model = joblib.load(pca_path)
 
         # Normalize

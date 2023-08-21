@@ -95,7 +95,7 @@ class ExtractHelper(object):
                                       pca_path=self.pca_path,
                                       is_gallery=is_gallery,
                                       save_dir=self.save_dir,
-                                      ).tolist()
+                                      )
 
         # Save
         if is_gallery:

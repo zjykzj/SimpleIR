@@ -20,6 +20,8 @@ import torch
 from .impl.distancer import Distancer
 from .impl.ranker import Ranker
 from .impl.reranker import ReRanker
+from ..utils.logger import LOGGER
+from ..utils.misc import colorstr
 
 __all__ = ['RetrievalHelper']
 

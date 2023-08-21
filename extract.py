@@ -4,12 +4,15 @@
 @date: 2023/8/20 下午12:17
 @file: extract.py
 @author: zj
-@description: 
+@description:
+
+Usage - Extract Features:
+    $ python extract.py --arch resnet18 --data toy-cifar10.yaml
+
 """
 
 import os
 import sys
-import yaml
 import argparse
 
 from pathlib import Path
@@ -23,7 +26,7 @@ from simpleir.utils.logger import LOGGER
 from simpleir.utils.misc import print_args, colorstr
 from simpleir.data.build import build_data
 from simpleir.extract.helper import ExtractHelper, AggregateType, EnhanceType
-from simpleir.utils.general import increment_path
+from simpleir.utils.fileutil import increment_path, check_yaml, yaml_load
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
@@ -46,7 +49,7 @@ def parse_opt():
                         help='model architecture: ' +
                              ' | '.join(model_names) +
                              ' (default: resnet18)')
-    parser.add_argument('--data', type=str, default=ROOT / 'configs/data/cifar10.yaml', help='dataset.yaml path')
+    parser.add_argument('--data', type=str, default=ROOT / 'configs/data/toy-cifar10.yaml', help='dataset.yaml path')
 
     parser.add_argument('--aggregate', type=str, default='IDENTITY',
                         help='aggregate type: ' +
@@ -110,9 +113,8 @@ def main(opt):
     opt.save_dir = str(increment_path(Path(opt.project) / opt.name, exist_ok=False))
     print_args(vars(opt))
 
-    with open(opt.data, encoding='ascii', errors='ignore') as f:
-        opt.data = yaml.safe_load(f)
-
+    opt.data = check_yaml(opt.data)
+    opt.data = yaml_load(opt.data)
     process(opt)
 
 

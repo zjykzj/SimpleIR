@@ -63,6 +63,7 @@ class ExtractHelper(object):
                  learn_pca: bool = True,
                  reduce_dimension: int = 512,
                  pca_path: str = None,
+                 save_dir: str = None
                  ):
         # Extract
         self.model = model
@@ -75,9 +76,17 @@ class ExtractHelper(object):
         self.aggregate_type = AggregateType[aggregate_type]
         # Enhance
         self.enhance_type = EnhanceType[enhance_type]
+        if self.enhance_type in [EnhanceType.PCA, EnhanceType.PCA_W] and learn_pca is False and pca_path is None:
+            raise ValueError(
+                "If PCA learning is not performed on the gallery dataset, the PCA model path needs to be specified.")
+        if pca_path is None:
+            assert save_dir is not None
+            pca_path = os.path.join(save_dir, 'pca.pkl')
+
         self.learn_pca = learn_pca
-        self.pca_path = pca_path
         self.reduce_dimension = reduce_dimension
+        self.pca_path = pca_path
+        self.save_dir = save_dir
 
     def save_activation(self, module, input, output):
         activation = output

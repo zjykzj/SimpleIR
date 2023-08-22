@@ -10,8 +10,7 @@ Usage - Extract Features:
     $ python extract.py --arch resnet18 --data toy.yaml
 
 Usage - Reduce dimension:
-    $ python extract.py --arch resnet18 --data toy.yaml --enhance PCA --reduce 512 --learn-pca
-
+    $ python extract.py --arch resnet18 --data toy.yaml --enhance PCA --reduce 50 --learn-pca
 
 """
 
@@ -58,7 +57,7 @@ def parse_opt():
                         help='model architecture: ' +
                              ' | '.join(model_names) +
                              ' (default: resnet18)')
-    parser.add_argument('--data', type=str, default=ROOT / 'configs/data/toy-cifar10.yaml', help='dataset.yaml path')
+    parser.add_argument('--data', type=str, default=ROOT / 'configs/data/toy.yaml', help='dataset.yaml path')
 
     parser.add_argument('--aggregate', type=str, default='IDENTITY',
                         help='aggregate type: ' +
@@ -124,8 +123,6 @@ def main(opt: Namespace):
     print_args(vars(opt))
     if not os.path.exists(opt.save_dir):
         os.makedirs(opt.save_dir)
-    if opt.pca_path is None:
-        opt.pca_path = os.path.join(opt.save_dir, 'pca.pkl')
 
     opt.data = check_yaml(opt.data)
     opt.data = yaml_load(opt.data)
@@ -155,7 +152,9 @@ def main(opt: Namespace):
                                    enhance_type=opt.enhance,
                                    reduce_dimension=opt.reduce,
                                    learn_pca=opt.learn_pca,
-                                   pca_path=opt.pca_path)
+                                   pca_path=opt.pca_path,
+                                   save_dir=opt.save_dir
+                                   )
 
     LOGGER.info("Extract Gallery")
     do_extract(gallery_loader, extract_helper, opt.save_dir, is_gallery=True)

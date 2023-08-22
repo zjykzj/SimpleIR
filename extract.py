@@ -92,7 +92,7 @@ def process(opt):
         assert isinstance(model, MobileNetV3)
         target_layer = model.classifier[-1]
 
-    # Extractor
+    # Extract
     extract_helper = ExtractHelper(save_dir=opt.save_dir,
                                    model=model,
                                    target_layer=target_layer,
@@ -107,6 +107,7 @@ def process(opt):
     extract_helper.run(query_loader, is_gallery=False)
     LOGGER.info("Extract gallery")
     extract_helper.run(gallery_loader, is_gallery=True)
+    LOGGER.info(f"Save to {opt.save_dir}")
 
 
 def main(opt):

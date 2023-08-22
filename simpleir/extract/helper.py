@@ -9,6 +9,7 @@
 from typing import List, Tuple, Dict
 
 import os
+import pickle
 
 import numpy as np
 from tqdm import tqdm
@@ -18,6 +19,7 @@ from torch import Tensor
 from torch.nn import Module
 from torch.utils.data import DataLoader
 
+from simpleir.utils.logger import LOGGER
 from .impl.aggregate import AggregateType, do_aggregate
 from .impl.enhance import EnhanceType, do_enhance
 
@@ -29,13 +31,16 @@ class ExtractHelper(object):
     分三步进行，特征提取、特征集成、特征强化
 
     特征提取，输入模型，注册hook。在前向运行完成后提取特征
-    特征集成，提取了多层卷积激活，然后进行集成操作
-
-    对于特征强化，
-
+    特征集成，提取卷积激活进行集成操作
+    特征强化，
     第一种情况：针对gallery特征进行学习，然后进行维度缩减
     第二种情况：针对query特征进行使用，然后进行维度缩减
     第三种情况：外部指定一个pca，这种情况下就不需要学习了，直接进行操作即可
+
+    需要保存吗？
+    存放到指定位置即可。怎么简单怎么来，先把整个流程打通。
+
+    对于图像检索，需要什么？每个类对应的id
     """
 
     def __init__(self,

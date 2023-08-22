@@ -45,13 +45,15 @@ def parse() -> Namespace:
                              ' | '.join(__supported__) +
                              ' (default: CIFAR10)')
     parser.add_argument('--toy', action='store_true', default=False, help='Create toy dataset. (default: False)')
+    parser.add_argument('--toy-num', str=int, default=10,
+                        help='How many images per category are in the toy dataset. (default: 10)')
 
     args = parser.parse_args()
     print(f"args: {args}")
     return args
 
 
-def process(data_root: str, dataset: Dataset, is_toy: bool = False) -> None:
+def process(data_root: str, dataset: Dataset, is_toy: bool = False, toy_num: int = 10) -> None:
     assert isinstance(dataset, datasets.VisionDataset)
 
     if not os.path.exists(data_root):
@@ -79,7 +81,6 @@ def process(data_root: str, dataset: Dataset, is_toy: bool = False) -> None:
             os.makedirs(toy_data_root)
 
         print(f"Create Toy: {toy_data_root}")
-        toy_num = 10
         for class_name in classes:
             src_cls_dir = os.path.join(data_root, class_name)
             dst_cls_dir = os.path.join(toy_data_root, class_name)

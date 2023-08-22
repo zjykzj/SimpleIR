@@ -27,7 +27,19 @@ class EvaluateType(Enum):
     MAP_ROXFORD = 'MAP_ROXFORD'
 
 
+
+
 class MetricHelper:
+    """
+    度量标准有很多种，但是应该支持两种方式，
+
+    1. 检索结果在本地，那么你需要把数据从本地读取，然后进行评估
+    2. 支持全程在线评估，并不需要读取到本地的过程！
+
+    包括特征检索和特征评估，都不应该和本地操作联系在一起，支持直接的数据写入操作。
+
+    集成在一起运行时，可以选择保存到本地进行数据分析。但是应该支持直接导入操作。
+    """
 
     def __init__(self, retrieval_dir, eval_type='ACCURACY', top_k_list=(1, 3, 5, 10), data_root=None,
                  dataset='oxford5k'):

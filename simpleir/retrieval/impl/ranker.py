@@ -86,14 +86,3 @@ def do_rank(batch_dists_tensor: Tensor, gallery_targets_tensor: Tensor,
         raise ValueError(f'{rank_type} does not support')
 
     return batch_sort_idx_list, batch_rank_label_list
-
-
-class Ranker:
-
-    def __init__(self, rank_type: str = 'NORMAL', top_k=None):
-        self.rank_type = RankType[rank_type]
-        self.top_k = top_k
-
-    def run(self, batch_dists_tensor: Tensor, gallery_targets_tensor: Tensor) \
-            -> Tuple[List[List], List[List]]:
-        return do_rank(batch_dists_tensor, gallery_targets_tensor, self.rank_type, self.top_k)

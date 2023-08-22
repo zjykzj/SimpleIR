@@ -17,105 +17,58 @@ from collections import OrderedDict
 
 import torch
 
-from .impl.distancer import DistanceType
-from .impl.ranker import Ranker
-from .impl.reranker import ReRanker
+from .impl.distancer import DistanceType, do_distance
+from .impl.ranker import RankType, do_rank
+from .impl.reranker import ReRankType
 from ..utils.logger import LOGGER
 from ..utils.misc import colorstr
 
 __all__ = ['RetrievalHelper']
 
 
-def load_features(feat_dir: str) -> Tuple[List[List], List[int], List[str], List[str]]:
-    assert os.path.isdir(feat_dir), feat_dir
-
-    info_path = os.path.join(feat_dir, 'info.pkl')
-    with open(info_path, 'rb') as f:
-        info_dict = pickle.load(f)
-
-    feat_list = list()
-    label_list = list()
-    img_name_list = list()
-    for img_name, label in tqdm(info_dict['content'].items()):
-        feat_path = os.path.join(feat_dir, f'{img_name}.npy')
-        feat = np.load(feat_path)
-
-        feat_list.append(list(feat))
-        label_list.append(label)
-        img_name_list.append(img_name)
-
-    classes = info_dict['classes'] if 'classes' in info_dict.keys() else None
-    return feat_list, label_list, img_name_list, classes
-
-
 class RetrievalHelper:
+    """
+    图像检索需要什么？
+
+    1. 图像特征
+    2. 图像标签
+    3. 更好的展示目的，可以有图像类别
+
+    需要重新读取编译吗？在特征提取阶段，这些数据都应该已经存在了，剩下的就是把数据传递进来
+
+    保存每次检索得到的检索结果，包括检索图像名、检索排序后的前top_k个结果
+
+    反馈图像名和对应的标签？？？都可以
+    """
 
     def __init__(self,
-                 gallery_dir: str,
-                 save_dir: str,
-                 top_k=None,
                  distance_type: str = 'EUCLIDEAN',
                  rank_type: str = 'NORMAL',
-                 re_rank_type='IDENTITY',
+                 knn_top_k: int = 5,
+                 rerank_type: str = 'IDENTITY',
                  ):
-
-        self.query_dir = query_dir
-        assert os.path.isdir(self.query_dir), self.query_dir
-        self.gallery_dir = gallery_dir
-        assert os.path.isdir(self.gallery_dir), self.gallery_dir
-
-        self.save_dir = save_dir
-        assert os.path.isdir(self.save_dir), self.save_dir
-        self.top_k = top_k
-
         self.distance_type = DistanceType[distance_type]
+        self.rank_type = RankType[rank_type]
+        self.knn_top_k = knn_top_k
+        self.rerank_type = ReRankType[rerank_type]
 
-        self.ranker = Ranker(rank_type, top_k=self.top_k)
-        self.reranker = ReRanker(re_rank_type)
+    def run(self, gallery_feat_list, gallery_label_list,
+            query_img_name_list, query_feat_list, query_label_list):
+        gallery_feat_tensor = torch.from_numpy(np.array(gallery_feat_list, dtype=np.float32))
+        gallery_label_tensor = torch.from_numpy(np.array(gallery_label_list, dtype=int))
 
-    def run(self):
-        logger.info(f"Loading query features from {self.query_dir}")
-        query_feat_list, query_label_list, query_img_name_list, query_cls_list = load_features(self.query_dir)
-        logger.info(f"Loading gallery features from {self.gallery_dir}")
-        gallery_feat_list, gallery_label_list, gallery_img_name_list, gallery_cls_list = load_features(self.gallery_dir)
-        assert query_cls_list == gallery_cls_list or (query_cls_list is None and gallery_cls_list is None)
-
-        gallery_feat_tensor = torch.from_numpy(np.array(gallery_feat_list))
-        gallery_target_tensor = torch.from_numpy(np.array(gallery_label_list))
-
-        logger.info('Retrieval ...')
         content_dict = OrderedDict()
-        assert self.top_k is None or (0 < self.top_k <= len(query_feat_list))
-
-        for query_feat, query_label, query_img_name in tqdm(
-                zip(query_feat_list, query_label_list, query_img_name_list), total=len(query_feat_list)):
+        for query_img_name, query_feat, query_label in \
+                tqdm(zip(query_img_name_list, query_feat_list, query_label_list), total=len(query_feat_list)):
             query_feat_tensor = torch.from_numpy(np.array(query_feat)).unsqueeze(0)
 
-            batch_dists_tensor = self.distancer.run(query_feat_tensor, gallery_feat_tensor)
-
+            batch_dists_tensor = do_distance(query_feat_tensor, gallery_feat_tensor, self.distance_type)
             batch_sort_idx_list, batch_rank_label_list = \
-                self.ranker.run(batch_dists_tensor, gallery_target_tensor)
+                do_rank(batch_dists_tensor, gallery_label_tensor, self.rank_type, self.knn_top_k)
 
             rank_label_list = batch_rank_label_list[0]
             sort_idx_list = batch_sort_idx_list[0]
-            rank_img_name_list = list(np.array(gallery_img_name_list)[sort_idx_list])
-            assert len(rank_label_list) == len(rank_img_name_list)
 
-            rank_list = [[rank_img_name, rank_label] for rank_img_name, rank_label in
-                         zip(rank_img_name_list[:self.top_k], rank_label_list[:self.top_k])]
+            content_dict[query_img_name] = [rank_label_list, sort_idx_list]
 
-            save_path = os.path.join(self.save_dir, f'{query_img_name}.csv')
-            np.savetxt(save_path, np.array(rank_list, dtype=object), fmt='%s', delimiter=KEY_SEP)
-            content_dict[query_img_name] = query_label
-
-        info_dict = {
-            'content': content_dict,
-            'query_dir': self.query_dir,
-            'gallery_dir': self.gallery_dir
-        }
-        if query_cls_list is not None:
-            info_dict['classes'] = query_cls_list
-        info_path = os.path.join(self.save_dir, 'info.pkl')
-        logger.info(f'save to {info_path}')
-        with open(info_path, 'wb') as f:
-            pickle.dump(info_dict, f)
+        return content_dict

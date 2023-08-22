@@ -41,12 +41,3 @@ def do_rerank(query_feats: Tensor, gallery_feats: Tensor, gallery_targets: Tenso
         raise ValueError(f'{re_rank_type} does not support')
 
     return batch_sorts, rank_list
-
-
-class ReRanker:
-
-    def __init__(self, re_rank_type='IDENTITY'):
-        self.re_rank_type = ReRankType[re_rank_type]
-
-    def run(self):
-        pass

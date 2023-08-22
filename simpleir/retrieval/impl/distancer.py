@@ -4,10 +4,10 @@
 @date: 2022/4/27 上午11:55
 @file: similarity.py
 @author: zj
-@description: 
-Input query image features and search set features.
-Calculate the similarity between the query image and each image in the retrieval set
-Returns a list. The first dimension represents target and the second dimension is similarity
+@description: Input query image features and search set features.
+
+1. Calculate the similarity between the query image and each image in the retrieval set.
+2. Returns a list. The first dimension represents target and the second dimension is similarity
 """
 
 from enum import Enum
@@ -36,12 +36,3 @@ def do_distance(query_feat_tensor: Tensor, gallery_feat_tensor: Tensor,
         raise ValueError(f'{distance_type} does not support')
 
     return batch_dists_tensor
-
-
-class Distancer:
-
-    def __init__(self, distance_type: str = 'EUCLIDEAN'):
-        self.distance_type = DistanceType[distance_type]
-
-    def run(self, query_feat_tensor: Tensor, gallery_feat_tensor: Tensor) -> Tensor:
-        return do_distance(query_feat_tensor, gallery_feat_tensor, self.distance_type)

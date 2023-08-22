@@ -16,6 +16,7 @@ from sklearn.decomposition import PCA
 import torch
 from torch import Tensor
 
+from simpleir.utils.misc import colorstr
 from simpleir.utils.norm import l2_norm
 from simpleir.utils.logger import LOGGER
 
@@ -27,7 +28,7 @@ class EnhanceType(Enum):
     PCA_W = 'PCA_W'  # L2_Norm -> PCA_Whiten -> L2_Norm
 
 
-def pca_fit(feat_array: ndarray, rd=512, is_whiten: bool = False) -> PCA:
+def pca_fit(feat_array: ndarray, rd: int = 512, is_whiten: bool = False) -> PCA:
     """
     Calculate pca/whitening parameters
     """
@@ -41,8 +42,9 @@ def pca_fit(feat_array: ndarray, rd=512, is_whiten: bool = False) -> PCA:
     return pca_model
 
 
-def do_enhance(feat_tensor: Tensor, enhance_type: EnhanceType = EnhanceType.IDENTITY,
-               is_gallery: bool = False, save_dir: str = None,
+def do_enhance(feat_tensor: Tensor,
+               enhance_type: EnhanceType = EnhanceType.IDENTITY,
+               is_gallery: bool = False,
                learn_pca: bool = True, pca_path: str = None, reduce_dimension: int = 512) -> torch.Tensor:
     """
     Feature enhancement
@@ -52,18 +54,15 @@ def do_enhance(feat_tensor: Tensor, enhance_type: EnhanceType = EnhanceType.IDEN
     elif enhance_type is EnhanceType.L2_NORM:
         return l2_norm(feat_tensor)
     elif enhance_type is EnhanceType.PCA or enhance_type is EnhanceType.PCA_W:
-        assert os.path.isdir(save_dir), save_dir
-        assert pca_path is not None
-
         if is_gallery and learn_pca:
             is_whiten = enhance_type is EnhanceType.PCA_W
 
             pca_model = pca_fit(feat_tensor.numpy(), rd=reduce_dimension, is_whiten=is_whiten)
-            LOGGER.info('Saving PCA model: %s' % pca_path)
+            LOGGER.info(f'Saving PCA model: {colorstr(pca_path)}')
             joblib.dump(pca_model, pca_path)
         else:
             assert os.path.isfile(pca_path), pca_path
-            LOGGER.info('Loading PCA model: %s' % pca_path)
+            LOGGER.info(f'Loading PCA model: {colorstr(pca_path)}')
             pca_model = joblib.load(pca_path)
 
         # Normalize

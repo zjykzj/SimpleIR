@@ -7,17 +7,26 @@
 @description:
 
 Usage - Extract Features:
-    $ python extract.py --arch resnet18 --data toy-cifar10.yaml
+    $ python extract.py --arch resnet18 --data toy.yaml
+
+Usage - Reduce dimension:
+    $ python extract.py --arch resnet18 --data toy.yaml --enhance PCA --reduce 512 --learn-pca
+
 
 """
 
 import os
 import sys
-import argparse
+import pickle
 
+import argparse
+from argparse import Namespace
+
+import numpy as np
 from pathlib import Path
 
 import torch
+from torch.utils.data import DataLoader
 import torchvision.models as models
 from torchvision.models.resnet import ResNet, resnet18, resnet34, resnet50, resnet101, resnet152
 from torchvision.models.mobilenet import MobileNetV2, MobileNetV3, mobilenet_v2, mobilenet_v3_large, mobilenet_v3_small
@@ -59,7 +68,7 @@ def parse_opt():
                         help='enhance type: ' +
                              ' | '.join(enhance_types) +
                              ' (default: identity)')
-    parser.add_argument('--reduce', type=str, default='512', help='reduce dimension')
+    parser.add_argument('--reduce', type=int, default=512, help='reduce dimension')
     parser.add_argument('--learn-pca', action='store_true', default=False,
                         help='whether to perform PCA learning')
     parser.add_argument('--pca-path', type=str, default=None, help='load the learned PCA model')
@@ -71,10 +80,56 @@ def parse_opt():
     return opt
 
 
-def process(opt):
-    """
-    加载模型，加载数据，批量处理
-    """
+def do_extract(data_loader: DataLoader, extract_helper: ExtractHelper, save_dir: str, is_gallery: bool = False):
+    image_name_list, label_list, feat_tensor_list = extract_helper.run(data_loader, is_gallery=is_gallery)
+
+    # Save
+    if is_gallery:
+        feat_dir = os.path.join(save_dir, 'gallery')
+        info_path = os.path.join(save_dir, "gallery.pkl")
+    else:
+        feat_dir = os.path.join(save_dir, 'query')
+        info_path = os.path.join(save_dir, "query.pkl")
+
+    content_dict = dict()
+    assert hasattr(data_loader.dataset, 'classes')
+    classes = data_loader.dataset.classes
+    for image_name, target, feat_tensor in zip(image_name_list, label_list, feat_tensor_list):
+        cls_name = classes[target]
+        cls_dir = os.path.join(feat_dir, cls_name)
+        if not os.path.exists(cls_dir):
+            os.makedirs(cls_dir)
+
+        feat_path = os.path.join(cls_dir, image_name + ".npy")
+        np.save(feat_path, feat_tensor.numpy())
+
+        assert image_name not in content_dict.keys()
+        content_dict[image_name] = {
+            'path': feat_path,
+            'class': cls_name,
+            'label': target
+        }
+
+    info_dict = {
+        'content': content_dict,
+        'classes': classes,
+    }
+    with open(info_path, 'wb') as f:
+        pickle.dump(info_dict, f)
+
+
+def main(opt: Namespace):
+    # Config
+    opt.save_dir = str(increment_path(Path(opt.project) / opt.name, exist_ok=False))
+    print_args(vars(opt))
+    if not os.path.exists(opt.save_dir):
+        os.makedirs(opt.save_dir)
+    if opt.pca_path is None:
+        opt.pca_path = os.path.join(opt.save_dir, 'pca.pkl')
+
+    opt.data = check_yaml(opt.data)
+    opt.data = yaml_load(opt.data)
+
     # Data
     gallery_loader = build_data(opt.data, is_gallery=True)
     query_loader = build_data(opt.data, is_gallery=False)
@@ -93,8 +148,7 @@ def process(opt):
         target_layer = model.classifier[-1]
 
     # Extract
-    extract_helper = ExtractHelper(save_dir=opt.save_dir,
-                                   model=model,
+    extract_helper = ExtractHelper(model=model,
                                    target_layer=target_layer,
                                    device=device,
                                    aggregate_type=opt.aggregate,
@@ -103,20 +157,13 @@ def process(opt):
                                    learn_pca=opt.learn_pca,
                                    pca_path=opt.pca_path)
 
-    LOGGER.info("Extract query")
-    extract_helper.run(query_loader, is_gallery=False)
-    LOGGER.info("Extract gallery")
-    extract_helper.run(gallery_loader, is_gallery=True)
-    LOGGER.info(f"Save to {opt.save_dir}")
+    LOGGER.info("Extract Gallery")
+    do_extract(gallery_loader, extract_helper, opt.save_dir, is_gallery=True)
 
+    LOGGER.info("Extract Query")
+    do_extract(query_loader, extract_helper, opt.save_dir, is_gallery=False)
 
-def main(opt):
-    opt.save_dir = str(increment_path(Path(opt.project) / opt.name, exist_ok=False))
-    print_args(vars(opt))
-
-    opt.data = check_yaml(opt.data)
-    opt.data = yaml_load(opt.data)
-    process(opt)
+    LOGGER.info(f"Save to {colorstr(opt.save_dir)}")
 
 
 if __name__ == "__main__":

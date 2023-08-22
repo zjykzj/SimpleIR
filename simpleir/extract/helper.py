@@ -41,10 +41,17 @@ class ExtractHelper(object):
     存放到指定位置即可。怎么简单怎么来，先把整个流程打通。
 
     对于图像检索，需要什么？每个类对应的id
+
+    特征提取阶段可以提供什么？
+    1. 对于检索库
+        1. 每个检索特征的保存地址
+        2. 每个检索特征对应的类别名/类别标签
+    2. 对于查询库
+        1. 每个查询特征的保存地址
+        2. 每个查询特征对应的类别名/类别标签
     """
 
     def __init__(self,
-                 save_dir: str,
                  # 特征提取
                  model: Module,
                  target_layer: Module,
@@ -57,7 +64,6 @@ class ExtractHelper(object):
                  reduce_dimension: int = 512,
                  pca_path: str = None,
                  ):
-        self.save_dir = save_dir
         # Extract
         self.model = model
         self.target_layer = target_layer
@@ -79,7 +85,7 @@ class ExtractHelper(object):
 
     def run(self, dataloader: DataLoader, is_gallery: bool = True):
         image_name_list = list()
-        target_list = list()
+        label_list = list()
         feat_tensor_list = list()
         for images, targets, paths in tqdm(dataloader):
             _ = self.model.forward(images.to(self.device))
@@ -90,7 +96,7 @@ class ExtractHelper(object):
                 image_name = os.path.splitext(os.path.split(path)[1])[0]
 
                 image_name_list.append(image_name)
-                target_list.append(target)
+                label_list.append(int(target))
                 feat_tensor_list.append(feat_tensor)
 
         feat_tensor_list = do_enhance(torch.stack(feat_tensor_list),
@@ -99,21 +105,6 @@ class ExtractHelper(object):
                                       reduce_dimension=self.reduce_dimension,
                                       pca_path=self.pca_path,
                                       is_gallery=is_gallery,
-                                      save_dir=self.save_dir,
                                       )
 
-        # Save
-        if is_gallery:
-            feat_dir = os.path.join(self.save_dir, 'gallery')
-        else:
-            feat_dir = os.path.join(self.save_dir, 'query')
-
-        classes = dataloader.dataset.classes
-        for image_name, target, feat_tensor in zip(image_name_list, target_list, feat_tensor_list):
-            cls_name = classes[target]
-            cls_dir = os.path.join(feat_dir, cls_name)
-            if not os.path.exists(cls_dir):
-                os.makedirs(cls_dir)
-
-            feat_path = os.path.join(cls_dir, image_name + ".npy")
-            np.save(feat_path, feat_tensor.numpy())
+        return image_name_list, label_list, feat_tensor_list

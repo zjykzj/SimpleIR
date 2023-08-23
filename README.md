@@ -4,7 +4,7 @@
   <a title="Chinese" href="./README.zh-CN.md">🇨🇳</a>
 </div>
 
-<div align="center"><a title="" href="https://github.com/zjykzj/SimpleIR"><img align="center" src="./imgs/SimpleIR.png" alt=""></a></div>
+<div align="center"><a title="" href="https://github.com/zjykzj/SimpleIR"><img align="center" src="./imgs/SimpleIR.svg" alt=""></a></div>
 
 <p align="center">
   «SimpleIR» provides a simple framework for Image Retrieval
@@ -32,13 +32,10 @@
   <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/commit-activity/y/zjykzj/simpleir" alt=""></a>
 </p>
 
-Previously, SimpleIR focused on both model training and image retrieval tasks. In the next stage, I will focus more on the implementation and optimization of image retrieval tasks, including how to better test new models and retrieval methods, and how to achieve image retrieval more quickly.
-
 ## Table of Contents
 
 - [Table of Contents](#table-of-contents)
 - [Background](#background)
-- [Installation](#installation)
 - [Usage](#usage)
 - [Maintainers](#maintainers)
 - [Thanks](#thanks)
@@ -47,14 +44,13 @@ Previously, SimpleIR focused on both model training and image retrieval tasks. I
 
 ## Background
 
-Since the traditional image processing, the field of image retrieval has been a research hotspot. Up to now, image
+**B2**: Previously, SimpleIR focused on both model training and image retrieval tasks (See [v0.11.0](https://github.com/zjykzj/SimpleIR/releases/tag/v0.11.0) and before). 
+In the next stage, I will focus more on the implementation and optimization of image retrieval tasks, including how to better test new models and retrieval methods, and how to achieve image retrieval more quickly.
+
+**B1**: Since the traditional image processing, the field of image retrieval has been a research hotspot. Up to now, image
 retrieval algorithms based on deep learning have been continuously proposed. Although this field has developed for many
 years, there are still great barriers to research and practice. In order to better practice image retrieval algorithms,
 I developed this warehouse, hoping to better promote the landing and optimization of image retrieval algorithms.
-
-## Installation
-
-See [install](https://simpleir.readthedocs.io/en/latest/install/)
 
 ## Usage
 
@@ -69,7 +65,7 @@ See [Get Started](https://simpleir.readthedocs.io/en/latest/get-started/)
 * [ZJCV/ZCls2](https://github.com/ZJCV/ZCls2)
 * [PyRetri/PyRetri](https://github.com/PyRetri/PyRetri)
 
-For more thanks, check [THANKS](THANKS.md)
+For more thanks, check [THANKS](./docs/THANKS.md)
 
 ## Contributing
 

@@ -4,7 +4,7 @@
   <a title="英语" href="./README.md">🇺🇸</a>
 </div>
 
-<div align="center"><a title="" href="https://github.com/zjykzj/SimpleIR"><img align="center" src="./imgs/SimpleIR.png" alt=""></a></div>
+<div align="center"><a title="" href="https://github.com/zjykzj/SimpleIR"><img align="center" src="./imgs/SimpleIR.svg" alt=""></a></div>
 
 <p align="center">
   «SimpleIR»提供了一个简单的图像检索框架
@@ -32,13 +32,10 @@
   <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/commit-activity/y/zjykzj/simpleir" alt=""></a>
 </p>
 
-之前的SimpleIR同时专注在模型训练以及图像检索任务上，下一个阶段我会更加专注在图像检索任务的实现和优化，包括如何更好的测试新的模型和检索方法，如何更快速的实现图像检索。
-
 ## 内容列表
 
 - [内容列表](#内容列表)
 - [背景](#背景)
-- [安装](#安装)
 - [用法](#用法)
 - [主要维护人员](#主要维护人员)
 - [致谢](#致谢)
@@ -47,11 +44,9 @@
 
 ## 背景
 
-从传统图像处理开始，图像检索领域就一直是研究的热点。直到现在，基于深度学习的图像检索算法依然不断的被提出来。虽然这个领域已经发展了很多年，但是还是存在极大的研究和实践壁垒。为了更好的实践图像检索算法，我开发了本仓库，希望能够更好的促进图像检索算法的落地和优化。
+**B2**: 之前的SimpleIR同时专注在模型训练以及图像检索任务上（查看[v0.11.0](https://github.com/zjykzj/SimpleIR/releases/tag/v0.11.0)及之前标签），下一个阶段我会更加专注在图像检索任务的实现和优化，包括如何更好的测试新的模型和检索方法，如何更快速的实现图像检索。
 
-## 安装
-
-查看[install](https://simpleir.readthedocs.io/en/latest/install/)
+**B1**: 从传统图像处理开始，图像检索领域就一直是研究的热点。直到现在，基于深度学习的图像检索算法依然不断的被提出来。虽然这个领域已经发展了很多年，但是还是存在极大的研究和实践壁垒。为了更好的实践图像检索算法，我开发了本仓库，希望能够更好的促进图像检索算法的落地和优化。
 
 ## 用法
 
@@ -66,7 +61,7 @@
 * [ZJCV/ZCls2](https://github.com/ZJCV/ZCls2)
 * [PyRetri/PyRetri](https://github.com/PyRetri/PyRetri)
 
-更多致谢内容，查看[THANKS](THANKS.md)
+更多致谢内容，查看[THANKS](./docs/THANKS.md)
 
 ## 参与贡献方式
 

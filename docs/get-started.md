@@ -45,3 +45,18 @@ After completing the retrieval, the retrieval results will be saved in `runs/ret
 ```shell
 python metric.py /path/to/retrieval.pkl --evaluate ACCURACY
 ```
+
+## Demo: toy dataset
+
+```shell
+# Create toy dataset
+python tools/dataset/extract_torchvision_dataset.py --dataset CIFAR100 --toy ../datasets/cifar100
+# Extract
+python extract.py --arch resnet18 --data toy.yaml
+# Retrieval
+python retrieval.py runs/extract/exp/gallery.pkl runs/extract/exp/query.pkl
+# Metric
+python metric.py runs/retrieval/exp/info.pkl --evaluate ACCURACY
+...
+Accuracy: ['19.400', '34.300', '45.100', '58.400']
+```

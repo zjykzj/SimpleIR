@@ -58,11 +58,11 @@ def parse_opt():
                              ' (default: resnet18)')
     parser.add_argument('--data', type=str, default=ROOT / 'configs/data/toy.yaml', help='dataset.yaml path')
 
-    parser.add_argument('--aggregate', type=str, default='IDENTITY',
+    parser.add_argument('--aggregate', type=str, default='IDENTITY', choices=aggregate_types,
                         help='aggregate type: ' +
                              ' | '.join(aggregate_types) +
                              ' (default: identity)')
-    parser.add_argument('--enhance', type=str, default='IDENTITY',
+    parser.add_argument('--enhance', type=str, default='IDENTITY', choices=enhance_types,
                         help='enhance type: ' +
                              ' | '.join(enhance_types) +
                              ' (default: identity)')

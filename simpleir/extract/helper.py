@@ -6,20 +6,15 @@
 @author: zj
 @description: 
 """
-from typing import List, Tuple, Dict
 
 import os
-import pickle
 
-import numpy as np
 from tqdm import tqdm
 
 import torch
-from torch import Tensor
 from torch.nn import Module
 from torch.utils.data import DataLoader
 
-from simpleir.utils.logger import LOGGER
 from .impl.aggregate import AggregateType, do_aggregate
 from .impl.enhance import EnhanceType, do_enhance
 
@@ -36,11 +31,6 @@ class ExtractHelper(object):
     第一种情况：针对gallery特征进行学习，然后进行维度缩减
     第二种情况：针对query特征进行使用，然后进行维度缩减
     第三种情况：外部指定一个pca，这种情况下就不需要学习了，直接进行操作即可
-
-    需要保存吗？
-    存放到指定位置即可。怎么简单怎么来，先把整个流程打通。
-
-    对于图像检索，需要什么？每个类对应的id
 
     特征提取阶段可以提供什么？
     1. 对于检索库

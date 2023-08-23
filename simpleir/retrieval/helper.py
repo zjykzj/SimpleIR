@@ -48,7 +48,7 @@ class RetrievalHelper:
         self.knn_top_k = knn_top_k
         self.rerank_type = ReRankType[rerank_type]
 
-    def run(self, gallery_feat_list, gallery_label_list,
+    def run(self, gallery_img_name_list, gallery_feat_list, gallery_label_list,
             query_img_name_list, query_feat_list, query_label_list):
         gallery_feat_tensor = torch.from_numpy(np.array(gallery_feat_list, dtype=np.float32))
         gallery_label_tensor = torch.from_numpy(np.array(gallery_label_list, dtype=int))
@@ -64,7 +64,9 @@ class RetrievalHelper:
 
             rank_label_list = batch_rank_label_list[0]
             sort_idx_list = batch_sort_idx_list[0]
+            rank_img_name_list = list(np.array(gallery_img_name_list)[sort_idx_list])
+            assert len(rank_label_list) == len(rank_img_name_list)
 
-            content_dict[query_img_name] = [rank_label_list, sort_idx_list]
+            content_dict[query_img_name] = [query_label, rank_img_name_list, rank_label_list]
 
         return content_dict

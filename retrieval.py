@@ -19,18 +19,17 @@ Usage - Use KNN Rank:
 
 import os
 import sys
-import pickle
 
 import argparse
 from argparse import Namespace
 
-import numpy as np
 from pathlib import Path
 
 from simpleir.retrieval.helper import RetrievalHelper, DistanceType, RankType, ReRankType
 from simpleir.utils.logger import LOGGER
 from simpleir.utils.misc import print_args, colorstr
 from simpleir.utils.fileutil import increment_path
+from simpleir.utils.general import load_features, save_retrieval
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
@@ -73,34 +72,6 @@ def parse_opt():
     return opt
 
 
-def load_features(info_path: str):
-    """
-    遍历所有目录，获得最后的文件夹
-
-    query_feat_list, query_label_list, query_img_name_list, query_cls_list
-    """
-    assert os.path.isfile(info_path), info_path
-
-    with open(info_path, 'rb') as f:
-        info_dict = pickle.load(f)
-
-    feat_list = list()
-    label_list = list()
-    img_name_list = list()
-    for img_name, v_dict in info_dict['content'].items():
-        feat_path = v_dict['path']
-        feat = np.load(feat_path)
-        feat_list.append(feat)
-
-        label = v_dict['label']
-        label_list.append(label)
-
-        img_name_list.append(img_name)
-
-    classes = info_dict['classes'] if 'classes' in info_dict.keys() else None
-    return feat_list, label_list, img_name_list, classes
-
-
 def main(opt: Namespace):
     # Config
     opt.save_dir = str(increment_path(Path(opt.project) / opt.name, exist_ok=False))
@@ -119,22 +90,11 @@ def main(opt: Namespace):
                                        rerank_type=opt.rerank)
 
     LOGGER.info("Retrieval")
-    content_dict = retrieval_helper.run(gallery_feat_list, gallery_label_list,
+    content_dict = retrieval_helper.run(gallery_img_name_list, gallery_feat_list, gallery_label_list,
                                         query_img_name_list, query_feat_list, query_label_list)
 
     # Save
-    info_dict = {
-        'content': content_dict,
-        'query_path': opt.query,
-        'gallery_path': opt.gallery
-    }
-    if query_classes is not None:
-        info_dict['classes'] = query_classes
-    info_path = os.path.join(opt.save_dir, 'info.pkl')
-    with open(info_path, 'wb') as f:
-        pickle.dump(info_dict, f)
-
-    # Save
+    save_retrieval(opt.gallery, opt.query, content_dict, query_classes, opt.save_dir)
     LOGGER.info(f"Save to {colorstr(opt.save_dir)}")
 
 

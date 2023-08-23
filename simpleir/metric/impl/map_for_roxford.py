@@ -138,11 +138,9 @@ class MapForROxford(MetricBase):
     """
 
     def __init__(self, data_root: str, retrieval_dir: str, top_k_list=[1, 5, 10], dataset='oxford5k'):
-        super().__init__(retrieval_dir, None)
+        super().__init__(top_k_list=top_k_list)
 
         self.data_root = data_root
-        self.retrieval_dir = retrieval_dir
-        self.top_k_list = top_k_list
         self.dataset = dataset
 
     def load_ranks(self):

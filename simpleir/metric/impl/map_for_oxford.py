@@ -23,8 +23,8 @@ class MapForOxford(MetricBase):
     See https://www.robots.ox.ac.uk/~vgg/data/oxbuildings/compute_ap.cpp
     """
 
-    def __init__(self, data_root: str, retrieval_dir: str):
-        super().__init__(retrieval_dir, None)
+    def __init__(self, data_root: str, batch_rank_name_list: List, query_name_list: List):
+        super().__init__(batch_rank_label_list=batch_rank_name_list, query_name_list=query_name_list)
 
         self.data_root = data_root
 

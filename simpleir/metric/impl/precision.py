@@ -11,20 +11,19 @@ import torch
 
 import numpy as np
 
-from ..metric_base import MetricBase
 from .functional import precision
 
 __all__ = ['Precision']
 
 
-class Precision(MetricBase):
+class Precision:
 
-    def __init__(self, retrieval_dir, top_k_list=(1, 3, 5, 10)):
-        super().__init__(retrieval_dir, top_k_list)
+    def __init__(self, batch_rank_label_list, query_label_list, top_k_list=(1, 3, 5, 10)):
+        self.batch_rank_label_list = batch_rank_label_list
+        self.query_label_list = query_label_list
+        self.top_k_list = top_k_list
 
     def run(self):
-        super().run()
-
         batch_rank_label_tensor = torch.from_numpy(np.array(self.batch_rank_label_list))
         query_label_tensor = torch.from_numpy(np.array(self.query_label_list))
         assert len(query_label_tensor) == len(batch_rank_label_tensor)

@@ -16,12 +16,10 @@ Usage - Reduce dimension:
 
 import os
 import sys
-import pickle
 
 import argparse
 from argparse import Namespace
 
-import numpy as np
 from pathlib import Path
 
 import torch
@@ -35,6 +33,7 @@ from simpleir.utils.misc import print_args, colorstr
 from simpleir.data.build import build_data
 from simpleir.extract.helper import ExtractHelper, AggregateType, EnhanceType
 from simpleir.utils.fileutil import increment_path, check_yaml, yaml_load
+from simpleir.utils.general import save_features
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
@@ -90,31 +89,9 @@ def do_extract(data_loader: DataLoader, extract_helper: ExtractHelper, save_dir:
         feat_dir = os.path.join(save_dir, 'query')
         info_path = os.path.join(save_dir, "query.pkl")
 
-    content_dict = dict()
     assert hasattr(data_loader.dataset, 'classes')
     classes = data_loader.dataset.classes
-    for image_name, target, feat_tensor in zip(image_name_list, label_list, feat_tensor_list):
-        cls_name = classes[target]
-        cls_dir = os.path.join(feat_dir, cls_name)
-        if not os.path.exists(cls_dir):
-            os.makedirs(cls_dir)
-
-        feat_path = os.path.join(cls_dir, image_name + ".npy")
-        np.save(feat_path, feat_tensor.numpy())
-
-        assert image_name not in content_dict.keys()
-        content_dict[image_name] = {
-            'path': feat_path,
-            'class': cls_name,
-            'label': target
-        }
-
-    info_dict = {
-        'content': content_dict,
-        'classes': classes,
-    }
-    with open(info_path, 'wb') as f:
-        pickle.dump(info_dict, f)
+    save_features(classes, image_name_list, label_list, feat_tensor_list, feat_dir, info_path)
 
 
 def main(opt: Namespace):

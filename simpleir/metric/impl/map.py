@@ -11,16 +11,17 @@ import torch
 
 import numpy as np
 
-from ..metric_base import MetricBase
 from .functional import compute_map
 
-__all__ = ["Map"]
+__all__ = ["MAP"]
 
 
-class Map(MetricBase):
+class MAP:
 
-    def __init__(self, retrieval_dir, top_k_list=(1, 3, 5, 10)):
-        super().__init__(retrieval_dir, top_k_list)
+    def __init__(self, batch_rank_label_list, query_label_list, top_k_list=(1, 3, 5, 10)):
+        super().__init__(batch_rank_label_list=batch_rank_label_list,
+                         query_label_list=query_label_list,
+                         top_k_list=top_k_list)
 
     def run(self):
         super().run()

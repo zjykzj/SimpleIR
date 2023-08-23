@@ -28,13 +28,10 @@ class RetrievalHelper:
 
     1. 图像特征
     2. 图像标签
-    3. 更好的展示目的，可以有图像类别
 
-    需要重新读取编译吗？在特征提取阶段，这些数据都应该已经存在了，剩下的就是把数据传递进来
-
-    保存每次检索得到的检索结果，包括检索图像名、检索排序后的前top_k个结果
-
-    反馈图像名和对应的标签？？？都可以
+    图像检索返回什么？
+    1.
+    3. 后续的评估阶段可能需要图像名
     """
 
     def __init__(self,
@@ -54,6 +51,7 @@ class RetrievalHelper:
         gallery_label_tensor = torch.from_numpy(np.array(gallery_label_list, dtype=int))
 
         content_dict = OrderedDict()
+        # Calculate the retrieval results of query features one by one
         for query_img_name, query_feat, query_label in \
                 tqdm(zip(query_img_name_list, query_feat_list, query_label_list), total=len(query_feat_list)):
             query_feat_tensor = torch.from_numpy(np.array(query_feat)).unsqueeze(0)

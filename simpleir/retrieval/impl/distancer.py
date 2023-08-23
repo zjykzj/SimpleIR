@@ -4,14 +4,15 @@
 @date: 2022/4/27 上午11:55
 @file: similarity.py
 @author: zj
-@description: Input query image features and search set features.
+@description: Input query image features and gallery set features.
 
-1. Calculate the similarity between the query image and each image in the retrieval set.
+1. Calculate the similarity between the query image and each image in the gallery set.
 2. Returns a list. The first dimension represents target and the second dimension is similarity
 """
 
 from enum import Enum
 from torch import Tensor
+
 from simpleir.utils.distance import euclidean_distance, cosine_distance
 
 

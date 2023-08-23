@@ -31,6 +31,7 @@ class Accuracy:
         assert len(query_label_tensor) == len(batch_rank_label_tensor)
 
         acc = accuracy(batch_rank_label_tensor, query_label_tensor, topk=self.top_k_list)
+        acc = [format(a, ".3f") for a in acc]
         LOGGER.info(f"Accuracy: {colorstr(acc)}")
 
         return acc

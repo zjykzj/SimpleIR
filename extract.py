@@ -36,7 +36,7 @@ from simpleir.utils.fileutil import increment_path, check_yaml, yaml_load
 from simpleir.utils.general import save_features
 
 FILE = Path(__file__).resolve()
-ROOT = FILE.parents[0]  # YOLOv5 root directory
+ROOT = FILE.parents[0]  # SimpleIR root directory
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
@@ -61,11 +61,11 @@ def parse_opt():
     parser.add_argument('--aggregate', type=str, default='IDENTITY', choices=aggregate_types,
                         help='aggregate type: ' +
                              ' | '.join(aggregate_types) +
-                             ' (default: identity)')
+                             ' (default: IDENTITY)')
     parser.add_argument('--enhance', type=str, default='IDENTITY', choices=enhance_types,
                         help='enhance type: ' +
                              ' | '.join(enhance_types) +
-                             ' (default: identity)')
+                             ' (default: IDENTITY)')
     parser.add_argument('--reduce', type=int, default=512, help='reduce dimension')
     parser.add_argument('--learn-pca', action='store_true', default=False,
                         help='whether to perform PCA learning')

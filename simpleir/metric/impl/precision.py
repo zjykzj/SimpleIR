@@ -31,6 +31,7 @@ class Precision:
         assert len(query_label_tensor) == len(batch_rank_label_tensor)
 
         pre = precision(batch_rank_label_tensor, query_label_tensor, topk=self.top_k_list)
+        pre = [format(p, ".3f") for p in pre]
         LOGGER.info(f"Precision: {colorstr(pre)}")
 
         return pre

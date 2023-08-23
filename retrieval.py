@@ -4,7 +4,17 @@
 @date: 2023/8/21 上午11:17
 @file: retrieval.py
 @author: zj
-@description: 
+@description:
+
+Usage - Retrieval Features:
+    $ python retrieval.py /path/to/gallery.pkl /path/to/query.pkl
+
+Usage - Use Cosine distance:
+    $ python retrieval.py --distance COSINE /path/to/gallery.pkl /path/to/query.pkl
+
+Usage - Use KNN Rank:
+    $ python retrieval.py --rank KNN /path/to/gallery.pkl /path/to/query.pkl
+
 """
 
 import os
@@ -20,7 +30,7 @@ from pathlib import Path
 from simpleir.retrieval.helper import RetrievalHelper, DistanceType, RankType, ReRankType
 from simpleir.utils.logger import LOGGER
 from simpleir.utils.misc import print_args, colorstr
-from simpleir.utils.fileutil import increment_path, check_yaml, yaml_load
+from simpleir.utils.fileutil import increment_path
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
@@ -33,22 +43,25 @@ def parse_opt():
     distance_types = [e.value for e in DistanceType]
     rank_types = [e.value for e in RankType]
     rerank_types = [e.value for e in ReRankType]
+    # print(distance_types)
+    # print(rank_types)
+    # print(rerank_types)
 
     parser = argparse.ArgumentParser()
     parser.add_argument('gallery', type=str, help='gallery info path')
     parser.add_argument('query', type=str, help='query info path')
 
-    parser.add_argument('--distance', type=str, default='EUCLIDEAN',
+    parser.add_argument('--distance', type=str, default='EUCLIDEAN', choices=distance_types,
                         help='distance type: ' +
                              ' | '.join(distance_types) +
                              ' (default: EUCLIDEAN)')
-    parser.add_argument('--rank', type=str, default='NORMAL',
+    parser.add_argument('--rank', type=str, default='NORMAL', choices=rank_types,
                         help='rank type: ' +
                              ' | '.join(rank_types) +
                              ' (default: NORMAL)')
     parser.add_argument('--knn-topk', type=int, default=5,
                         help='select the top-k highest similarity lists for knn sorting')
-    parser.add_argument('--rerank', type=str, default='IDENTITY',
+    parser.add_argument('--rerank', type=str, default='IDENTITY', choices=rerank_types,
                         help='rerank type: ' +
                              ' | '.join(rerank_types) +
                              ' (default: IDENTITY)')
@@ -88,9 +101,6 @@ def load_features(info_path: str):
     return feat_list, label_list, img_name_list, classes
 
 
-def do_retrieval():
-
-
 def main(opt: Namespace):
     # Config
     opt.save_dir = str(increment_path(Path(opt.project) / opt.name, exist_ok=False))
@@ -98,37 +108,34 @@ def main(opt: Namespace):
     if not os.path.exists(opt.save_dir):
         os.makedirs(opt.save_dir)
 
-    opt.data = check_yaml(opt.data)
-    opt.data = yaml_load(opt.data)
-
     # Data
     gallery_feat_list, gallery_label_list, gallery_img_name_list, gallery_classes = load_features(opt.gallery)
     query_feat_list, query_label_list, query_img_name_list, query_classes = load_features(opt.query)
 
     # Retrieval
-    extract_helper = RetrievalHelper(distance_type=opt.distance,
-                                     rank_type=opt.rank,
-                                     knn_top_k=opt.knn_topk,
-                                     rerank_type=opt.rerank)
+    retrieval_helper = RetrievalHelper(distance_type=opt.distance,
+                                       rank_type=opt.rank,
+                                       knn_top_k=opt.knn_topk,
+                                       rerank_type=opt.rerank)
 
     LOGGER.info("Retrieval")
-    do_retrieval()
-
-    # Save
-    LOGGER.info(f"Save to {colorstr(opt.save_dir)}")
+    content_dict = retrieval_helper.run(gallery_feat_list, gallery_label_list,
+                                        query_img_name_list, query_feat_list, query_label_list)
 
     # Save
     info_dict = {
         'content': content_dict,
-        'query_dir': self.query_dir,
-        'gallery_dir': self.gallery_dir
+        'query_path': opt.query,
+        'gallery_path': opt.gallery
     }
-    if query_cls_list is not None:
-        info_dict['classes'] = query_cls_list
-    info_path = os.path.join(self.save_dir, 'info.pkl')
-    logger.info(f'save to {info_path}')
+    if query_classes is not None:
+        info_dict['classes'] = query_classes
+    info_path = os.path.join(opt.save_dir, 'info.pkl')
     with open(info_path, 'wb') as f:
         pickle.dump(info_dict, f)
+
+    # Save
+    LOGGER.info(f"Save to {colorstr(opt.save_dir)}")
 
 
 if __name__ == "__main__":

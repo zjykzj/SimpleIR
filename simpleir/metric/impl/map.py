@@ -12,6 +12,8 @@ import torch
 import numpy as np
 
 from .functional import compute_map
+from ...utils.logger import LOGGER
+from ...utils.misc import colorstr
 
 __all__ = ["MAP"]
 
@@ -19,15 +21,16 @@ __all__ = ["MAP"]
 class MAP:
 
     def __init__(self, batch_rank_label_list, query_label_list, top_k_list=(1, 3, 5, 10)):
-        super().__init__(batch_rank_label_list=batch_rank_label_list,
-                         query_label_list=query_label_list,
-                         top_k_list=top_k_list)
+        self.batch_rank_label_list = batch_rank_label_list
+        self.query_label_list = query_label_list
+        self.top_k_list = top_k_list
 
     def run(self):
-        super().run()
-
         batch_rank_label_tensor = torch.from_numpy(np.array(self.batch_rank_label_list))
         query_label_tensor = torch.from_numpy(np.array(self.query_label_list))
         assert len(query_label_tensor) == len(batch_rank_label_tensor)
 
-        return compute_map(batch_rank_label_tensor, query_label_tensor, topk=self.top_k_list)
+        map = compute_map(batch_rank_label_tensor, query_label_tensor, topk=self.top_k_list)
+        LOGGER.info(f"MAP: {colorstr(map)}")
+
+        return map

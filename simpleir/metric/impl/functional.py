@@ -7,15 +7,9 @@
 @description: 
 """
 from typing import Tuple, List
-import os
-import pickle
 
 import numpy as np
-from tqdm import tqdm
-
 from torch import Tensor
-
-from zcls2.config.key_word import KEY_SEP
 
 __all__ = ['accuracy', 'precision', 'compute_ap', 'compute_map']
 
@@ -52,7 +46,7 @@ def precision(pred: Tensor, target: Tensor, topk=(1,)) -> List[float]:
     res = []
     for k in topk:
         correct_k = correct[:, :k].t().float().sum(0).mul_(1.0 / k).mean()
-        res.append(correct_k * 100.0)
+        res.append(float(correct_k) * 100.0)
     return res
 
 

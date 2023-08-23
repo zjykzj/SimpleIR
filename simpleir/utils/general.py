@@ -41,11 +41,6 @@ def save_features(classes, image_name_list, label_list, feat_tensor_list, feat_d
 
 
 def load_features(info_path: str):
-    """
-    遍历所有目录，获得最后的文件夹
-
-    query_feat_list, query_label_list, query_img_name_list, query_cls_list
-    """
     assert os.path.isfile(info_path), info_path
 
     with open(info_path, 'rb') as f:

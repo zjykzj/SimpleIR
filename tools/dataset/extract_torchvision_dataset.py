@@ -13,7 +13,7 @@ Usage - Create Dataset:
     $ python tools/dataset/extract_torchvision_dataset.py --dataset FashionMNIST ../datasets/fashionmnist
 
 Usage - Create Toy Dataset:
-    $ python tools/dataset/extract_torchvision_dataset.py --dataset CIFAR10 --toy ../datasets/cifar10
+    $ python tools/dataset/extract_torchvision_dataset.py --dataset CIFAR100 --toy ../datasets/cifar100
 
 """
 import glob
@@ -45,7 +45,7 @@ def parse() -> Namespace:
                              ' | '.join(__supported__) +
                              ' (default: CIFAR10)')
     parser.add_argument('--toy', action='store_true', default=False, help='Create toy dataset. (default: False)')
-    parser.add_argument('--toy-num', str=int, default=10,
+    parser.add_argument('--toy-num', type=int, default=10,
                         help='How many images per category are in the toy dataset. (default: 10)')
 
     args = parser.parse_args()
@@ -53,7 +53,7 @@ def parse() -> Namespace:
     return args
 
 
-def process(data_root: str, dataset: Dataset, is_toy: bool = False, toy_num: int = 10) -> None:
+def process(data_root: str, dataset: Dataset, is_train: bool = True, is_toy: bool = False, toy_num: int = 10) -> None:
     assert isinstance(dataset, datasets.VisionDataset)
 
     if not os.path.exists(data_root):
@@ -61,6 +61,7 @@ def process(data_root: str, dataset: Dataset, is_toy: bool = False, toy_num: int
 
     print(f"Create dataset: {data_root}")
     classes = dataset.classes
+    cls_dict = {class_name: 0 for class_name in classes}
     for idx in tqdm(range(len(dataset))):
         image, target = dataset.__getitem__(idx)
         assert isinstance(image, Image.Image)
@@ -70,7 +71,9 @@ def process(data_root: str, dataset: Dataset, is_toy: bool = False, toy_num: int
         if not os.path.exists(cls_dir):
             os.makedirs(cls_dir)
 
-        img_path = os.path.join(cls_dir, f'{idx}.jpg')
+        cls_dict[class_name] = cls_dict[class_name] + 1
+        prefix = 'train' if is_train else 'val'
+        img_path = os.path.join(cls_dir, f'{prefix}_{class_name}-{cls_dict[class_name]}.jpg')
         image.save(img_path)
 
     if is_toy:
@@ -93,33 +96,32 @@ def process(data_root: str, dataset: Dataset, is_toy: bool = False, toy_num: int
                 shutil.copyfile(file_path, dst_file_path)
 
 
-def main(data_root: str, dataset_name: str, is_toy: bool = False) -> None:
-    assert isinstance(dataset_name, str) and dataset_name in __supported__
+def main(args: Namespace) -> None:
+    data_root = args.data_root
+    dataset = args.dataset
 
     train_dir = os.path.join(data_root, 'train')
     val_dir = os.path.join(data_root, 'val')
 
-    if dataset_name == 'MNIST':
+    if dataset == 'MNIST':
         train_dataset = datasets.MNIST(data_root, train=True, download=True)
         val_dataset = datasets.MNIST(data_root, train=False, download=True)
-    elif dataset_name == 'CIFAR10':
+    elif dataset == 'CIFAR10':
         train_dataset = datasets.CIFAR10(data_root, train=True, download=True)
         val_dataset = datasets.CIFAR10(data_root, train=False, download=True)
-    elif dataset_name == 'CIFAR100':
+    elif dataset == 'CIFAR100':
         train_dataset = datasets.CIFAR100(data_root, train=True, download=True)
         val_dataset = datasets.CIFAR100(data_root, train=False, download=True)
-    elif dataset_name == 'FashionMNIST':
+    elif dataset == 'FashionMNIST':
         train_dataset = datasets.FashionMNIST(data_root, train=True, download=True)
         val_dataset = datasets.FashionMNIST(data_root, train=False, download=True)
     else:
-        raise ValueError(f"{dataset_name} does not support")
+        raise ValueError(f"{dataset} does not support")
 
-    process(train_dir, train_dataset, is_toy)
-    process(val_dir, val_dataset, is_toy)
+    process(train_dir, train_dataset, is_train=True, is_toy=args.toy, toy_num=args.toy_num)
+    process(val_dir, val_dataset, is_train=False, is_toy=args.toy, toy_num=args.toy_num)
 
 
 if __name__ == '__main__':
     args = parse()
-    print(args)
-
-    main(args.data_root, args.dataset, args.toy)
+    main(args)

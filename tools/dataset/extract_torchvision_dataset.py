@@ -61,6 +61,10 @@ def process(data_root: str, dataset: Dataset, is_train: bool = True, is_toy: boo
 
     print(f"Create dataset: {data_root}")
     classes = dataset.classes
+    if is_train:
+        for idx, class_name in enumerate(classes):
+            print(f"{idx}: {class_name}")
+
     cls_dict = {class_name: 0 for class_name in classes}
     for idx in tqdm(range(len(dataset))):
         image, target = dataset.__getitem__(idx)

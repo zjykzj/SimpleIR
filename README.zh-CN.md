@@ -32,6 +32,10 @@
   <a href="https://github.com/zjykzj/SimpleIR"><img src="https://img.shields.io/github/commit-activity/y/zjykzj/simpleir" alt=""></a>
 </p>
 
+<p align="center">
+<img src='./imgs/MindMap.svg' alt='map' />
+</p>
+
 ## 内容列表
 
 - [内容列表](#内容列表)

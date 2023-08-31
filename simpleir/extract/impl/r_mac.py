@@ -13,6 +13,7 @@ cached_regions = dict()
 
 def get_regions(h: int, w: int, level_n: int = 3) -> List:
     """
+    这里的区域提取方式跟原始论文的描述会有差别。在原始论文中，每个尺度采样的子区域之间的重叠率为40%。
     Divide the image into several regions.
 
     Args:
@@ -58,10 +59,14 @@ def get_regions(h: int, w: int, level_n: int = 3) -> List:
 
         for x in range(n_h):
             for y in range(n_w):
+                # left_x
                 st_x = step_size_h * x
+                # right_x
                 ed_x = st_x + region_width - 1
                 assert ed_x < h
+                # top_y
                 st_y = step_size_w * y
+                # bottom_y
                 ed_y = st_y + region_width - 1
                 assert ed_y < w
                 regions.append((st_x, st_y, ed_x, ed_y))
